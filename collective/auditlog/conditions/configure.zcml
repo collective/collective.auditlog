@@ -1,0 +1,44 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone"
+    xmlns:five="http://namespaces.zope.org/five"
+    i18n_domain="collective.auditlog">
+
+    <include package="plone.contentrules" />
+    <include package="plone.contentrules" file="meta.zcml" />
+    <include package="Products.CMFCore" file="permissions.zcml" />
+
+    <!-- RunScript condition definition -->
+
+  <adapter factory=".trueAction.TrueActionConditionExecutor" />
+
+    <browser:page
+      for="plone.app.contentrules.browser.interfaces.IRuleConditionAdding"
+      name="collective.auditlogcondition.TrueAction"
+      class=".trueAction.TrueActionAddForm"
+      permission="cmf.ManagePortal"
+      />
+
+
+    <browser:page
+      for="collective.auditlog.conditions.trueAction.ITrueActionCondition"
+      name="edit"
+      class=".trueAction.TrueActionEditForm"
+      permission="cmf.ManagePortal"
+      />
+
+
+    <plone:ruleCondition
+        name="collective.auditlogcondition.TrueAction"
+        title="Is True Action"
+        description="Apply only when the action specified was completed on current content"
+        for="*"
+        event="zope.component.interfaces.IObjectEvent"
+        addview="collective.auditlogcondition.TrueAction"
+        editview="edit"
+        />
+
+
+</configure>
+

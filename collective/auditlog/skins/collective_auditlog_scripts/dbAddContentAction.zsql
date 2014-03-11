@@ -1,0 +1,67 @@
+ <dtml-comment>
+title:Insert action into Data Warehouse
+arguments: ADID Date ID UID Temp Type Title Path SiteName Action Field CopyOf Count CreateID Error
+connection_id:CONN_MYSQL_Data_Warehouse
+max_rows:1000
+max_cache:100
+cache_time:0
+class_name:
+class_file:
+</dtml-comment>
+<dtml-unless Error>
+ <dtml-unless ID>
+
+  <dtml-if expr="Action=='checkout'">
+    DELETE FROM content_wfa WHERE Action="added" AND UID=<dtml-sqlvar Temp type="string">
+  </dtml-if>
+
+ </dtml-unless>
+
+ <dtml-if ID>
+ 
+  <dtml-if ADID>
+  INSERT INTO content_wfa (ADID, Date, Content_ID, UID, Temp_UID, Content_Type, Title, Path, Site_Name, Action, Field, Affected_Count, Copy)
+  VALUES (
+    <dtml-sqlvar ADID type="string">, <dtml-sqlvar Date type="string">, <dtml-sqlvar ID type="string">, <dtml-sqlvar UID type="string">, <dtml-sqlvar Temp type="string">, 
+    <dtml-sqlvar Type type="string">, <dtml-sqlvar Title type="string">, <dtml-sqlvar Path type="string">, <dtml-sqlvar SiteName type="string">, <dtml-sqlvar Action type="string">, 
+    <dtml-sqlvar Field type="string">, <dtml-sqlvar Count type="string">, <dtml-sqlvar CopyOf type="int">
+  )
+  </dtml-if>
+
+  <dtml-var sql_delimiter>
+  
+  <dtml-if CreateID>
+    UPDATE content_wfa SET Content_ID = <dtml-sqlvar ID type="string">, Title = <dtml-sqlvar Title type="string">, Path = <dtml-sqlvar Path type="string">
+    WHERE (Content_ID LIKE <dtml-sqlvar CreateID type="string"> OR Title = '') AND UID = <dtml-sqlvar UID type="string">
+
+  <dtml-elif Field>
+    UPDATE content_wfa SET Field = <dtml-sqlvar Field type="string">
+    WHERE ID = <dtml-sqlvar ID type="int">
+
+  <dtml-elif Title>
+    UPDATE content_wfa SET Title = <dtml-sqlvar Title type="string">
+    WHERE ID = <dtml-sqlvar ID type="int">
+
+  </dtml-if>
+
+ </dtml-if>
+
+</dtml-unless>
+
+<dtml-if Error>
+  INSERT INTO error_log (ADID, Date, Content_ID, UID, Temp_UID, Content_Type, Title, Path, Site_Name, Action, Field, Affected_Count, Copy)
+  VALUES (
+    <dtml-sqlvar ADID type="string">, <dtml-sqlvar Date type="string">, <dtml-sqlvar ID type="string">, <dtml-sqlvar UID type="string">, <dtml-sqlvar Temp type="string">, 
+    <dtml-sqlvar Type type="string">, <dtml-sqlvar Title type="string">, <dtml-sqlvar Path type="string">, <dtml-sqlvar SiteName type="string">, <dtml-sqlvar Action type="string">, 
+    <dtml-sqlvar Field type="string">, <dtml-sqlvar Count type="string">, <dtml-sqlvar CopyOf type="int">
+  )
+<dtml-var sql_delimiter>
+
+ <dtml-if expr="'field_uid: ' in Field">
+  DELETE FROM content_wfa WHERE Field=<dtml-sqlvar Field type="string">
+ <dtml-else>
+  DELETE FROM content_wfa WHERE UID=<dtml-sqlvar UID type="string">
+ </dtml-if>
+
+</dtml-if>
+
