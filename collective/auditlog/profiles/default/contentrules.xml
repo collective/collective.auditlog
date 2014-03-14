@@ -170,7 +170,9 @@
     <property name="script">save_action</property>
    </action>
   </actions>
- </rule>
+</rule>
+
+<!--
  <rule name="rule-109" title="Store Web Form Field Added" description=""
     enabled="True" event="zope.lifecycleevent.interfaces.IObjectAddedEvent"
     stop-after="True">
@@ -210,7 +212,7 @@
     <property name="script">save_action</property>
    </action>
   </actions>
- </rule>
+</rule>
  <rule name="rule-110" title="Store Web Form Field Moved"
     description="This stores the action of moving any Web Form field into the Data Warehouse"
     enabled="True" event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
@@ -294,7 +296,7 @@
     <property name="script">save_action</property>
    </action>
   </actions>
- </rule>
+</rule>
  <rule name="rule-112" title="Store Web Form Field Renamed"
     description="This stores the action of renaming any objects within a Web Form into the Data Warehouse."
     enabled="True" event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
@@ -337,7 +339,7 @@
    </action>
   </actions>
  </rule>
-
+-->
 
  <assignment name="rule-100" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-101" bubbles="True" enabled="True" location=""/>
@@ -348,9 +350,11 @@
  <assignment name="rule-106" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-107" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-108" bubbles="True" enabled="True" location=""/>
+<!--
  <assignment name="rule-109" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-110" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-111" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-112" bubbles="True" enabled="True" location=""/>
+-->
 
 </contentrules>

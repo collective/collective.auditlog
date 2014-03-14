@@ -19,6 +19,29 @@
   <include file="profiles.zcml" />
   <include file="skins.zcml" />
 
+   <interface
+      interface="plone.app.iterate.interfaces.IAfterCheckinEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="A working copy has been checked in."
+      />
+
+    <interface
+      interface="plone.app.iterate.interfaces.ICheckoutEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been checked out."
+      />
+
+    <interface
+      interface="plone.app.iterate.interfaces.ICancelCheckoutEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="A working copy has been cancelled."
+      />
+
+    <interface
+      interface="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been moved"
+      />
   <!-- Rule triggers -->
   <subscriber
     for="plone.app.iterate.interfaces.IAfterCheckinEvent"
