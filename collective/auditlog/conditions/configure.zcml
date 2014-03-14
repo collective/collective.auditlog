@@ -11,7 +11,7 @@
 
     <!-- RunScript condition definition -->
 
-  <adapter factory=".trueAction.TrueActionConditionExecutor" />
+    <adapter factory=".trueAction.TrueActionConditionExecutor" />
 
     <browser:page
       for="plone.app.contentrules.browser.interfaces.IRuleConditionAdding"
@@ -20,14 +20,12 @@
       permission="cmf.ManagePortal"
       />
 
-
     <browser:page
       for="collective.auditlog.conditions.trueAction.ITrueActionCondition"
       name="edit"
       class=".trueAction.TrueActionEditForm"
       permission="cmf.ManagePortal"
       />
-
 
     <plone:ruleCondition
         name="collective.auditlogcondition.TrueAction"
@@ -39,6 +37,4 @@
         editview="edit"
         />
 
-
 </configure>
-

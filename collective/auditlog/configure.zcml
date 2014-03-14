@@ -19,36 +19,36 @@
   <include file="profiles.zcml" />
   <include file="skins.zcml" />
 
-    <!-- Rule triggers -->
-    <subscriber
-      for="plone.app.iterate.interfaces.IAfterCheckinEvent"
-      handler=".handlers.checkin_action"
-      />
+  <!-- Rule triggers -->
+  <subscriber
+    for="plone.app.iterate.interfaces.IAfterCheckinEvent"
+    handler=".handlers.checkin_action"
+    />
 
-    <subscriber
-      for="plone.app.iterate.interfaces.ICheckoutEvent"
-      handler=".handlers.checkout_action"
-      />
+  <subscriber
+    for="plone.app.iterate.interfaces.ICheckoutEvent"
+    handler=".handlers.checkout_action"
+    />
 
-    <subscriber
-      for="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-      handler=".handlers.cancel_checkout_action"
-      />
+  <subscriber
+    for="plone.app.iterate.interfaces.ICancelCheckoutEvent"
+    handler=".handlers.cancel_checkout_action"
+    />
 
-    <subscriber
-      for="zope.app.container.interfaces.IObjectAddedEvent"
-      handler=".handlers.added"
-      />
+  <subscriber
+    for="zope.app.container.interfaces.IObjectAddedEvent"
+    handler=".handlers.added"
+    />
 
-    <subscriber
-      for="Products.Archetypes.interfaces.IBaseObject
-           zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-      handler=".handlers.confirmed_removed"
-      />
+  <subscriber
+    for="Products.Archetypes.interfaces.IBaseObject
+          zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+    handler=".handlers.confirmed_removed"
+    />
 
-    <subscriber
-      for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-      handler=".handlers.moved"
-      />
+  <subscriber
+    for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+    handler=".handlers.moved"
+    />
 
 </configure>
