@@ -16,5 +16,9 @@ allow_type(type(AuditLogTest.testingActions))
 allow_type(type(AuditLogChecker.checkAction))
 
 
+allow_module('collective.auditlog.async')
+ModuleSecurityInfo('collective.auditlog.async').declarePublic('queueJob')
+
+
 def initialize(context):
     """Initializer called when used as a Zope 2 product."""

@@ -29,6 +29,11 @@ setup(name='collective.auditlog',
           'setuptools',
           'collective.contentrules.runscript'
       ],
+      extras_require={
+          'async': [
+              'plone.app.async',
+          ]
+      },
       entry_points="""
       # -*- Entry points: -*-
 
