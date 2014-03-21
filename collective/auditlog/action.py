@@ -3,6 +3,9 @@ from OFS.SimpleItem import SimpleItem
 from zope.component import adapts
 from zope.interface import Interface, implements
 from zope.formlib import form
+from zope.interface import implementer
+import transaction as transaction_manager
+from transaction.interfaces import IDataManager
 
 from plone.app.contentrules.browser.formhelper import AddForm, EditForm
 from plone.contentrules.rule.interfaces import IRuleElementData, IExecutable
@@ -12,6 +15,7 @@ except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
+import threading
 from datetime import datetime
 from Products.Archetypes.interfaces import (
     IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
@@ -34,6 +38,49 @@ from collective.auditlog.utils import getUID
 
 import logging
 logger = logging.getLogger('collective.auditlog')
+
+
+_stats = threading.local()
+
+
+@implementer(IDataManager)
+class DataManager(object):
+    """ point of this is to be able to clear deleted from thread local
+        since delete is plone is a bit wonky and we don't want to
+        schedule a bunch of events
+    """
+    def noop(self, trans):
+        pass
+
+    tpc_begin = tpc_vote = tpc_finish = tpc_abort = commit = noop
+
+    def abort(self, trans):
+        close()
+
+    def sortKey(self):
+        # Sort normally
+        return "collective.auditlog"
+
+
+def init():
+    transaction = transaction_manager.get()
+    found = False
+    for resource in transaction._resources:
+        if isinstance(resource, DataManager):
+            found = True
+            break
+    if not found:
+        transaction.join(DataManager())
+
+    if not hasattr(_stats, 'deleted'):
+        _stats.deleted = []
+
+
+def close(event=None):
+    """Close the event processing when the request ends
+    """
+    if hasattr(_stats, 'deleted'):
+        _stats.deleted = []
 
 
 class IAuditAction(Interface):
@@ -123,6 +170,11 @@ class AuditActionExecutor(object):
         if IObjectRemovedEvent.providedBy(event):
             # need to keep track of removed events so it doesn't get called
             # more than once for each object
+            init()
+            uid = getUID(obj)
+            if uid in _stats.deleted:
+                return
+            _stats.deleted.append(uid)
             action = 'removed'
         elif (IObjectInitializedEvent.providedBy(event) or
                 IObjectCreatedEvent.providedBy(event) or
