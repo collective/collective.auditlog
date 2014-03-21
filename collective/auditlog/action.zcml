@@ -1,0 +1,38 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:plone="http://namespaces.plone.org/plone">
+
+    <include package="plone.contentrules" />
+    <include package="plone.contentrules" file="meta.zcml" />
+
+    <!-- RunScript action definition -->
+
+    <adapter factory=".action.AuditActionExecutor" />
+
+    <browser:page
+      for="plone.app.contentrules.browser.interfaces.IRuleActionAdding"
+      name="plone.actions.Audit"
+      class=".action.AuditAddForm"
+      permission="cmf.ManagePortal"
+    />
+
+    <browser:page
+      for=".action.IAuditAction"
+      name="edit"
+      class=".action.AuditEditForm"
+      permission="cmf.ManagePortal"
+      />
+
+    <plone:ruleAction
+        name="plone.actions.Audit"
+        title="Audit"
+        description="Audit action"
+        for="*"
+        event="zope.component.interfaces.IObjectEvent"
+        addview="plone.actions.Audit"
+        editview="edit"
+        schema=".action.IAuditAction"
+        factory=".action.AuditAction"
+        />
+</configure>
