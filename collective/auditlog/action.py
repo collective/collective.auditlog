@@ -31,7 +31,6 @@ from zope.component.hooks import getSite
 
 from collective.auditlog.async import queueJob
 from collective.auditlog.utils import getUID
-from collective.auditlog import td
 
 import logging
 logger = logging.getLogger('collective.auditlog')
@@ -187,9 +186,6 @@ class AuditActionExecutor(object):
             title=obj.Title(),
             path='/'.join(obj.getPhysicalPath())
         ))
-        tdata = td.get()
-        if not tdata.registered:
-            tdata.register()
         queueJob(getSite(), **data)
         return True
 
