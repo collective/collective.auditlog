@@ -6,6 +6,9 @@ from zope.globalrequest import getRequest
 
 
 def getEngine(conn_string=None, req=None):
+    """
+    cache this on the request object
+    """
     if req is None:
         req = getRequest()
     if 'sa.engine' in req.environ:
@@ -20,6 +23,9 @@ def getEngine(conn_string=None, req=None):
 
 
 def getSession(conn_string=None, engine=None, req=None):
+    """
+    same, cache on request object
+    """
     if engine is None:
         engine = getEngine(conn_string)
     if req is None:

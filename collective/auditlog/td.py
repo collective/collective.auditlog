@@ -71,7 +71,6 @@ class DataManager(object):
     def abort(self, trans):
         if self.td.registered:
             self.session.expunge_all()
-            print 'refreshed'
             # so content rules can match again
             cr_handlers.close(None)
         self.td.reset()
@@ -107,7 +106,6 @@ class Savepoint:
                 for ob in self.old:
                     self.dm.session.add(ob)
             else:
-                print 'refreshed'
                 # allow content rules to run again
                 cr_handlers.close(None)
 

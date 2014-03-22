@@ -4,7 +4,7 @@ from collective.auditlog import db
 
 try:
     from plone.app.async.interfaces import IAsyncService
-    ASYNC_INSTALLED = False
+    ASYNC_INSTALLED = True
 except ImportError:
     ASYNC_INSTALLED = False
 

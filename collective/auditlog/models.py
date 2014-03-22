@@ -19,3 +19,4 @@ class LogEntry(Base):
     action = Column(String, nullable=True)
     field = Column(Unicode, nullable=True)
     working_copy = Column(Unicode, nullable=True)
+    info = Column(Unicode, nullable=True)

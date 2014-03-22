@@ -22,7 +22,7 @@ from OFS.interfaces import IObjectClonedEvent
 
 import inspect
 from plone.app.iterate.interfaces import (
-    ICheckinEvent, ICheckoutEvent, ICancelCheckoutEvent,
+    ICheckinEvent, IBeforeCheckoutEvent, ICancelCheckoutEvent,
     IWorkingCopy)
 from Products.CMFCore.interfaces import IActionSucceededEvent
 from Products.CMFCore.utils import getToolByName
@@ -110,7 +110,8 @@ class AuditActionExecutor(object):
             return True  # cut out early, we can't do this event
 
         data = {
-            'performed_on': datetime.utcnow()
+            'performed_on': datetime.utcnow(),
+            'info': ''
         }
 
         if IPloneFormGenField.providedBy(obj):
@@ -123,23 +124,25 @@ class AuditActionExecutor(object):
         if IObjectRemovedEvent.providedBy(event):
             # need to keep track of removed events so it doesn't get called
             # more than once for each object
-            import pdb; pdb.set_trace()
             action = 'removed'
         elif (IObjectInitializedEvent.providedBy(event) or
                 IObjectCreatedEvent.providedBy(event) or
                 IObjectAddedEvent.providedBy(event)):
             action = 'added'
-            #req.environ['disable.auditlog'] = True
         elif IObjectMovedEvent.providedBy(event):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
                 if 'Rename' in rule.rule.title:
+                    data['info'] = 'previous id: %s' % event.oldName
                     action = 'rename'
                 else:
                     # cut out here, double action for this event
                     return True
             else:
                 if 'Moved' in rule.rule.title:
+                    data['info'] = 'previous location: %s/%s' % (
+                        '/'.join(event.oldParent.getPhysicalPath()),
+                        event.oldName)
                     action = 'moved'
                 else:
                     # step out immediately since this could be a double action
@@ -147,15 +150,17 @@ class AuditActionExecutor(object):
         elif IObjectModifiedEvent.providedBy(event):
             action = 'modified'
         elif IActionSucceededEvent.providedBy(event):
+            data['info'] = 'workflow transition: %s' % event.action
             action = 'workflow'
         elif IObjectClonedEvent.providedBy(event):
             action = 'copied'
         elif ICheckinEvent.providedBy(event):
+            data['info'] = event.message
             action = 'checked in'
             req.environ['disable.auditlog'] = True
             data['working_copy'] = '/'.join(obj.getPhysicalPath())
             obj = event.baseline
-        elif ICheckoutEvent.providedBy(event):
+        elif IBeforeCheckoutEvent.providedBy(event):
             action = 'checked out'
             req.environ['disable.auditlog'] = True
         elif ICancelCheckoutEvent.providedBy(event):

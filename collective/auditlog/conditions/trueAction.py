@@ -4,16 +4,14 @@ from zope.interface import implements, Interface
 from zope.component import adapts
 from zope.formlib import form
 from zope import schema
-
 from zope.component.interfaces import IObjectEvent
 
 from plone.contentrules.rule.interfaces import IExecutable, IRuleElementData
-
 from plone.app.contentrules.browser.formhelper import AddForm, EditForm
+from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 
 from collective.auditlog import MessageFactory as _
 
-from plone.app.linkintegrity.interfaces import ILinkIntegrityInfo
 
 
 class ITrueActionCondition(Interface):
@@ -61,6 +59,7 @@ class TrueActionConditionExecutor(object):
         action = self.element.action
         trueAction = False
 
+        import pdb; pdb.set_trace()
         if "delete" in action:
             try:
                 if request is None:

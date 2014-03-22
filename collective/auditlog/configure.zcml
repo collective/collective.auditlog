@@ -17,7 +17,6 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
-  <include package=".conditions" />
   <include file="profiles.zcml" />
   <include file="action.zcml" />
 
@@ -28,7 +27,7 @@
      />
 
   <interface
-    interface="plone.app.iterate.interfaces.ICheckoutEvent"
+    interface="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
     type="plone.contentrules.rule.interfaces.IRuleEventType"
     name="An object has been checked out."
     />
@@ -62,7 +61,7 @@
     />
 
   <subscriber
-    for="plone.app.iterate.interfaces.ICheckoutEvent"
+    for="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
     handler=".handlers.execute_event"
     />
 

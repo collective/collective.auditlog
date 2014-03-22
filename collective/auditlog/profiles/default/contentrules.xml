@@ -20,7 +20,7 @@
  </rule>
  <rule name="rule-101" title="Store Check-out"
     description="This stores the action of checking out any content into the Data Warehouse"
-    enabled="True" event="plone.app.iterate.interfaces.ICheckoutEvent"
+    enabled="True" event="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
     stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
@@ -79,7 +79,6 @@
       <element>Document</element>
      </property>
    </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
   </conditions>
   <actions>
    <action type="plone.actions.Audit">
@@ -96,7 +95,6 @@
       <element>Document</element>
      </property>
    </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
   </conditions>
   <actions>
    <action type="plone.actions.Audit">
@@ -145,7 +143,6 @@
      <element>Document</element>
     </property>
    </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
   </conditions>
   <actions>
    <action type="plone.actions.Audit">
@@ -162,7 +159,6 @@
      <element>Document</element>
     </property>
    </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
   </conditions>
   <actions>
    <action type="plone.actions.Audit">
