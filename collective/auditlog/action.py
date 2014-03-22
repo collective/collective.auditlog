@@ -3,9 +3,6 @@ from OFS.SimpleItem import SimpleItem
 from zope.component import adapts
 from zope.interface import Interface, implements
 from zope.formlib import form
-from zope.interface import implementer
-import transaction as transaction_manager
-from transaction.interfaces import IDataManager
 
 from plone.app.contentrules.browser.formhelper import AddForm, EditForm
 from plone.contentrules.rule.interfaces import IRuleElementData, IExecutable
@@ -15,7 +12,6 @@ except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
-import threading
 from datetime import datetime
 from Products.Archetypes.interfaces import (
     IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
@@ -35,52 +31,10 @@ from zope.component.hooks import getSite
 
 from collective.auditlog.async import queueJob
 from collective.auditlog.utils import getUID
+from collective.auditlog import td
 
 import logging
 logger = logging.getLogger('collective.auditlog')
-
-
-_stats = threading.local()
-
-
-@implementer(IDataManager)
-class DataManager(object):
-    """ point of this is to be able to clear deleted from thread local
-        since delete is plone is a bit wonky and we don't want to
-        schedule a bunch of events
-    """
-    def noop(self, trans):
-        pass
-
-    tpc_begin = tpc_vote = tpc_finish = tpc_abort = commit = noop
-
-    def abort(self, trans):
-        close()
-
-    def sortKey(self):
-        # Sort normally
-        return "collective.auditlog"
-
-
-def init():
-    transaction = transaction_manager.get()
-    found = False
-    for resource in transaction._resources:
-        if isinstance(resource, DataManager):
-            found = True
-            break
-    if not found:
-        transaction.join(DataManager())
-
-    if not hasattr(_stats, 'deleted'):
-        _stats.deleted = []
-
-
-def close(event=None):
-    """Close the event processing when the request ends
-    """
-    if hasattr(_stats, 'deleted'):
-        _stats.deleted = []
 
 
 class IAuditAction(Interface):
@@ -110,7 +64,6 @@ class AuditActionExecutor(object):
         # for archetypes we need to make sure we're getting the right moved
         # event here so we do not duplicate
         if (not IObjectEditedEvent.providedBy(event) and
-                not IObjectRemovedEvent.providedBy(event) and
                 event_iface != rule.rule.event):
             return False
         # if archetypes, initialization also does move events
@@ -170,11 +123,7 @@ class AuditActionExecutor(object):
         if IObjectRemovedEvent.providedBy(event):
             # need to keep track of removed events so it doesn't get called
             # more than once for each object
-            init()
-            uid = getUID(obj)
-            if uid in _stats.deleted:
-                return
-            _stats.deleted.append(uid)
+            import pdb; pdb.set_trace()
             action = 'removed'
         elif (IObjectInitializedEvent.providedBy(event) or
                 IObjectCreatedEvent.providedBy(event) or
@@ -233,6 +182,9 @@ class AuditActionExecutor(object):
             title=obj.Title(),
             path='/'.join(obj.getPhysicalPath())
         ))
+        tdata = td.get()
+        if not tdata.registered:
+            tdata.register()
         queueJob(getSite(), **data)
         return True
 

@@ -1,10 +1,10 @@
 from zope.component import getUtility
-from collective.auditlog.models import LogEntry, Base
+from collective.auditlog.models import LogEntry
 from collective.auditlog import db
 
 try:
     from plone.app.async.interfaces import IAsyncService
-    ASYNC_INSTALLED = True
+    ASYNC_INSTALLED = False
 except ImportError:
     ASYNC_INSTALLED = False
 
@@ -15,17 +15,8 @@ logger = logging.getLogger('collective.auditlog')
 
 def runJob(context, **data):
     log = LogEntry(**data)
-    Session = db.getSession()
-    try:
-        session = Session()
-        session.add(log)
-        session.commit()
-    except:
-        engine = db.getEngine()
-        Base.metadata.create_all(engine)
-        session = db.getSession(engine=engine)()
-        session.add(log)
-        session.commit()
+    session = db.getSession()
+    session.add(log)
 
 
 def queueJob(obj, *args, **kwargs):
@@ -42,6 +33,6 @@ def queueJob(obj, *args, **kwargs):
                 "Error using plone.app.async with "
                 "collective.auditlog. logging without "
                 "plone.app.async...")
-            runJob(*args, **kwargs)
+            runJob(obj, *args, **kwargs)
     else:
         runJob(obj, *args, **kwargs)

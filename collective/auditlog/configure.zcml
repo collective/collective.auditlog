@@ -92,9 +92,4 @@
     handler=".handlers.execute_event"
     />
 
-  <subscriber
-    for="zope.publisher.interfaces.IEndRequestEvent"
-    handler=".action.close"
-    />
-
 </configure>
