@@ -7,7 +7,6 @@ from plone.registry.interfaces import IRegistry
 from tempfile import mkstemp
 import os
 from collective.auditlog import db
-from collective.auditlog.models import LogEntry
 from collective.auditlog.interfaces import DB_STRING_KEY
 from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
 from plone.app.testing import setRoles, login
@@ -39,15 +38,21 @@ class TestActions(unittest.TestCase):
         login(self.portal, TEST_USER_NAME)
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
 
+    def tearDown(self):
+        del self.request.environ['sa.session']
+
+    @property
+    def logs(self):
+        return [l for l in db.getSession().new]
+
     def test_add(self):
         with tempDb():
             self.portal.invokeFactory(type_name="Document", id="page",
                                       Title="Page")
             self.portal.page.unmarkCreationFlag()
             notify(ObjectInitializedEvent(self.portal.page))
-            self.assertEqual(len(db.getSession()().query(LogEntry).all()), 1)
-            self.assertEqual(db.getSession()().query(LogEntry).all()[0].action,
-                             'added')
+            self.assertEqual(len(self.logs), 1)
+            self.assertEqual(self.logs[0].action, 'added')
 
     def test_edit(self):
         self.portal.invokeFactory(type_name="Document", id="page",
@@ -56,8 +61,8 @@ class TestActions(unittest.TestCase):
 
         with tempDb():
             notify(ObjectEditedEvent(self.portal.page))
-            self.assertEqual(len(db.getSession()().query(LogEntry).all()), 1)
-            self.assertEqual(db.getSession()().query(LogEntry).all()[0].action,
+            self.assertEqual(len(self.logs), 1)
+            self.assertEqual(self.logs[0].action,
                              'modified')
 
     def test_moved(self):
@@ -72,9 +77,8 @@ class TestActions(unittest.TestCase):
             transaction.savepoint(optimistic=True)
             cd = self.portal.manage_cutObjects('page')
             self.portal.folder.manage_pasteObjects(cd)
-            self.assertEqual(len(db.getSession()().query(LogEntry).all()), 1)
-            self.assertEqual(db.getSession()().query(LogEntry).all()[0].action,
-                             'moved')
+            self.assertEqual(len(self.logs), 1)
+            self.assertEqual(self.logs[0].action, 'moved')
 
     def test_copied(self):
         self.portal.invokeFactory(type_name="Document", id="page",
@@ -88,9 +92,8 @@ class TestActions(unittest.TestCase):
             transaction.savepoint(optimistic=True)
             cd = self.portal.manage_copyObjects('page')
             self.portal.folder.manage_pasteObjects(cd)
-            self.assertEqual(len(db.getSession()().query(LogEntry).all()), 1)
-            self.assertEqual(db.getSession()().query(LogEntry).all()[0].action,
-                             'copied')
+            self.assertEqual(len(self.logs), 1)
+            self.assertEqual(self.logs[0].action, 'copied')
 
     def test_rename(self):
         self.portal.invokeFactory(type_name="Document", id="page",
@@ -101,9 +104,8 @@ class TestActions(unittest.TestCase):
             # will work
             transaction.savepoint(optimistic=True)
             self.portal.manage_renameObject('page', 'page2')
-            self.assertEqual(len(db.getSession()().query(LogEntry).all()), 1)
-            self.assertEqual(db.getSession()().query(LogEntry).all()[0].action,
-                             'rename')
+            self.assertEqual(len(self.logs), 1)
+            self.assertEqual(self.logs[0].action, 'rename')
 
     def test_delete(self):
         self.portal.invokeFactory(type_name="Document", id="page",
@@ -112,6 +114,5 @@ class TestActions(unittest.TestCase):
 
         with tempDb():
             self.portal.manage_delObjects(['page'])
-            self.assertEqual(len(db.getSession()().query(LogEntry).all()), 1)
-            self.assertEqual(db.getSession()().query(LogEntry).all()[0].action,
-                             'removed')
+            self.assertEqual(len(self.logs), 1)
+            self.assertEqual(self.logs[0].action, 'removed')

@@ -1,6 +1,7 @@
 from zope.component import getUtility
 from collective.auditlog.models import LogEntry
 from collective.auditlog import db
+from collective.auditlog import td
 
 try:
     from plone.app.async.interfaces import IAsyncService
@@ -14,8 +15,13 @@ logger = logging.getLogger('collective.auditlog')
 
 
 def runJob(context, **data):
-    log = LogEntry(**data)
+    # make sure to join the transaction before we start
     session = db.getSession()
+    tdata = td.get()
+    if not tdata.registered:
+        tdata.register(session)
+
+    log = LogEntry(**data)
     session.add(log)
 
 

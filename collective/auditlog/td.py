@@ -116,6 +116,7 @@ class TransactionData(object):
         self.joined = False
         self.registered = False
         self.items = []
+        self.dm = None
 
     def join(self):
         transaction = transaction_manager.get()
@@ -123,15 +124,19 @@ class TransactionData(object):
         for resource in transaction._resources:
             if isinstance(resource, DataManager):
                 found = True
+                self.dm = resource
                 break
         if not found:
-            transaction.join(DataManager(self))
+            self.dm = DataManager(self)
+            transaction.join(self.dm)
         self.joined = True
 
-    def register(self):
+    def register(self, session=None):
         self.registered = True
         if not self.joined:
             self.join()
+        if session and self.dm:
+            self.dm._session = session
 
     def reset(self):
         self.items = []
