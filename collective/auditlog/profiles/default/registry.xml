@@ -1,0 +1,10 @@
+<registry>
+
+    <record name="collective.auditlog.connectionstring">
+        <field type="plone.registry.field.TextLine">
+            <title>Audit Log Connection String</title>
+        </field>
+        <value>sqlite:///:memory:</value>
+    </record>
+
+</registry>

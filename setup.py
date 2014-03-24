@@ -27,7 +27,8 @@ setup(name='collective.auditlog',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'collective.contentrules.runscript'
+          'sqlalchemy',
+          'five.globalrequest'
       ],
       extras_require={
           'async': [

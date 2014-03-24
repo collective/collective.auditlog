@@ -5,6 +5,8 @@
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     i18n_domain="collective.auditlog">
 
+  <include package="five.globalrequest" />
+
   <five:registerPackage package="." initialize=".initialize" />
 
   <genericsetup:registerProfile
@@ -15,63 +17,78 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
-  <include package=".conditions" />
   <include file="profiles.zcml" />
-  <include file="skins.zcml" />
+  <include file="action.zcml" />
 
-   <interface
-      interface="plone.app.iterate.interfaces.IAfterCheckinEvent"
-      type="plone.contentrules.rule.interfaces.IRuleEventType"
-      name="A working copy has been checked in."
-      />
+  <interface
+     interface="plone.app.iterate.interfaces.ICheckinEvent"
+     type="plone.contentrules.rule.interfaces.IRuleEventType"
+     name="A working copy has been checked in."
+     />
 
-    <interface
-      interface="plone.app.iterate.interfaces.ICheckoutEvent"
-      type="plone.contentrules.rule.interfaces.IRuleEventType"
-      name="An object has been checked out."
-      />
+  <interface
+    interface="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
+    type="plone.contentrules.rule.interfaces.IRuleEventType"
+    name="An object has been checked out."
+    />
 
-    <interface
-      interface="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-      type="plone.contentrules.rule.interfaces.IRuleEventType"
-      name="A working copy has been cancelled."
-      />
+  <interface
+    interface="plone.app.iterate.interfaces.ICancelCheckoutEvent"
+    type="plone.contentrules.rule.interfaces.IRuleEventType"
+    name="A working copy has been cancelled."
+    />
 
-    <interface
-      interface="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-      type="plone.contentrules.rule.interfaces.IRuleEventType"
-      name="An object has been moved"
-      />
+  <interface
+    interface="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+    type="plone.contentrules.rule.interfaces.IRuleEventType"
+    name="An object has been moved"
+    />
+  <interface
+    interface="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+    type="plone.contentrules.rule.interfaces.IRuleEventType"
+    name="An object has been created"
+    />
+  <interface
+    interface="OFS.interfaces.IObjectClonedEvent"
+    type="plone.contentrules.rule.interfaces.IRuleEventType"
+    name="An object has been copied"
+    />
+
   <!-- Rule triggers -->
   <subscriber
-    for="plone.app.iterate.interfaces.IAfterCheckinEvent"
-    handler=".handlers.checkin_action"
+    for="plone.app.iterate.interfaces.ICheckinEvent"
+    handler=".handlers.execute_event"
     />
 
   <subscriber
-    for="plone.app.iterate.interfaces.ICheckoutEvent"
-    handler=".handlers.checkout_action"
+    for="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
+    handler=".handlers.execute_event"
     />
 
   <subscriber
     for="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-    handler=".handlers.cancel_checkout_action"
+    handler=".handlers.execute_event"
     />
 
   <subscriber
-    for="zope.app.container.interfaces.IObjectAddedEvent"
-    handler=".handlers.added"
+    for="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+    handler=".handlers.created_event"
     />
 
-  <subscriber
-    for="Products.Archetypes.interfaces.IBaseObject
-          zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-    handler=".handlers.confirmed_removed"
-    />
-
+  <!-- object added and removed inherit from this event -->
   <subscriber
     for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    handler=".handlers.moved"
+    handler=".handlers.moved_event"
+    />
+
+  <subscriber
+    for="Products.Archetypes.interfaces.IObjectInitializedEvent"
+    handler=".handlers.archetypes_initialized"
+    />
+
+  <subscriber
+    for="OFS.interfaces.IObjectClonedEvent"
+    handler=".handlers.execute_event"
     />
 
 </configure>

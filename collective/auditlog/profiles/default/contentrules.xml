@@ -3,38 +3,35 @@
  <rule name="rule-100" title="Store Workflow Transitions"
     description="This stores all actions of sending content through workflow into the Data Warehouse"
     enabled="True" event="Products.CMFCore.interfaces.IActionSucceededEvent"
-    stop-after="True">
+    stop-after="False">
   <conditions>
-   <condition type="plone.conditions.WorkflowTransition">
-    <property name="wf_transitions">
+<condition type="plone.conditions.PortalType">
+     <property name="check_types">
+<element>Document</element>
+
     </property>
    </condition>
+
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
  <rule name="rule-101" title="Store Check-out"
     description="This stores the action of checking out any content into the Data Warehouse"
-    enabled="True" event="plone.app.iterate.interfaces.ICheckoutEvent"
-    stop-after="True">
+    enabled="True" event="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
+    stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types">
+     <property name="check_types">
+<element>Document</element>
+
     </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
@@ -42,36 +39,33 @@
 	description="This stores the action of cancelling a checkout of any content into the Data Warehouse" 
 	enabled="True"
     event="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-    stop-after="True">
+    stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types"></property>
+     <property name="check_types">
+<element>Document</element>
+
+     </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
   <rule name="rule-103" title="Store Check-In"
     description="This stores the action of checking in any content into the Data Warehouse"
-    enabled="True" event="plone.app.iterate.interfaces.IAfterCheckinEvent"
-    stop-after="True">
+    enabled="True" event="plone.app.iterate.interfaces.ICheckinEvent"
+    stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types"></property>
+    <property name="check_types">
+     <element>Document</element>
+    </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
@@ -81,35 +75,29 @@
     stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types"></property>
+     <property name="check_types">
+      <element>Document</element>
+     </property>
    </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">False</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
 <rule name="rule-105" title="Store Object Deleted"
     description="This stores the action of deleting any content from a container. This is only triggered when Link Integrity has been triggered and confirmed."
     enabled="True" event="zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-    stop-after="True">
+    stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types"></property>
+     <property name="check_types">
+      <element>Document</element>
+     </property>
    </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">False</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
@@ -120,35 +108,28 @@
   <conditions>
    <condition type="plone.conditions.PortalType">
     <property name="check_types">
+     <element>Document</element>
     </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters">
-     <property name="action" value="edit"/>
-    </property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
  <rule name="rule-107" title="Store Object Added"
     description="This stores the action of adding any new objects to a container into the Data Warehouse"
-    enabled="True" event="zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    enabled="True" event="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
     stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types"></property>
+    <property name="check_types">
+     <element>Document</element>
+    </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
  </rule>
@@ -158,188 +139,32 @@
     stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
-    <property name="check_types"></property>
-   </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
-  </conditions>
-  <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">False</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
-   </action>
-  </actions>
-</rule>
-
-<!--
- <rule name="rule-109" title="Store Web Form Field Added" description=""
-    enabled="True" event="zope.lifecycleevent.interfaces.IObjectAddedEvent"
-    stop-after="True">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
     <property name="check_types">
-     <element>FormTextField</element>
-     <element>FormPasswordField</element>
-     <element>FormCustomScriptAdapter</element>
-     <element>FormLinesField</element>
-     <element>FormSelectionField</element>
-     <element>FormFileField</element>
-     <element>FormMultiSelectionField</element>
-     <element>FormCaptchaField</element>
-     <element>FieldsetFolder</element>
-     <element>FormRichLabelField</element>
-     <element>FormFixedPointField</element>
-     <element>FormThanksPage</element>
-     <element>FormBooleanField</element>
-     <element>FormSaveDataAdapter</element>
-     <element>FormLabelField</element>
-     <element>FormDateField</element>
-     <element>FormIntegerField</element>
-     <element>FormMailerAdapter</element>
-     <element>FormStringField</element>
-     <element>FormReadonlyStringField</element>
-     <element>FormLikertField</element>
-     <element>FormRichTextField</element>
+     <element>Document</element>
     </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
 </rule>
- <rule name="rule-110" title="Store Web Form Field Moved"
-    description="This stores the action of moving any Web Form field into the Data Warehouse"
-    enabled="True" event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    stop-after="True">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-     <element>FormTextField</element>
-     <element>FormPasswordField</element>
-     <element>FormCustomScriptAdapter</element>
-     <element>FormLinesField</element>
-     <element>FormSelectionField</element>
-     <element>FormFileField</element>
-     <element>FormMultiSelectionField</element>
-     <element>FormCaptchaField</element>
-     <element>FieldsetFolder</element>
-     <element>FormRichLabelField</element>
-     <element>FormFixedPointField</element>
-     <element>FormThanksPage</element>
-     <element>FormBooleanField</element>
-     <element>FormSaveDataAdapter</element>
-     <element>FormLabelField</element>
-     <element>FormDateField</element>
-     <element>FormIntegerField</element>
-     <element>FormMailerAdapter</element>
-     <element>FormStringField</element>
-     <element>FormReadonlyStringField</element>
-     <element>FormLikertField</element>
-     <element>FormRichTextField</element>
-    </property>
-   </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
-  </conditions>
-  <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">False</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
-   </action>
-  </actions>
- </rule>
- 
- <rule name="rule-111" title="Store Web Form Field Edits"
-    description="This stores the Edit action to any element within a Web Form to the Data Warehouse"
-    enabled="True" event="zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+<rule name="rule-109" title="Store Object Copied"
+    description="This stores the action of copied any content into the Data Warehouse."
+    enabled="True" event="OFS.interfaces.IObjectClonedEvent"
     stop-after="False">
   <conditions>
    <condition type="plone.conditions.PortalType">
     <property name="check_types">
-     <element>FormTextField</element>
-     <element>FormPasswordField</element>
-     <element>FormCustomScriptAdapter</element>
-     <element>FormLinesField</element>
-     <element>FormSelectionField</element>
-     <element>FormFileField</element>
-     <element>FormMultiSelectionField</element>
-     <element>FormCaptchaField</element>
-     <element>FieldsetFolder</element>
-     <element>FormRichLabelField</element>
-     <element>FormFixedPointField</element>
-     <element>FormThanksPage</element>
-     <element>FormBooleanField</element>
-     <element>FormSaveDataAdapter</element>
-     <element>FormLabelField</element>
-     <element>FormDateField</element>
-     <element>FormIntegerField</element>
-     <element>FormMailerAdapter</element>
-     <element>FormStringField</element>
-     <element>FormReadonlyStringField</element>
-     <element>FormLikertField</element>
-     <element>FormRichTextField</element>
+     <element>Document</element>
     </property>
    </condition>
   </conditions>
   <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">True</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
+   <action type="plone.actions.Audit">
    </action>
   </actions>
 </rule>
- <rule name="rule-112" title="Store Web Form Field Renamed"
-    description="This stores the action of renaming any objects within a Web Form into the Data Warehouse."
-    enabled="True" event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    stop-after="True">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-     <element>FormTextField</element>
-     <element>FormPasswordField</element>
-     <element>FormCustomScriptAdapter</element>
-     <element>FormLinesField</element>
-     <element>FormSelectionField</element>
-     <element>FormFileField</element>
-     <element>FormMultiSelectionField</element>
-     <element>FormCaptchaField</element>
-     <element>FieldsetFolder</element>
-     <element>FormRichLabelField</element>
-     <element>FormFixedPointField</element>
-     <element>FormThanksPage</element>
-     <element>FormBooleanField</element>
-     <element>FormSaveDataAdapter</element>
-     <element>FormLabelField</element>
-     <element>FormDateField</element>
-     <element>FormIntegerField</element>
-     <element>FormMailerAdapter</element>
-     <element>FormStringField</element>
-     <element>FormReadonlyStringField</element>
-     <element>FormLikertField</element>
-     <element>FormRichTextField</element>
-    </property>
-   </condition>
-   <condition type="collective.auditlogcondition.TrueAction"/>
-  </conditions>
-  <actions>
-   <action type="plone.actions.RunScript">
-    <property name="fail_on_script_not_found">True</property>
-    <property name="restricted_traverse">False</property>
-    <property name="parameters"></property>
-    <property name="script">save_action</property>
-   </action>
-  </actions>
- </rule>
--->
 
  <assignment name="rule-100" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-101" bubbles="True" enabled="True" location=""/>
@@ -350,11 +175,6 @@
  <assignment name="rule-106" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-107" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-108" bubbles="True" enabled="True" location=""/>
-<!--
  <assignment name="rule-109" bubbles="True" enabled="True" location=""/>
- <assignment name="rule-110" bubbles="True" enabled="True" location=""/>
- <assignment name="rule-111" bubbles="True" enabled="True" location=""/>
- <assignment name="rule-112" bubbles="True" enabled="True" location=""/>
--->
 
 </contentrules>

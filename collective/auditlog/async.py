@@ -1,10 +1,11 @@
 from zope.component import getUtility
+from collective.auditlog.models import LogEntry
+from collective.auditlog import db
+from collective.auditlog import td
+
 try:
     from plone.app.async.interfaces import IAsyncService
-    # XXX
-    # XXX Disable until we do something about skin scripts...
-    # XXX
-    ASYNC_INSTALLED = False
+    ASYNC_INSTALLED = True
 except ImportError:
     ASYNC_INSTALLED = False
 
@@ -13,8 +14,15 @@ import logging
 logger = logging.getLogger('collective.auditlog')
 
 
-def runJob(context, *args, **kwargs):
-    context.save_action(*args, **kwargs)
+def runJob(context, **data):
+    # make sure to join the transaction before we start
+    session = db.getSession()
+    tdata = td.get()
+    if not tdata.registered:
+        tdata.register(session)
+
+    log = LogEntry(**data)
+    session.add(log)
 
 
 def queueJob(obj, *args, **kwargs):
@@ -31,6 +39,6 @@ def queueJob(obj, *args, **kwargs):
                 "Error using plone.app.async with "
                 "collective.auditlog. logging without "
                 "plone.app.async...")
-            runJob(*args, **kwargs)
+            runJob(obj, *args, **kwargs)
     else:
-        runJob(*args, **kwargs)
+        runJob(obj, *args, **kwargs)
