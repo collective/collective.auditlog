@@ -14,6 +14,7 @@ import transaction as transaction_manager
 from collective.auditlog.models import Base
 from collective.auditlog import db
 from plone.app.contentrules import handlers as cr_handlers
+import traceback
 
 logger = getLogger(__name__)
 
@@ -47,6 +48,11 @@ class DataManager(object):
             try:
                 self.session.commit()
             except:
+                logger.error('Error commit log to configured database. '
+                             'In case the error is related to the table '
+                             'not yet being created, auditlog will attempt '
+                             'to create the table now. Error stack: %s' % (
+                                 traceback.format_exc()))
                 engine = db.getEngine()
                 Base.metadata.create_all(bind=engine)
                 new = self.session.new.copy()
