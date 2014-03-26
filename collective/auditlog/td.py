@@ -53,9 +53,9 @@ class DataManager(object):
                              'not yet being created, auditlog will attempt '
                              'to create the table now. Error stack: %s' % (
                                  traceback.format_exc()))
+                new = self.session.new.copy()
                 engine = db.getEngine()
                 Base.metadata.create_all(bind=engine)
-                new = self.session.new.copy()
                 self.session.rollback()
                 for ob in new:
                     self.session.add(ob)

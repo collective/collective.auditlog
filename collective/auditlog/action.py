@@ -28,6 +28,7 @@ from Products.CMFCore.interfaces import IActionSucceededEvent
 from Products.CMFCore.utils import getToolByName
 from zope.globalrequest import getRequest
 from zope.component.hooks import getSite
+from collective.auditlog import td
 
 from collective.auditlog.async import queueJob
 from collective.auditlog.utils import getUID
@@ -186,6 +187,10 @@ class AuditActionExecutor(object):
             title=obj.Title(),
             path='/'.join(obj.getPhysicalPath())
         ))
+        tdata = td.get()
+        if not tdata.registered:
+            tdata.register()
+
         queueJob(getSite(), **data)
         return True
 
