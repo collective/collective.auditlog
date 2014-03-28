@@ -12,5 +12,6 @@ to audit more types of objects, you'll need to configure the content rules.
 The audits are stored into a relational database.
 
 To configuration the relational database, go to Site Setup, then the
-Configuration Registry and search for `collective.auditlog.connectionstring`.
-The configuration string needs to be a valid SQLAlchemy connection string.
+AuditLog Control Panel. The configuration string needs to be a valid SQLAlchemy connection string.
+
+The control panel also allows you to enable/disable tracking of actions performed on working copies. 

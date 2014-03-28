@@ -1,0 +1,49 @@
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2014-03-25 20:31+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0\n"
+"Language-Code: en\n"
+"Language-Name: English\n"
+"Preferred-Encodings: utf-8 latin1\n"
+"Domain: collective.auditlog\n"
+
+#: ./controlpanel.py:15
+msgid ""
+msgstr ""
+
+#: ./interfaces.py:19
+msgid "Audit Log Connection String"
+msgstr ""
+
+#: ./interfaces.py:12
+msgid "Audit Log Table Name"
+msgstr ""
+
+#: ./controlpanel.py:14
+msgid "Audit Log settings"
+msgstr ""
+
+#: ./profiles/default/controlpanel.xml
+msgid "AuditLog"
+msgstr ""
+
+#. Default: "Enter the connection string for the database Audit Log is to write to. Must be a valid SQLAlchemy connection string."
+#: ./interfaces.py:20
+msgid "help_auditlog_connection"
+msgstr ""
+
+#. Default: "Enter the table name for Audit Log to save to."
+#: ./interfaces.py:13
+msgid "help_auditlog_table_name"
+msgstr ""
+

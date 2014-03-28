@@ -18,6 +18,7 @@ from Products.Archetypes.interfaces import (
 from zope.lifecycleevent.interfaces import (
     IObjectCreatedEvent, IObjectModifiedEvent,
     IObjectMovedEvent, IObjectRemovedEvent, IObjectAddedEvent)
+from plone.app.iterate.relation import WorkingCopyRelation
 from OFS.interfaces import IObjectClonedEvent
 
 import inspect
@@ -29,6 +30,8 @@ from Products.CMFCore.utils import getToolByName
 from zope.globalrequest import getRequest
 from zope.component.hooks import getSite
 from collective.auditlog import td
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 
 from collective.auditlog.async import queueJob
 from collective.auditlog.utils import getUID
@@ -105,6 +108,8 @@ class AuditActionExecutor(object):
         # base off the others
         rule = inspect.stack()[1][0].f_locals['self']
         req = getRequest()
+	registry = getUtility(IRegistry)
+	trackWorkingCopies = registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']
 
         if not self.canExecute(rule, req):
             return True  # cut out early, we can't do this event
@@ -173,8 +178,19 @@ class AuditActionExecutor(object):
             return True
 
         if IWorkingCopy.providedBy(obj):
-            # if working copy, iterate, we can't care about anything but
-            # checked messages
+	  # if working copy, iterate, check if Track Working Copies is enabled
+	  if trackWorkingCopies:
+	    # if enabled in control panel, use original object and move
+	    # working copy path to working_copy
+	    data['working_copy'] = '/'.join(obj.getPhysicalPath())
+	    relationships = obj.getReferences(WorkingCopyRelation.relationship)
+	    # check relationships, if none, something is wrong, not logging action
+	    if len(relationships) > 0:
+	      obj = relationships[0]
+            else:
+	      return True
+	  else:
+            # if not enabled, we only care about checked messages
             if 'check' not in action:
                 return True
 

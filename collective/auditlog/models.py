@@ -20,3 +20,4 @@ class LogEntry(Base):
     field = Column(Unicode(255), nullable=True)
     working_copy = Column(Unicode(255), nullable=True)
     info = Column(Unicode(255), nullable=True)
+

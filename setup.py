@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '1.0'
+version = '1.1'
 
 setup(name='collective.auditlog',
       version=version,
@@ -17,8 +17,8 @@ setup(name='collective.auditlog',
           "Programming Language :: Python",
       ],
       keywords='',
-      author='',
-      author_email='',
+      author='rain2o',
+      author_email='Joel@rain2odesigns.com',
       url='http://svn.plone.org/svn/collective/',
       license='GPL',
       packages=find_packages(exclude=['ez_setup']),
