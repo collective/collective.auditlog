@@ -12,7 +12,7 @@ The audits are stored into a relational database. Once installed and called for 
 will create a table called "audit" if it does not already exist, so there is no need to create the
 table manually. 
 
-AuditLog attempts to use collective.async to perform the store actions, but if that fails it will finish 
+AuditLog attempts to use plone.app.async to perform the store actions, but if that fails it will finish 
 the task directly. The advantage of this is to allow an individual 'worker' client to run Async and handle 
 all of these request. If there is a lot of activity it will not get backed up. Async queues the job up and 
 handles it as it can while the users request finishes and moves on avoiding sacrifices in performance. Refer
