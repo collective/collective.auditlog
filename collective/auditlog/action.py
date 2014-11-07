@@ -155,7 +155,12 @@ class AuditActionExecutor(object):
         elif IObjectModifiedEvent.providedBy(event):
             action = 'modified'
         elif IActionSucceededEvent.providedBy(event):
-            data['info'] = 'workflow transition: %s' % event.action
+            history = obj.workflow_history
+            history = [r for r in history[event.workflow.id] if r['action'] and r['action']==event.action]
+            history_comment = ''
+            if len(history)>0:
+                history_comment=history[-1]['comments']
+            data['info'] = 'workflow transition: %s; comments: %s' % (event.action, history_comment)
             action = 'workflow'
         elif IObjectClonedEvent.providedBy(event):
             action = 'copied'
