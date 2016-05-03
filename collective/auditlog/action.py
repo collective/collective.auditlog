@@ -217,7 +217,8 @@ class AuditActionExecutor(object):
 
 
 class AuditAddForm(AddForm):
-    form_fields = form.FormFields(IAuditAction)
+    form_fields = form.FormFields(IAuditAction)  # needed for Plone4 (formlib)
+    schema = IAuditAction  # needed for Plone5 (z3c.form)
     label = u"Add Audit Action"
     form_name = u"Configure element"
 
