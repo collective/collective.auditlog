@@ -108,8 +108,8 @@ class AuditActionExecutor(object):
         # base off the others
         rule = inspect.stack()[1][0].f_locals['self']
         req = getRequest()
-	registry = getUtility(IRegistry)
-	trackWorkingCopies = registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']
+        registry = getUtility(IRegistry)
+        trackWorkingCopies = registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']  # noqa
 
         if not self.canExecute(rule, req):
             return True  # cut out early, we can't do this event
@@ -156,11 +156,17 @@ class AuditActionExecutor(object):
             action = 'modified'
         elif IActionSucceededEvent.providedBy(event):
             history = obj.workflow_history
-            history = [r for r in history[event.workflow.id] if r['action'] and r['action']==event.action]
+            history = [
+                r for r in history[event.workflow.id]
+                if r['action'] and r['action'] == event.action
+            ]
             history_comment = ''
-            if len(history)>0:
-                history_comment=history[-1]['comments']
-            data['info'] = 'workflow transition: %s; comments: %s' % (event.action, history_comment)
+            if len(history) > 0:
+                history_comment = history[-1]['comments']
+            data['info'] = 'workflow transition: %s; comments: %s' % (
+                event.action,
+                history_comment,
+            )
             action = 'workflow'
         elif IObjectClonedEvent.providedBy(event):
             action = 'copied'
@@ -183,21 +189,24 @@ class AuditActionExecutor(object):
             return True
 
         if IWorkingCopy.providedBy(obj):
-	  # if working copy, iterate, check if Track Working Copies is enabled
-	  if trackWorkingCopies:
-	    # if enabled in control panel, use original object and move
-	    # working copy path to working_copy
-	    data['working_copy'] = '/'.join(obj.getPhysicalPath())
-	    relationships = obj.getReferences(WorkingCopyRelation.relationship)
-	    # check relationships, if none, something is wrong, not logging action
-	    if len(relationships) > 0:
-	      obj = relationships[0]
+            # if working copy, iterate, check if Track Working Copies is
+            # enabled
+            if trackWorkingCopies:
+                # if enabled in control panel, use original object and move
+                # working copy path to working_copy
+                data['working_copy'] = '/'.join(obj.getPhysicalPath())
+                relationships = obj.getReferences(
+                    WorkingCopyRelation.relationship)
+                # check relationships, if none, something is wrong, not logging
+                # action
+                if len(relationships) > 0:
+                    obj = relationships[0]
+                else:
+                    return True
             else:
-	      return True
-	  else:
-            # if not enabled, we only care about checked messages
-            if 'check' not in action:
-                return True
+                # if not enabled, we only care about checked messages
+                if 'check' not in action:
+                    return True
 
         data.update(dict(
             action=action,
