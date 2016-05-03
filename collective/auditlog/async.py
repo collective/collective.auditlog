@@ -1,3 +1,4 @@
+# coding=utf-8
 from zope.component import getUtility
 from collective.auditlog.models import LogEntry
 from collective.auditlog import db

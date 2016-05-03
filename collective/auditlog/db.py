@@ -1,9 +1,8 @@
-from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
-from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, scoped_session
+from zope.component import getUtility
 from zope.globalrequest import getRequest
-from collective.auditlog.interfaces import IAuditLogSettings
 
 
 def getEngine(conn_string=None, req=None):
@@ -17,10 +16,7 @@ def getEngine(conn_string=None, req=None):
     else:
         if conn_string is None:
             registry = getUtility(IRegistry)
-#	    settings = registry.forInterface(IAuditLogSettings)
-#            conn_string = registry['collective.auditlog.connectionstring']
-#	    conn_string = self.settings.connectionstring
-	    conn_string = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionstring']
+            conn_string = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionstring']  # noqa
         engine = create_engine(conn_string)
         if req:
             req.environ['sa.engine'] = engine

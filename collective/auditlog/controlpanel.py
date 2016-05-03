@@ -1,11 +1,6 @@
-from Products.Five.browser import BrowserView
-
-from zope.component import queryUtility
-from plone.registry.interfaces import IRegistry
-
-from plone.app.registry.browser import controlpanel
-
+# coding=utf-8
 from collective.auditlog.interfaces import IAuditLogSettings, _
+from plone.app.registry.browser import controlpanel
 
 
 class AuditLogSettingsEditForm(controlpanel.RegistryEditForm):
@@ -17,10 +12,9 @@ class AuditLogSettingsEditForm(controlpanel.RegistryEditForm):
     def updateFields(self):
         super(AuditLogSettingsEditForm, self).updateFields()
 
-
     def updateWidgets(self):
         super(AuditLogSettingsEditForm, self).updateWidgets()
 
+
 class AuditLogSettingsControlPanel(controlpanel.ControlPanelFormWrapper):
     form = AuditLogSettingsEditForm
-
