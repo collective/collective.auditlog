@@ -26,7 +26,7 @@ setup(
         "Programming Language :: Python :: 2.7",
         "Operating System :: OS Independent"
     ],
-    keywords='',
+    keywords='Plone Audit Log',
     author='rain2o',
     author_email='Joel@rain2odesigns.com',
     url='http://svn.plone.org/svn/collective/',
