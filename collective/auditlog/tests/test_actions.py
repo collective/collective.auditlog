@@ -51,13 +51,13 @@ class TestActions(unittest.TestCase):
     def logs(self):
         return getSession().query(LogEntry).all()
 
-    def create_page(self):
+    def create_page(self, title='Page'):
         ''' Create a page and return it
         '''
         obj_id = self.portal.invokeFactory(
             type_name="Document",
             id="page",
-            title="Page"
+            title=title,
         )
         obj = self.portal[obj_id]
         try:
@@ -71,6 +71,11 @@ class TestActions(unittest.TestCase):
     def test_add(self):
         with tempDb():
             self.create_page()
+            self.assertEqual(self.logs[-1].action, 'added')
+
+    def test_unicode(self):
+        with tempDb():
+            self.create_page(title='Pàge')
             self.assertEqual(self.logs[-1].action, 'added')
 
     def test_edit(self):

@@ -1,8 +1,9 @@
 # coding=utf-8
-from zope.component import getUtility
-from collective.auditlog.models import LogEntry
 from collective.auditlog import db
 from collective.auditlog import td
+from collective.auditlog.models import LogEntry
+from Products.CMFPlone.utils import safe_unicode
+from zope.component import getUtility
 
 try:
     from plone.app.async.interfaces import IAsyncService
@@ -21,6 +22,11 @@ def runJob(context, **data):
     tdata = td.get()
     if not tdata.registered:
         tdata.register(session)
+
+    for key in data:
+        value = data[key]
+        if isinstance(value, str):
+            data[key] = safe_unicode(value)
 
     log = LogEntry(**data)
     session.add(log)

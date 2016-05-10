@@ -4,6 +4,7 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
+- Fix unicode issues
 - Tests are working again
   [ale-rt]
 
