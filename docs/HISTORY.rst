@@ -4,7 +4,8 @@ Changelog
 1.2.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Tests are working again
+  [ale-rt]
 
 
 1.2.0 (2016-05-03)
