@@ -4,7 +4,8 @@ Changelog
 1.2.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Make action more robust on IActionSucceededEvent
+  [ale-rt]
 
 
 1.2.1 (2016-05-10)
