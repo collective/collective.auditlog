@@ -1,13 +1,12 @@
-from plone.app.testing import TEST_USER_ID
-from Products.CMFCore.utils import getToolByName
-from plone.app.testing import setRoles
+# coding=utf-8
 from plone.app.testing import applyProfile
-from plone.app.testing import PLONE_FIXTURE
-from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
-from zope.configuration import xmlconfig
+from plone.app.testing import PloneSandboxLayer
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
 from plone.testing import z2
+from zope.configuration import xmlconfig
 
 try:
     from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
@@ -31,10 +30,6 @@ class AuditLog(PloneSandboxLayer):
         # install into the Plone site
         applyProfile(portal, 'collective.auditlog:default')
         setRoles(portal, TEST_USER_ID, ('Member', 'Manager'))
-        # workflowTool = getToolByName(portal, 'portal_workflow')
-        # workflowTool.setDefaultChain('simple_publication_workflow')
-        # workflowTool.setChainForPortalTypes(('File',),
-        #                                     'simple_publication_workflow')
 
 
 AuditLog_FIXTURE = AuditLog()

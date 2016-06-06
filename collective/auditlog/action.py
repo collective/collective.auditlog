@@ -101,6 +101,19 @@ class AuditActionExecutor(object):
 
         return host
 
+    def get_history_comment(self):
+        ''' Given an object and a IActionSucceededEvent,
+        extract the comment of the transition.
+        '''
+        action = self.event.action
+        if not action:
+            return ''
+        history = self.event.object.workflow_history
+        for transition in reversed(history[self.event.workflow.id]):
+            if transition.get('action') == action:
+                return transition.get('comments', '')
+        return ''
+
     def __call__(self):
         event = self.event
         obj = event.object
@@ -155,17 +168,9 @@ class AuditActionExecutor(object):
         elif IObjectModifiedEvent.providedBy(event):
             action = 'modified'
         elif IActionSucceededEvent.providedBy(event):
-            history = obj.workflow_history
-            history = [
-                r for r in history[event.workflow.id]
-                if r['action'] and r['action'] == event.action
-            ]
-            history_comment = ''
-            if len(history) > 0:
-                history_comment = history[-1]['comments']
             data['info'] = 'workflow transition: %s; comments: %s' % (
                 event.action,
-                history_comment,
+                self.get_history_comment(),
             )
             action = 'workflow'
         elif IObjectClonedEvent.providedBy(event):
