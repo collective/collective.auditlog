@@ -2,6 +2,7 @@ from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 
+
 _ = MessageFactory('collective.auditlog')
 
 
@@ -22,6 +23,19 @@ class IAuditLogSettings(Interface):
         ),
         required=True,
         default=u'sqlite:///:memory:',
+    )
+
+    connectionparameters = schema.TextLine(
+        title=_(u"Audit Log Connection Parameters"),
+        description=_(
+            u"help_auditlog_connection_parameteers",
+            default=(
+                u"Enter the connection parametes in a json form. "
+                u"E.g.: '{\"pool_recycle\": 3600, \"echo\": true}' "
+            )
+        ),
+        required=True,
+        default=u'',
     )
 
     trackworkingcopies = schema.Bool(

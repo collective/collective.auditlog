@@ -1,0 +1,17 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    i18n_domain="plone"
+    >
+
+  <genericsetup:upgradeStep
+      title="Disable autorename on save"
+      description=""
+      destination="1001"
+      handler=".to1001.fix_registry_records"
+      profile="collective.auditlog:default"
+      source="*"
+      />
+
+</configure>

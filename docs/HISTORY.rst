@@ -1,10 +1,12 @@
 Changelog
 =========
 
-1.2.3 (unreleased)
+1.3.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- The engine parameters (like pool_recycle, echo, ...)
+  can be specified through a registry record
+  [ale-rt]
 
 
 1.2.2 (2016-06-06)
