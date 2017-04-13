@@ -66,3 +66,4 @@ Authors
 
 - Joel Rainwater, initial author
 - Nathan van Gheem, Async integration, bug fixes, optimization.
+- Alessandro Pisa, bug fixing, testing

@@ -21,6 +21,7 @@
 
   <include file="profiles.zcml" />
   <include file="action.zcml" />
+  <include package=".upgrades" />
 
 
   <!-- Control panel -->
