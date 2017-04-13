@@ -6,7 +6,7 @@
     >
 
   <genericsetup:upgradeStep
-      title="Disable autorename on save"
+      title="Update the registry records"
       description=""
       destination="1001"
       handler=".to1001.fix_registry_records"

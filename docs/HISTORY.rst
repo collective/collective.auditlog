@@ -4,7 +4,8 @@ Changelog
 1.3.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix upgrade step title.
+  [ale-rt]
 
 
 1.3.0 (2017-04-13)
