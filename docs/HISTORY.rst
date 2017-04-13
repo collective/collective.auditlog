@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.1 (unreleased)
+1.3.1 (2017-04-13)
 ------------------
 
 - Fix upgrade step title.
