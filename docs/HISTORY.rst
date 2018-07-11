@@ -4,7 +4,9 @@ Changelog
 1.3.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Skip retrieving rule when audit log is disabled completely.
+  Improves performance.
+  [reinhardt]
 
 
 1.3.1 (2017-04-13)
