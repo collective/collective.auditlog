@@ -115,12 +115,15 @@ class AuditActionExecutor(object):
         return ''
 
     def __call__(self):
+        req = getRequest()
+        if req.environ.get('disable.auditlog', False):
+            return True
+
         event = self.event
         obj = event.object
         # order of those checks is important since some interfaces
         # base off the others
         rule = inspect.stack()[1][0].f_locals['self']
-        req = getRequest()
         registry = getUtility(IRegistry)
         trackWorkingCopies = registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']  # noqa
 
