@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.2 (unreleased)
+1.3.2 (2018-07-11)
 ------------------
 
 - Skip retrieving rule when audit log is disabled completely.
