@@ -4,7 +4,8 @@ Changelog
 1.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Factored out getObjectInfo and addLogEntry.
+  [reinhardt]
 
 
 1.3.2 (2018-07-11)
