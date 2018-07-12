@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.3.3 (unreleased)
+1.3.3 (2018-07-12)
 ------------------
 
 - Factored out getObjectInfo and addLogEntry.
