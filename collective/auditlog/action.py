@@ -12,7 +12,6 @@ except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
-from datetime import datetime
 from Products.Archetypes.interfaces import (
     IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
 from zope.lifecycleevent.interfaces import (
@@ -26,15 +25,12 @@ from plone.app.iterate.interfaces import (
     ICheckinEvent, IBeforeCheckoutEvent, ICancelCheckoutEvent,
     IWorkingCopy)
 from Products.CMFCore.interfaces import IActionSucceededEvent
-from Products.CMFCore.utils import getToolByName
 from zope.globalrequest import getRequest
-from zope.component.hooks import getSite
-from collective.auditlog import td
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
 
-from collective.auditlog.async import queueJob
-from collective.auditlog.utils import getUID
+from collective.auditlog.utils import getObjectInfo
+from collective.auditlog.utils import addLogEntry
 
 import logging
 logger = logging.getLogger('collective.auditlog')
@@ -78,29 +74,6 @@ class AuditActionExecutor(object):
             return False
         return True
 
-    def getUser(self):
-        portal_membership = getToolByName(self.context, 'portal_membership')
-        return portal_membership.getAuthenticatedMember()
-
-    def getHostname(self, request):
-        """
-        stolen from the developer manual
-        """
-
-        if "HTTP_X_FORWARDED_HOST" in request.environ:
-            # Virtual host
-            host = request.environ["HTTP_X_FORWARDED_HOST"]
-        elif "HTTP_HOST" in request.environ:
-            # Direct client request
-            host = request.environ["HTTP_HOST"]
-        else:
-            return None
-
-        # separate to domain name and port sections
-        host = host.split(":")[0].lower()
-
-        return host
-
     def get_history_comment(self):
         ''' Given an object and a IActionSucceededEvent,
         extract the comment of the transition.
@@ -131,7 +104,6 @@ class AuditActionExecutor(object):
             return True  # cut out early, we can't do this event
 
         data = {
-            'performed_on': datetime.utcnow(),
             'info': ''
         }
 
@@ -216,20 +188,10 @@ class AuditActionExecutor(object):
                 if 'check' not in action:
                     return True
 
-        data.update(dict(
-            action=action,
-            user=self.getUser().getUserName(),
-            site_name=self.getHostname(req),
-            uid=getUID(obj),
-            type=obj.portal_type,
-            title=obj.Title(),
-            path='/'.join(obj.getPhysicalPath())
-        ))
-        tdata = td.get()
-        if not tdata.registered:
-            tdata.register()
+        data.update(getObjectInfo(obj))
+        data['action'] = action
 
-        queueJob(getSite(), **data)
+        addLogEntry(data)
         return True
 
 
