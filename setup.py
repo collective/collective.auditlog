@@ -38,7 +38,8 @@ setup(
     install_requires=[
         'setuptools',
         'sqlalchemy',
-        'five.globalrequest'
+        'five.globalrequest',
+        'five.formlib',  # plone 5
     ],
     extras_require={
         'async': [
@@ -50,5 +51,8 @@ setup(
 
       [z3c.autoinclude.plugin]
       target = plone
+
+      [celery_tasks]
+      audit = collective.auditlog.tasks
       """
 )

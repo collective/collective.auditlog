@@ -1,8 +1,16 @@
+from importlib import import_module
+from zope.component import getUtility
 from zope.component.hooks import getSite
-from zope.lifecycleevent.interfaces import (
-    IObjectRemovedEvent, IObjectAddedEvent, IObjectCopiedEvent)
+from zope.lifecycleevent import IObjectAddedEvent
+from zope.lifecycleevent import IObjectModifiedEvent
+from zope.lifecycleevent import IObjectRemovedEvent
+from zope.lifecycleevent import IObjectCopiedEvent
 from plone.app.discussion.interfaces import IComment
+from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import IContentish
+from collective.auditlog.action import AuditActionExecutor
+from collective.auditlog.utils import addLogEntry
+from collective.auditlog.utils import getObjectInfo
 from collective.auditlog.utils import getUID
 from plone.app.contentrules import handlers as cr_handlers
 from Products.Archetypes.interfaces import IBaseObject
@@ -33,7 +41,13 @@ def execute_event(event, object=None):
     except AttributeError:
         return
     if qi.isProductInstalled('collective.auditlog'):
-        execute_rules(event)
+        executor = None
+        for ev in get_automatic_events():
+            if ev.providedBy(event):
+                executor = AuditActionExecutor(None, None, event)
+                executor()
+        if executor is None:
+            execute_rules(event)
 
 
 def moved_event(event):
@@ -88,3 +102,28 @@ def archetypes_initialized(event):
         cr_handlers._status.delayed_events[
             'IObjectInitializedEvent-audit-%s' % getUID(obj)] = None
         execute_event(delayed_event)
+
+
+def get_automatic_events():
+    events = []
+    registry = getUtility(IRegistry)
+    key = 'collective.auditlog.interfaces.IAuditLogSettings.automaticevents'
+    automaticevents = registry[key]
+    for ev in automaticevents:
+        module, interface = ev.rsplit('.', 1)
+        imported = import_module(module)
+        automatic = getattr(imported, interface, None)
+        if automatic is not None:
+            events.append(automatic)
+    return events
+
+
+def log_entry(obj, data):
+    data.update(getObjectInfo(obj))
+    addLogEntry(data)
+
+
+def custom_event(event):
+    obj = event.object
+    data = {'info': event.info, 'action': event.action}
+    log_entry(obj, data)

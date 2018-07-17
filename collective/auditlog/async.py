@@ -11,9 +11,15 @@ try:
 except ImportError:
     ASYNC_INSTALLED = False
 
-import logging
-
-logger = logging.getLogger('collective.auditlog')
+try:
+    import collective.celery
+    from collective.auditlog.tasks import queue_job
+    from celery.utils.log import get_task_logger
+    logger = get_task_logger(__name__)
+except ImportError:
+    queue_job = None
+    import logging
+    logger = logging.getLogger('collective.auditlog')
 
 
 def runJob(context, **data):
@@ -37,7 +43,9 @@ def queueJob(obj, *args, **kwargs):
     queue a job async if available.
     otherwise, just run normal
     """
-    if ASYNC_INSTALLED:
+    if queue_job:
+        queue_job.delay(obj, *args, **kwargs)
+    elif ASYNC_INSTALLED:
         try:
             async = getUtility(IAsyncService)
             async.queueJob(runJob, obj, *args, **kwargs)

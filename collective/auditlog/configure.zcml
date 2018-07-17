@@ -104,4 +104,9 @@
     handler=".handlers.execute_event"
     />
 
+  <subscriber
+    for="collective.auditlog.interfaces.IAuditableActionPerformedEvent"
+    handler=".handlers.custom_event"
+    />
+
 </configure>

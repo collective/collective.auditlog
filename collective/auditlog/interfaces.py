@@ -1,9 +1,31 @@
 from zope import schema
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
+from zope.interface.declarations import implementer
+from zope.interface.interface import Attribute
+from zope.schema.vocabulary import SimpleTerm
+from zope.schema.vocabulary import SimpleVocabulary
 
 
 _ = MessageFactory('collective.auditlog')
+
+EVENT_TYPES = [
+    ('plone.app.iterate.interfaces.ICheckinEvent',
+     'A working copy has been checked in.'),
+    ('plone.app.iterate.interfaces.IBeforeCheckoutEvent',
+     'An object has been checked out.'),
+    ('plone.app.iterate.interfaces.ICancelCheckoutEvent',
+     'A working copy has been cancelled.'),
+    ('zope.lifecycleevent.interfaces.IObjectMovedEvent',
+     'An object has been moved'),
+    ('zope.lifecycleevent.interfaces.IObjectCreatedEvent',
+     'An object has been created'),
+    ('OFS.interfaces.IObjectClonedEvent',
+     'An object has been copied'),
+]
+
+EVENT_TYPES_VOCAB = [SimpleTerm(e[0], e[0], e[1])
+                     for e in EVENT_TYPES]
 
 
 class IAuditLogSettings(Interface):
@@ -51,3 +73,37 @@ class IAuditLogSettings(Interface):
         ),
         required=False,
     )
+
+    automaticevents = schema.List(
+        title=_(u"Trigger Without Content Rule"),
+        description=_(
+            u"help_auditlog_automaticevents",
+            default=(
+                u"The selected events will not require a content rule "
+                u"to trigger them, so all instances will be logged."
+            )
+        ),
+        default=[],
+        value_type=schema.Choice(
+            vocabulary=SimpleVocabulary(EVENT_TYPES_VOCAB)
+        )
+    )
+
+
+class IAuditableActionPerformedEvent(Interface):
+    """An event for signaling auditable actions."""
+
+    object = Attribute("The subject of the event.")
+    request = Attribute("The current request.")
+    action = Attribute("A title for the performed action.")
+    note = Attribute("Additional information for the action.")
+
+
+@implementer(IAuditableActionPerformedEvent)
+class AuditableActionPerformedEvent(object):
+
+    def __init__(self, object, request, action, info=None):
+        self.object = object
+        self.request = request
+        self.action = action
+        self.info = info

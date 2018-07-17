@@ -14,4 +14,13 @@
       source="*"
       />
 
+  <genericsetup:upgradeStep
+      title="Update the registry records"
+      description=""
+      destination="1002"
+      handler=".to1001.fix_registry_records"
+      profile="collective.auditlog:default"
+      source="*"
+      />
+
 </configure>

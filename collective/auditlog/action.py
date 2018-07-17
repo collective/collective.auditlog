@@ -63,7 +63,7 @@ class AuditActionExecutor(object):
         # for archetypes we need to make sure we're getting the right moved
         # event here so we do not duplicate
         if (not IObjectEditedEvent.providedBy(event) and
-                event_iface != rule.rule.event):
+                rule is not None and event_iface != rule.rule.event):
             return False
         # if archetypes, initialization also does move events
         if (IObjectMovedEvent.providedBy(event) and
@@ -96,7 +96,7 @@ class AuditActionExecutor(object):
         obj = event.object
         # order of those checks is important since some interfaces
         # base off the others
-        rule = inspect.stack()[1][0].f_locals['self']
+        rule = inspect.stack()[1][0].f_locals.get('self', None)
         registry = getUtility(IRegistry)
         trackWorkingCopies = registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']  # noqa
 
@@ -125,14 +125,14 @@ class AuditActionExecutor(object):
         elif IObjectMovedEvent.providedBy(event):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
-                if 'Rename' in rule.rule.title:
+                if rule is None or 'Rename' in rule.rule.title:
                     data['info'] = 'previous id: %s' % event.oldName
                     action = 'rename'
                 else:
                     # cut out here, double action for this event
                     return True
             else:
-                if 'Moved' in rule.rule.title:
+                if rule is None or 'Moved' in rule.rule.title:
                     data['info'] = 'previous location: %s/%s' % (
                         '/'.join(event.oldParent.getPhysicalPath()),
                         event.oldName)
