@@ -32,6 +32,18 @@
       permission="cmf.ManagePortal"
       />
 
+  <browser:resourceDirectory
+      name="collective.auditlog"
+      directory="static"
+      />
+
+  <browser:page
+      name="auditlog-view"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      class="collective.auditlog.browser.LogView"
+      template="logview.pt"
+      permission="cmf.ModifyPortalContent"
+      />
 
   <interface
      interface="plone.app.iterate.interfaces.ICheckinEvent"

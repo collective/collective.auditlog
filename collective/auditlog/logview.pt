@@ -1,0 +1,91 @@
+<html
+    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    lang="en"
+    metal:use-macro="context/main_template/macros/master"
+    i18n:domain="collective.auditlog">
+  <head>
+    <metal:block metal:fill-slot="top_slot"
+        tal:define="dummy python:request.set('disable_border', 1);
+                    disable_column_one python:request.set('disable_plone.leftcolumn', 1);
+                    disable_column_two python:request.set('disable_plone.rightcolumn', 1);"
+        />
+    <metal:js fill-slot="javascript_head_slot">
+      <script tal:attributes="src string:${portal_url}/++resource++collective.auditlog/infinitescroll.jquery.js"></script>
+    </metal:js>
+  </head>
+  <body>
+    <metal:title metal:fill-slot="content-title">
+      <h1 class="documentFirstHeading" i18n:translate="">
+        Audit Log
+      </h1>
+    </metal:title>
+
+    <metal:content-core metal:fill-slot="content-core">
+	  <form method="get"
+			action=""
+			class="input-group"
+			tal:attributes="action request/URL">
+		  <input type="text"
+				 name="query"
+				 value=""
+				 class=""
+				 placeholder="Enter a search term"
+				 i18n:attributes="placeholder"
+				 tal:attributes="value request/query|nothing" />
+		  <span class="input-group-btn">
+			<input class=""
+				   type="submit"
+				   value="filter"
+				   i18n:attributes="value"/>
+			<a href=""
+			  class="plone-btn plone-btn-default"
+			  role="button"
+			  i18n:translate=""
+			  tal:attributes="href request/URL">clear</a>
+		  </span>
+	  </form>
+      <table class="listing">
+        <tbody id="logview">
+          <tr tal:define="order python:request.get('order', 'performed_on')">
+            <th><a tal:attributes="href string:${request/URL}?order=user">User</a><span tal:condition="python:order=='user'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=performed_on">Date</a><span tal:condition="python:order=='performed_on'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=uid">UID</a><span tal:condition="python:order=='uid'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=type">Type</a><span tal:condition="python:order=='type'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=title">Title</a><span tal:condition="python:order=='title'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=path">Path</a><span tal:condition="python:order=='path'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=site_name">Site</a><span tal:condition="python:order=='site_name'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=action">Action</a><span tal:condition="python:order=='action'"> ^ </span></th>
+            <th><a tal:attributes="href string:${request/URL}?order=info">Notes</a><span tal:condition="python:order=='info'"> ^ </span></th>
+          </tr>
+          <tr class="logline" tal:repeat="line view/loglines">
+            <td tal:content="line/user"></td>
+            <td tal:content="line/performed_on"></td>
+            <td tal:content="line/uid"></td>
+            <td tal:content="line/type"></td>
+            <td tal:content="line/title"></td>
+            <td tal:content="line/path"></td>
+            <td tal:content="line/site_name"></td>
+            <td tal:content="line/action"></td>
+            <td tal:content="line/info"></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="navigation">
+        <a class="next"
+           tal:attributes="href view/pagination_next">
+        </a>
+      </div>
+  <script type="text/javascript">
+    $(document).ready(function() {
+      $('#logview').infinitescroll({
+        itemSelector: '.logline',
+        hideNav: '.pagination'
+      });
+    });
+  </script>
+  </metal:content-core>
+  </body>
+</html>

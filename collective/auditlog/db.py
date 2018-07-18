@@ -1,4 +1,5 @@
 # coding=utf-8
+from App.config import getConfiguration
 from json import loads
 from plone.registry.interfaces import IRegistry
 from sqlalchemy import create_engine
@@ -6,6 +7,11 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from zope.component import getUtility
 from zope.globalrequest import getRequest
+
+
+zope_conf = getConfiguration()
+product_conf = getattr(zope_conf, 'product_config', {})
+config = product_conf.get('collective.auditlog', {})
 
 
 def getEngine(conn_string=None, conn_parameters=None, req=None):
@@ -18,8 +24,12 @@ def getEngine(conn_string=None, conn_parameters=None, req=None):
         engine = req.environ['sa.engine']
     else:
         if conn_string is None:
+            conn_string = config.get('audit-connection-string', None)
+        if conn_string is None:
             registry = getUtility(IRegistry)
             conn_string = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionstring']  # noqa
+        if conn_parameters is None:
+            conn_parameters = config.get('audit-connection-params', None)
         if conn_parameters is None:
             conn_parameters = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionparameters']  # noqa
         if not conn_parameters:
