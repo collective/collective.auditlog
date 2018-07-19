@@ -1,4 +1,3 @@
-from Products.CMFCore.utils import getToolByName
 from collective.auditlog import td
 from collective.auditlog.async import queueJob
 from datetime import datetime
@@ -46,9 +45,8 @@ def getHostname(request):
     return host
 
 
-def getUser(context):
-    portal_membership = getToolByName(context, 'portal_membership')
-    return portal_membership.getAuthenticatedMember()
+def getUser(request):
+    return request.other['AUTHENTICATED_USER']
 
 
 def getObjectInfo(obj):
@@ -58,7 +56,7 @@ def getObjectInfo(obj):
     """
     data = dict(
         performed_on=datetime.utcnow(),
-        user=getUser(obj).getUserName(),
+        user=getUser(getRequest()).getUserName(),
         site_name=getHostname(getRequest()),
         uid=getUID(obj),
         type=obj.portal_type,
