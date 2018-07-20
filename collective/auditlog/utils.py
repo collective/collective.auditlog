@@ -4,7 +4,7 @@ from datetime import datetime
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
-
+from AccessControl getSecurityManager
 
 def getUID(context):
     uid = IUUID(context, None)
@@ -46,8 +46,7 @@ def getHostname(request):
 
 
 def getUser(request):
-    return request.other['AUTHENTICATED_USER']
-
+    return request.other.get('AUTHENTICATED_USER', getSecurityManager().getUser())
 
 def getObjectInfo(obj):
     """ Get basic information about an object for logging.
