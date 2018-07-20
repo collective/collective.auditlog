@@ -46,6 +46,7 @@ def execute_event(event, object=None):
             if ev.providedBy(event):
                 executor = AuditActionExecutor(None, None, event)
                 executor()
+                break
         if executor is None:
             execute_rules(event)
 

@@ -18,8 +18,8 @@ EVENT_TYPES = [
      'A working copy has been cancelled.'),
     ('zope.lifecycleevent.interfaces.IObjectMovedEvent',
      'An object has been moved'),
-    ('zope.lifecycleevent.interfaces.IObjectCreatedEvent',
-     'An object has been created'),
+    ('zope.lifecycleevent.interfaces.IObjectAddedEvent',
+     'An object has been added'),
     ('OFS.interfaces.IObjectClonedEvent',
      'An object has been copied'),
 ]

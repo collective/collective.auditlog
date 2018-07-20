@@ -69,9 +69,9 @@
     name="An object has been moved"
     />
   <interface
-    interface="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+    interface="zope.lifecycleevent.interfaces.IObjectAddedEvent"
     type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="An object has been created"
+    name="An object has been added"
     />
   <interface
     interface="OFS.interfaces.IObjectClonedEvent"
@@ -96,7 +96,7 @@
     />
 
   <subscriber
-    for="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+    for="zope.lifecycleevent.interfaces.IObjectAddedEvent"
     handler=".handlers.created_event"
     />
 
