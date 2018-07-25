@@ -48,7 +48,9 @@ def execute_event(event, object=None):
                 executor()
                 break
         if executor is None:
-            execute_rules(event)
+            # plone sends some events twice, first wrapped. Ignore those.
+            if getattr(event, 'object', None) is not None:
+                execute_rules(event)
 
 
 def moved_event(event):
@@ -83,6 +85,12 @@ def created_event(event):
         execute_event(event)
     else:
         return
+
+
+def loggedout_event(event):
+    obj = event.object
+    data = {'info': '', 'action': 'logged out'}
+    log_entry(obj, data)
 
 
 def archetypes_initialized(event):

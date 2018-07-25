@@ -1,10 +1,11 @@
+from Products.CMFCore.utils import getToolByName
 from collective.auditlog import td
 from collective.auditlog.async import queueJob
 from datetime import datetime
 from plone.uuid.interfaces import IUUID
 from zope.component.hooks import getSite
 from zope.globalrequest import getRequest
-from AccessControl getSecurityManager
+
 
 def getUID(context):
     uid = IUUID(context, None)
@@ -45,8 +46,11 @@ def getHostname(request):
     return host
 
 
-def getUser(request):
-    return request.other.get('AUTHENTICATED_USER', getSecurityManager().getUser())
+def getUser(context):
+    site = getSite()
+    portal_membership = getToolByName(site, 'portal_membership')
+    return portal_membership.getAuthenticatedMember()
+
 
 def getObjectInfo(obj):
     """ Get basic information about an object for logging.
@@ -55,12 +59,12 @@ def getObjectInfo(obj):
     """
     data = dict(
         performed_on=datetime.utcnow(),
-        user=getUser(getRequest()).getUserName(),
+        user=getUser(obj).getUserName(),
         site_name=getHostname(getRequest()),
         uid=getUID(obj),
-        type=obj.portal_type,
-        title=obj.Title(),
-        path='/'.join(obj.getPhysicalPath())
+        type=getattr(obj, 'portal_type', ''),
+        title=getattr(obj, 'Title', False) and obj.Title() or obj.id,
+        path=getattr(obj, 'getPhysicalPath', False) and '/'.join(obj.getPhysicalPath()) or '/'
     )
     return data
 

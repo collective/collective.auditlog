@@ -20,8 +20,16 @@ EVENT_TYPES = [
      'An object has been moved'),
     ('zope.lifecycleevent.interfaces.IObjectAddedEvent',
      'An object has been added'),
+    ('zope.lifecycleevent.interfaces.IObjectModifiedEvent',
+     'An object has been modified'),
     ('OFS.interfaces.IObjectClonedEvent',
      'An object has been copied'),
+    ('Products.CMFCore.interfaces.IActionSucceededEvent',
+     'A workflow action succeeded'),
+    ('Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent',
+     'A user logged in'),
+    ('Products.PluggableAuthService.interfaces.events.IUserLoggedOutEvent',
+     'A user logged out'),
 ]
 
 EVENT_TYPES_VOCAB = [SimpleTerm(e[0], e[0], e[1])

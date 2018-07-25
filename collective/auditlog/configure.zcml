@@ -4,6 +4,7 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
     i18n_domain="collective.auditlog">
 
   <include package="five.globalrequest" />
@@ -29,6 +30,7 @@
       name="auditlog-settings"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       class=".controlpanel.AuditLogSettingsControlPanel"
+      template="controlpanel.pt"
       permission="cmf.ManagePortal"
       />
 
@@ -100,6 +102,20 @@
     handler=".handlers.created_event"
     />
 
+  <subscriber
+      zcml:condition="installed Products.Archetypes"
+      for="Products.Archetypes.interfaces.IBaseObject
+           zope.lifecycleevent.IObjectAddedEvent"
+    handler=".handlers.execute_event"
+    />
+
+  <subscriber
+      zcml:condition="installed plone.app.dexterity"
+      for="plone.dexterity.interfaces.IDexterityContent
+           zope.lifecycleevent.IObjectModifiedEvent"
+    handler=".handlers.execute_event"
+    />
+
   <!-- object added and removed inherit from this event -->
   <subscriber
     for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
@@ -115,6 +131,21 @@
     for="OFS.interfaces.IObjectClonedEvent"
     handler=".handlers.execute_event"
     />
+
+  <subscriber
+      for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
+      handler=".handlers.execute_event"
+      />
+
+  <subscriber
+      for="Products.PluggableAuthService.interfaces.events.IUserLoggedOutEvent"
+      handler=".handlers.loggedout_event"
+      />
+
+  <subscriber
+      for="Products.CMFCore.interfaces.IActionSucceededEvent"
+      handler=".handlers.execute_event"
+      />
 
   <subscriber
     for="collective.auditlog.interfaces.IAuditableActionPerformedEvent"

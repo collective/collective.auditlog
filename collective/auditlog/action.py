@@ -25,6 +25,8 @@ from plone.app.iterate.interfaces import (
     ICheckinEvent, IBeforeCheckoutEvent, ICancelCheckoutEvent,
     IWorkingCopy)
 from Products.CMFCore.interfaces import IActionSucceededEvent
+from Products.PluggableAuthService.interfaces.events import (
+    IUserLoggedInEvent, IUserLoggedOutEvent)
 from zope.globalrequest import getRequest
 from zope.component import getUtility
 from plone.registry.interfaces import IRegistry
@@ -164,6 +166,11 @@ class AuditActionExecutor(object):
             req.environ['disable.auditlog'] = True
             data['working_copy'] = '/'.join(obj.getPhysicalPath())
             obj = event.baseline
+        elif IUserLoggedInEvent.providedBy(event):
+            action = 'logged in'
+            data['info'] = event.object.getUserName()
+        elif IUserLoggedOutEvent.providedBy(event):
+            action = 'logged out'
         else:
             logger.warn('no action matched')
             return True

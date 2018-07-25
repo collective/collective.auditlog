@@ -49,27 +49,26 @@
 	  </form>
       <table class="listing">
         <tbody id="logview">
-          <tr tal:define="order python:request.get('order', 'performed_on')">
-            <th><a tal:attributes="href string:${request/URL}?order=user">User</a><span tal:condition="python:order=='user'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=performed_on">Date</a><span tal:condition="python:order=='performed_on'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=uid">UID</a><span tal:condition="python:order=='uid'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=type">Type</a><span tal:condition="python:order=='type'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=title">Title</a><span tal:condition="python:order=='title'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=path">Path</a><span tal:condition="python:order=='path'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=site_name">Site</a><span tal:condition="python:order=='site_name'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=action">Action</a><span tal:condition="python:order=='action'"> ^ </span></th>
-            <th><a tal:attributes="href string:${request/URL}?order=info">Notes</a><span tal:condition="python:order=='info'"> ^ </span></th>
+          <tr tal:define="order python:request.get('order', 'performed_on');
+                          direction view/direction">
+            <th tal:repeat="column view/columns" style="white-space: nowrap">
+              <a tal:attributes="href string:${request/URL}?order=${column/name}&direction=${new_direction}"
+                 tal:define="new_direction python:view.new_direction(order, column['name'])"
+                 tal:content="column/label">
+              </a>
+              <tal:block condition="python:order==column['name']">
+                <span tal:condition="python:direction == 'asc'">
+                  <img tal:attributes="src string:${portal_url}/arrowTop.png">
+                </span>
+                <span tal:condition="python:direction == 'desc'">
+                  <img tal:attributes="src string:${portal_url}/arrowBottom.png">
+                </span>
+              </tal:block>
+            </th>
           </tr>
           <tr class="logline" tal:repeat="line view/loglines">
-            <td tal:content="line/user"></td>
-            <td tal:content="line/performed_on"></td>
-            <td tal:content="line/uid"></td>
-            <td tal:content="line/type"></td>
-            <td tal:content="line/title"></td>
-            <td tal:content="line/path"></td>
-            <td tal:content="line/site_name"></td>
-            <td tal:content="line/action"></td>
-            <td tal:content="line/info"></td>
+            <td tal:repeat="column view/columns"
+                tal:content="python:getattr(line, column['name'], '')"></td>
           </tr>
         </tbody>
       </table>
