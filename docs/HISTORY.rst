@@ -4,7 +4,8 @@ Changelog
 1.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Handle IWorkspaceCreatedFromTemplateEvent.
+  [reinhardt]
 
 
 1.3.3 (2018-07-12)

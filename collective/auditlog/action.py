@@ -11,6 +11,11 @@ try:
 except ImportError:
     class IPloneFormGenField(Interface):
         pass
+try:
+    from ploneintranet.workspace.interfaces import IWorkspaceCreatedFromTemplateEvent  # noqa: E501
+except ImportError:
+    class IWorkspaceCreatedFromTemplateEvent(Interface):
+        pass
 
 from Products.Archetypes.interfaces import (
     IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
@@ -120,7 +125,8 @@ class AuditActionExecutor(object):
             action = 'removed'
         elif (IObjectInitializedEvent.providedBy(event) or
                 IObjectCreatedEvent.providedBy(event) or
-                IObjectAddedEvent.providedBy(event)):
+                IObjectAddedEvent.providedBy(event) or
+                IWorkspaceCreatedFromTemplateEvent.providedBy(event)):
             action = 'added'
         elif IObjectMovedEvent.providedBy(event):
             # moves can also be renames. Check the parent object
