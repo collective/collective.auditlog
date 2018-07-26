@@ -104,9 +104,4 @@
     handler=".handlers.execute_event"
     />
 
-  <subscriber
-    for="ploneintranet.workspace.interfaces.IWorkspaceCreatedFromTemplateEvent"
-    handler=".handlers.execute_event"
-    />
-
 </configure>
