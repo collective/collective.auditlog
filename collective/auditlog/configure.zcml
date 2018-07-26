@@ -105,7 +105,7 @@
   <subscriber
       zcml:condition="installed Products.Archetypes"
       for="Products.Archetypes.interfaces.IBaseObject
-           zope.lifecycleevent.IObjectAddedEvent"
+           zope.lifecycleevent.IObjectModifiedEvent"
     handler=".handlers.execute_event"
     />
 
