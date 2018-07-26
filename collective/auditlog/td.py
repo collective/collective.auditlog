@@ -41,6 +41,9 @@ class DataManager(object):
     def session(self):
         if self._session is None:
             self._session = db.getSession()
+            engine = db.getEngine()
+            if not engine.dialect.has_table(engine, 'audit'):
+                Base.metadata.create_all(bind=engine)
         return self._session
 
     def commit(self, trans):
@@ -48,18 +51,8 @@ class DataManager(object):
             try:
                 self.session.commit()
             except:
-                logger.error('Error commit log to configured database. '
-                             'In case the error is related to the table '
-                             'not yet being created, auditlog will attempt '
-                             'to create the table now. Error stack: %s' % (
-                                 traceback.format_exc()))
-                new = self.session.new.copy()
-                engine = db.getEngine()
-                Base.metadata.create_all(bind=engine)
-                self.session.rollback()
-                for ob in new:
-                    self.session.add(ob)
-                self.session.commit()
+                logger.error('Error during audit log commit. '
+                             'Error stack: %s' % (traceback.format_exc()))
         self.td.reset()
 
     def tpc_begin(self, trans):
