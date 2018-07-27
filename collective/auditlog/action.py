@@ -87,6 +87,73 @@ class AuditActionExecutor(object):
                 return transition.get('comments', '')
         return ''
 
+    def process_action(self, event, obj, rule):
+        result = {}
+        data = {}
+        action = None
+        # the order of those interface checks matters since some interfaces
+        # inherit from others
+        if IObjectRemovedEvent.providedBy(event):
+            # need to keep track of removed events so it doesn't get called
+            # more than once for each object
+            action = 'removed'
+        elif (IObjectInitializedEvent.providedBy(event) or
+                IObjectCreatedEvent.providedBy(event) or
+                IObjectAddedEvent.providedBy(event)):
+            action = 'added'
+        elif IObjectMovedEvent.providedBy(event):
+            # moves can also be renames. Check the parent object
+            if event.oldParent == event.newParent:
+                if 'Rename' in rule.rule.title:
+                    data['info'] = 'previous id: %s' % event.oldName
+                    action = 'rename'
+                else:
+                    # cut out here, double action for this event
+                    result['stop_execution'] = True
+                    return result
+            else:
+                if 'Moved' in rule.rule.title:
+                    data['info'] = 'previous location: %s/%s' % (
+                        '/'.join(event.oldParent.getPhysicalPath()),
+                        event.oldName)
+                    action = 'moved'
+                else:
+                    # step out immediately since this could be a double action
+                    result['stop_execution'] = True
+                    return result
+        elif IObjectModifiedEvent.providedBy(event):
+            action = 'modified'
+        elif IActionSucceededEvent.providedBy(event):
+            data['info'] = 'workflow transition: %s; comments: %s' % (
+                event.action,
+                self.get_history_comment(),
+            )
+            action = 'workflow'
+        elif IObjectClonedEvent.providedBy(event):
+            action = 'copied'
+        elif ICheckinEvent.providedBy(event):
+            data['info'] = event.message
+            action = 'checked in'
+            result['disable.auditlog'] = True
+            data['working_copy'] = '/'.join(obj.getPhysicalPath())
+            result['object'] = event.baseline
+        elif IBeforeCheckoutEvent.providedBy(event):
+            action = 'checked out'
+            result['disable.auditlog'] = True
+        elif ICancelCheckoutEvent.providedBy(event):
+            action = 'cancel check out'
+            result['disable.auditlog'] = True
+            data['working_copy'] = '/'.join(obj.getPhysicalPath())
+            result['object'] = event.baseline
+        else:
+            logger.warn('no action matched')
+            result['stop_execution'] = True
+
+        data['action'] = action
+        result['data'] = data
+
+        return result
+
     def __call__(self):
         req = getRequest()
         if req.environ.get('disable.auditlog', False):
@@ -112,61 +179,13 @@ class AuditActionExecutor(object):
             data['field'] = obj.getId()
             obj = aq_parent(obj)
 
-        # the order of those interface checks matters since some interfaces
-        # inherit from others
-        if IObjectRemovedEvent.providedBy(event):
-            # need to keep track of removed events so it doesn't get called
-            # more than once for each object
-            action = 'removed'
-        elif (IObjectInitializedEvent.providedBy(event) or
-                IObjectCreatedEvent.providedBy(event) or
-                IObjectAddedEvent.providedBy(event)):
-            action = 'added'
-        elif IObjectMovedEvent.providedBy(event):
-            # moves can also be renames. Check the parent object
-            if event.oldParent == event.newParent:
-                if 'Rename' in rule.rule.title:
-                    data['info'] = 'previous id: %s' % event.oldName
-                    action = 'rename'
-                else:
-                    # cut out here, double action for this event
-                    return True
-            else:
-                if 'Moved' in rule.rule.title:
-                    data['info'] = 'previous location: %s/%s' % (
-                        '/'.join(event.oldParent.getPhysicalPath()),
-                        event.oldName)
-                    action = 'moved'
-                else:
-                    # step out immediately since this could be a double action
-                    return True
-        elif IObjectModifiedEvent.providedBy(event):
-            action = 'modified'
-        elif IActionSucceededEvent.providedBy(event):
-            data['info'] = 'workflow transition: %s; comments: %s' % (
-                event.action,
-                self.get_history_comment(),
-            )
-            action = 'workflow'
-        elif IObjectClonedEvent.providedBy(event):
-            action = 'copied'
-        elif ICheckinEvent.providedBy(event):
-            data['info'] = event.message
-            action = 'checked in'
-            req.environ['disable.auditlog'] = True
-            data['working_copy'] = '/'.join(obj.getPhysicalPath())
-            obj = event.baseline
-        elif IBeforeCheckoutEvent.providedBy(event):
-            action = 'checked out'
-            req.environ['disable.auditlog'] = True
-        elif ICancelCheckoutEvent.providedBy(event):
-            action = 'cancel check out'
-            req.environ['disable.auditlog'] = True
-            data['working_copy'] = '/'.join(obj.getPhysicalPath())
-            obj = event.baseline
-        else:
-            logger.warn('no action matched')
+        result = self.process_action(event, obj, rule)
+
+        if result.get('stop_execution'):
             return True
+        req.environ['disable.auditlog'] = result.get('disable.auditlog', False)
+        obj = result.get('object', obj)
+        data.update(result['data'])
 
         if IWorkingCopy.providedBy(obj):
             # if working copy, iterate, check if Track Working Copies is
@@ -185,11 +204,10 @@ class AuditActionExecutor(object):
                     return True
             else:
                 # if not enabled, we only care about checked messages
-                if 'check' not in action:
+                if 'check' not in data['action']:
                     return True
 
         data.update(getObjectInfo(obj))
-        data['action'] = action
 
         addLogEntry(data)
         return True
