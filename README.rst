@@ -15,10 +15,10 @@ Once installed and called for the first time
 it will create a table called "audit" if it does not already exist,
 so there is no need to create the table manually.
 
-AuditLog attempts to use plone.app.async to perform the store actions,
-but if that fails it will finish the task directly.
-The advantage of this is to allow an individual 'worker' client
-to run Async and handle all of these request.
+AuditLog attempts to use plone.app.async or collective.celery to 
+perform the store actions, but if that fails it will finish the task 
+directly. The advantage of this is to allow an individual 'worker' 
+client to run Async and handle all of these request.
 If there is a lot of activity it will not get backed up.
 Async queues the job up and handles it as it can
 while the users request finishes and moves on
@@ -47,6 +47,104 @@ tracking of actions performed on working copies.
 All that is left is to configure the new Content Rules
 to track the content types and actions you desire.
 
+USAGE
+=====
+For now, collective.auditlog uses SQLAlchemy for storing data. To use
+postgres, it's necessary to add the 'pyscopg2' egg to the buildout. Once
+the product is installed, add the correct connection URL to the product
+setup. Example:
+
+postgresql://enfold:enfold@localhost/auditlog
+
+By default, collective.auditlog uses content rules to define which events
+to capture. An additional mechanism has been added that allows the site to
+automatically log the various events supported by collective.auditlog.
+Simply choose from the picklist in the config for this to work. If no
+events are selected, no logging will occur.
+
+It is possible to log custom events from application code by using the
+AuditableActionPerformedEvent, like this:
+
+from zope event import notify
+from collective.auditlog.interfaces import AuditableActionPerformedEvent
+notify(AuditableActionPerformedEvent(obj, request, "action", "note"))
+
+'obj', refers to the affected content object; 'request' is the current zope
+request, 'action' and 'note' correspond to the logged action and its
+description, respectively. All parameters are required, but everything
+except obj can be set to None if no value is available.
+
+In addition to control panel configuration, connection parameters can be
+set using the zope-conf-additional directive in the buildout. Note that
+this will take precedence over any control panel configuration. Example:
+
+zope-conf-additional =
+    <product-config collective.auditlog>
+        audit-connection-string postgres://enfold:enfold@localhost/auditlog
+        audit-connection-params {"pool_recycle": 3600, "echo": true}
+    </product-config>
+
+There is now a view for the audit log entries, located at @@auditlog-view.
+There is no link to it from the control panel at the moment. The view uses
+infinite scrollong rather than pagination for looking at the logs.
+
+Celery Integration
+==================
+The collective.celery package requires adding the celery and
+collective.celery eggs to the mian buildout section eggs. Example:
+
+eggs =
+    celery
+    Plone
+    collective.celery
+
+We still use the celery-broker part, for clarity. The celery part is
+still required, but is simpler:
+
+[celery-broker]
+host = 127.0.0.1
+port = 6379
+
+[celery]
+recipe = zc.recipe.egg
+environment-vars = ${buildout:environment-vars}
+eggs =
+    ${buildout:eggs}
+    flower
+scripts = pcelery flower
+
+The celery part depends on having some variables added to the main
+environment-vars section:
+
+environment-vars =
+    CELERY_BROKER_URL redis://${celery-broker:host}:${celery-broker:port}
+    CELERY_RESULT_BACKEND redis://${celery-broker:host}:${celery-broker:port}
+    CELERY_TASKS collective.es.index.tasks
+
+Additional Zope configuration
+-----------------------------
+
+There's now a hook in collective.celery for carrying out additional zope
+configuration before running the tasks. If the tasks module contains an
+'extra_config' method, it is passed the zope startup object at worker
+initialization time. This is used by collective.es.index to run the
+elasticsearch configuration method.
+
+Monitoring celery tasks
+-----------------------
+
+Celery needs to be started as an independent process. It's recommended to
+use supervisord for this. To try it out from the command line, you can run
+"bin/pcelery worker" from the buildout directory. Note that the script is
+now named 'pcelery' and it needs a path to the zope configuration. Example:
+
+$ bin/pcelery worker parts/client1/etc/zope.conf
+
+Flower is included in this setup. Run "bin/flower" from the buildout
+directory and consult the dashboard at http://localhost:5555 using a
+browser. Note that the broker is now a requried parameter:
+
+$ bin/flower --broker redis://127.0.0.1:6379
 
 Dependencies
 ============
@@ -58,8 +156,8 @@ Here is just a list of those for reference:
 - setuptools
 - sqlalchemy
 - five.globalrequest
-- plone.app.async
-
+- plone.app.async [OPTIONAL]
+- collective.celery [OPTIONAL]
 
 Authors
 =======
@@ -67,3 +165,4 @@ Authors
 - Joel Rainwater, initial author
 - Nathan van Gheem, Async integration, bug fixes, optimization.
 - Alessandro Pisa, bug fixing, testing
+- Enfold Systems, celery integration and audit view

@@ -44,6 +44,9 @@ setup(
     extras_require={
         'async': [
             'plone.app.async',
+        ],
+        'celery': [
+            'collective.celery',
         ]
     },
     entry_points="""

@@ -4,8 +4,17 @@ Changelog
 1.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- collective.celery integration
+  [enfold]
 
+- @@auditlog-view allows viewing/sorting/searching audit log entries
+  [enfold]
+
+- add login & logout audits
+  [enfold]
+
+- ability to specify the sqlalchemy DSN in config file
+  [enfold]
 
 1.3.3 (2018-07-12)
 ------------------
