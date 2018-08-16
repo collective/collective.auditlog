@@ -43,7 +43,7 @@ def queueJob(obj, *args, **kwargs):
     queue a job async if available.
     otherwise, just run normal
     """
-    if queue_job:
+    if queue_job and kwargs['action'] != 'Undo from ZMI':
         queue_job.delay(obj, *args, **kwargs)
     elif ASYNC_INSTALLED:
         try:

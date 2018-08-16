@@ -1,6 +1,5 @@
 from importlib import import_module
 from zope.component import getUtility
-from zope.component.hooks import getSite
 from zope.lifecycleevent import IObjectAddedEvent
 from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import IObjectRemovedEvent
@@ -11,6 +10,7 @@ from Products.CMFCore.interfaces import IContentish
 from collective.auditlog.action import AuditActionExecutor
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
+from collective.auditlog.utils import getSite
 from collective.auditlog.utils import getUID
 from plone.app.contentrules import handlers as cr_handlers
 from Products.Archetypes.interfaces import IBaseObject
@@ -35,22 +35,16 @@ except ImportError:
 
 
 def execute_event(event, object=None):
-    site = getSite()
-    try:
-        qi = site.portal_quickinstaller
-    except AttributeError:
-        return
-    if qi.isProductInstalled('collective.auditlog'):
-        executor = None
-        for ev in get_automatic_events():
-            if ev.providedBy(event):
-                executor = AuditActionExecutor(None, None, event)
-                executor()
-                break
-        if executor is None:
-            # plone sends some events twice, first wrapped. Ignore those.
-            if getattr(event, 'object', None) is not None:
-                execute_rules(event)
+    executor = None
+    for ev in get_automatic_events():
+        if ev.providedBy(event):
+            executor = AuditActionExecutor(None, None, event)
+            executor()
+            break
+    if executor is None:
+        # plone sends some events twice, first wrapped. Ignore those.
+        if getattr(event, 'object', None) is not None:
+            execute_rules(event)
 
 
 def moved_event(event):
@@ -115,15 +109,22 @@ def archetypes_initialized(event):
 
 def get_automatic_events():
     events = []
-    registry = getUtility(IRegistry)
-    key = 'collective.auditlog.interfaces.IAuditLogSettings.automaticevents'
-    automaticevents = registry[key]
-    for ev in automaticevents:
-        module, interface = ev.rsplit('.', 1)
-        imported = import_module(module)
-        automatic = getattr(imported, interface, None)
-        if automatic is not None:
-            events.append(automatic)
+    site = getSite()
+    try:
+        qi = site.portal_quickinstaller
+        installed = qi.isProductInstalled('collective.auditlog')
+    except AttributeError:
+        installed = False
+    if installed:
+        registry = getUtility(IRegistry)
+        key = 'collective.auditlog.interfaces.IAuditLogSettings.automaticevents'
+        automaticevents = registry[key]
+        for ev in automaticevents:
+            module, interface = ev.rsplit('.', 1)
+            imported = import_module(module)
+            automatic = getattr(imported, interface, None)
+            if automatic is not None:
+                events.append(automatic)
     return events
 
 

@@ -3,8 +3,9 @@ from collective.auditlog import td
 from collective.auditlog.async import queueJob
 from datetime import datetime
 from plone.uuid.interfaces import IUUID
-from zope.component.hooks import getSite
+from zope.component.hooks import getSite as getSiteHook
 from zope.globalrequest import getRequest
+from Zope2 import app
 
 
 def getUID(context):
@@ -23,7 +24,7 @@ def getUID(context):
     try:
         return context.id
     except AttributeError:
-        return ''
+        return 'unknown'
 
 
 def getHostname(request):
@@ -46,10 +47,40 @@ def getHostname(request):
     return host
 
 
-def getUser(context):
+def getSite():
+    site = getSiteHook()
+    if site is None:
+        # user might be at zope root level. Try to guess site
+        zope_root = app()
+        plone_sites = zope_root.objectIds('Plone Site')
+        if len(plone_sites) == 1:
+            # just one plone site, safe bet
+            site = zope_root[plone_sites[0]]
+        elif len(plone_sites) > 1:
+            # many sites. Might be an undo attempt
+            request = getRequest()
+            if 'transaction_info' in request.other:
+                info = ' '.join(request.other['transaction_info'])
+                for plone_site in plone_sites:
+                    if " /{}/".format(plone_site) in info:
+                        site = zope_root[plone_site]
+    return site
+
+
+def getUser():
     site = getSite()
-    portal_membership = getToolByName(site, 'portal_membership')
-    return portal_membership.getAuthenticatedMember()
+    try:
+        portal_membership = getToolByName(site, 'portal_membership')
+        user = portal_membership.getAuthenticatedMember()
+        username = user.getUsername()
+    except AttributeError:
+        request = getRequest()
+        user = request.other.get('AUTHENTICATED_USER')
+        if user is not None:
+            username = user.getUserName()
+        else:
+            username = 'unknown'
+    return username
 
 
 def getObjectInfo(obj):
@@ -59,12 +90,13 @@ def getObjectInfo(obj):
     """
     data = dict(
         performed_on=datetime.utcnow(),
-        user=getUser(obj).getUserName(),
+        user=getUser(),
         site_name=getHostname(getRequest()),
         uid=getUID(obj),
         type=getattr(obj, 'portal_type', ''),
-        title=getattr(obj, 'Title', False) and obj.Title() or obj.id,
-        path=getattr(obj, 'getPhysicalPath', False) and '/'.join(obj.getPhysicalPath()) or '/'
+        title=getattr(obj, 'Title', False) and obj.Title() or obj.id(),
+        path=(getattr(obj, 'getPhysicalPath', False) and
+              '/'.join(obj.getPhysicalPath()) or '/')
     )
     return data
 
