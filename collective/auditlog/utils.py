@@ -88,13 +88,18 @@ def getObjectInfo(obj):
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
+    obj_id = obj.id
+    if callable(obj_id):
+        obj_id = obj_id()
+    if not obj_id:
+        obj_id = "Zope"
     data = dict(
         performed_on=datetime.utcnow(),
         user=getUser(),
         site_name=getHostname(getRequest()),
         uid=getUID(obj),
         type=getattr(obj, 'portal_type', ''),
-        title=getattr(obj, 'Title', False) and obj.Title() or obj.id(),
+        title=getattr(obj, 'Title', False) and obj.Title() or obj_id,
         path=(getattr(obj, 'getPhysicalPath', False) and
               '/'.join(obj.getPhysicalPath()) or '/')
     )
