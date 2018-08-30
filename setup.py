@@ -3,7 +3,7 @@ from setuptools import find_packages
 from setuptools import setup
 import os
 
-version = '1.4.0a1'
+version = '1.4.0a2.dev0'
 
 setup(
     name='collective.auditlog',
