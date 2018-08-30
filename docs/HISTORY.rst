@@ -4,7 +4,11 @@ Changelog
 1.3.4 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Deprecate some utility methods.
+  [ale-rt]
+- Added some memoized properties and methods to the `AuditActionExecutor` class
+  for easier customization
+  [ale-rt]
 
 
 1.3.3 (2018-07-12)

@@ -1,9 +1,12 @@
-from Products.CMFCore.utils import getToolByName
+# coding=utf-8
+
 from collective.auditlog import td
 from collective.auditlog.async import queueJob
 from datetime import datetime
 from plone.uuid.interfaces import IUUID
+from Products.CMFCore.utils import getToolByName
 from zope.component.hooks import getSite
+from zope.deprecation import deprecate
 from zope.globalrequest import getRequest
 
 
@@ -26,6 +29,9 @@ def getUID(context):
         return ''
 
 
+@deprecate(  # remove in version 1.4
+    'Moved to collective.auditlog.action.AuditActionExecutor._getObjectInfo'
+)
 def getHostname(request):
     """
     stolen from the developer manual
@@ -46,11 +52,17 @@ def getHostname(request):
     return host
 
 
+@deprecate(  # remove in version 1.4
+    'Moved to collective.auditlog.action.AuditActionExecutor._getObjectInfo'
+)
 def getUser(context):
     portal_membership = getToolByName(context, 'portal_membership')
     return portal_membership.getAuthenticatedMember()
 
 
+@deprecate(  # remove in version 1.4
+    'Moved to collective.auditlog.action.AuditActionExecutor._getObjectInfo'
+)
 def getObjectInfo(obj):
     """ Get basic information about an object for logging.
     This only includes information available on the object itself. Some fields
@@ -68,6 +80,9 @@ def getObjectInfo(obj):
     return data
 
 
+@deprecate(  # remove in version 1.4
+    'Moved to collective.auditlog.action.AuditActionExecutor.addLogEntry'
+)
 def addLogEntry(data):
     tdata = td.get()
     if not tdata.registered:
