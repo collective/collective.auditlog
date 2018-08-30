@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.3.4 (unreleased)
-------------------
+1.4.0a1 (2018-08-30)
+--------------------
 
 - Deprecate some utility methods.
   [ale-rt]
