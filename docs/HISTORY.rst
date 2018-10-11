@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.0a2 (unreleased)
+1.4.0a2 (2018-10-11)
 --------------------
 
 - Speed up rule retrieval
