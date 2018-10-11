@@ -1,4 +1,5 @@
 # coding=utf-8
+from Acquisition import aq_base
 from Acquisition import aq_parent
 from collective.auditlog import td
 from collective.auditlog.async import queueJob
@@ -81,10 +82,13 @@ class AuditActionExecutor(object):
     def rule(self):
         ''' Check up the stack the rule that invoked this action
         '''
-        for level in inspect.stack():
-            rule = level[0].f_locals.get('self')
+        # start higher in the stack
+        frame = inspect.currentframe().f_back.f_back
+        while frame:
+            rule = frame.f_locals.get('self')
             if isinstance(rule, RuleExecutable):
                 return rule
+            frame = frame.f_back
 
     def canExecute(self, rule=None, req=None):
         if rule is not None or req is not None:
@@ -98,8 +102,9 @@ class AuditActionExecutor(object):
 
         if req is None:
             req = self.request
+
         if req.environ.get('disable.auditlog', False):
-            return True
+            return False
 
         event = self.event
         obj = event.object
@@ -119,8 +124,7 @@ class AuditActionExecutor(object):
             obj.checkCreationFlag()
         ):
             return False
-        if req.environ.get('disable.auditlog', False):
-            return False
+
         return True
 
     def get_history_comment(self):

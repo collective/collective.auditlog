@@ -4,7 +4,8 @@ Changelog
 1.4.0a2 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Speed up rule retrieval
+  [ale-rt]
 
 
 1.4.0a1 (2018-08-30)
