@@ -165,6 +165,22 @@
    </action>
   </actions>
 </rule>
+<rule name="rule-110" title="Store Object Added"
+    description="This stores the action of adding any new objects to a container into the Data Warehouse"
+    enabled="True" event="zope.lifecycleevent.interfaces.IObjectAddedEvent"
+    stop-after="False">
+  <conditions>
+   <condition type="plone.conditions.PortalType">
+    <property name="check_types">
+     <element>Document</element>
+    </property>
+   </condition>
+  </conditions>
+  <actions>
+   <action type="plone.actions.Audit">
+   </action>
+  </actions>
+ </rule>
 
  <assignment name="rule-100" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-101" bubbles="True" enabled="True" location=""/>
@@ -176,5 +192,6 @@
  <assignment name="rule-107" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-108" bubbles="True" enabled="True" location=""/>
  <assignment name="rule-109" bubbles="True" enabled="True" location=""/>
+ <assignment name="rule-110" bubbles="True" enabled="True" location=""/>
 
 </contentrules>

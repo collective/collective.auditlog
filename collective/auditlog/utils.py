@@ -31,6 +31,8 @@ def getHostname(request):
     """
     stolen from the developer manual
     """
+    if request is None:
+        return None
 
     if "HTTP_X_FORWARDED_HOST" in request.environ:
         # Virtual host
@@ -59,7 +61,7 @@ def getSite():
         elif len(plone_sites) > 1:
             # many sites. Might be an undo attempt
             request = getRequest()
-            if 'transaction_info' in request.other:
+            if request and 'transaction_info' in request.other:
                 info = ' '.join(request.other['transaction_info'])
                 for plone_site in plone_sites:
                     if " /{}/".format(plone_site) in info:
@@ -67,15 +69,16 @@ def getSite():
     return site
 
 
-def getUser():
+def getUser(request=None):
+    if request is None:
+        request = getRequest()
     site = getSite()
     try:
         portal_membership = getToolByName(site, 'portal_membership')
         user = portal_membership.getAuthenticatedMember()
         username = user.getUsername()
     except AttributeError:
-        request = getRequest()
-        user = request.other.get('AUTHENTICATED_USER')
+        user = request and request.other.get('AUTHENTICATED_USER') or None
         if user is not None:
             username = user.getUserName()
         else:
@@ -83,11 +86,13 @@ def getUser():
     return username
 
 
-def getObjectInfo(obj):
+def getObjectInfo(obj, request=None):
     """ Get basic information about an object for logging.
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
+    if request is None:
+        request = getRequest()
     obj_id = obj.id
     if callable(obj_id):
         obj_id = obj_id()
@@ -95,8 +100,8 @@ def getObjectInfo(obj):
         obj_id = "Zope"
     data = dict(
         performed_on=datetime.utcnow(),
-        user=getUser(),
-        site_name=getHostname(getRequest()),
+        user=getUser(request),
+        site_name=getHostname(request),
         uid=getUID(obj),
         type=getattr(obj, 'portal_type', ''),
         title=getattr(obj, 'Title', False) and obj.Title() or obj_id,

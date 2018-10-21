@@ -17,7 +17,7 @@
 
     <h1 class="documentFirstHeading" tal:content="view/label">View Title</h1>
     <p>
-      <a tal:attributes="href string:${portal_url}/@@auditlog-view"><img tal:attributes="src string:${portal_url}/topic_icon.png"> View Audit Log</a>
+      <a tal:attributes="href string:${portal_url}/@@auditlog-view?order=performed_on&direction=desc"><img tal:attributes="src string:${portal_url}/topic_icon.png"> View Audit Log</a>
     </p>
 
     <div metal:use-macro="context/global_statusmessage/macros/portal_message">

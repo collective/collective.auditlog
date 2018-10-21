@@ -128,12 +128,13 @@ def get_automatic_events():
     return events
 
 
-def log_entry(obj, data):
-    data.update(getObjectInfo(obj))
+def log_entry(obj, data, request=None):
+    data.update(getObjectInfo(obj, request=request))
     addLogEntry(data)
 
 
 def custom_event(event):
     obj = event.object
+    request = getattr(event, 'request', None)
     data = {'info': event.info, 'action': event.action}
-    log_entry(obj, data)
+    log_entry(obj, data, request)
