@@ -34,7 +34,11 @@ except ImportError:
         execute(aq_parent(aq_inner(event.object)), event)
 
 
-def execute_event(obj, event):
+def execute_event(obj, event=None):
+    if event is None:
+        # ActionSuceededEvent does not send an object first
+        event = obj
+        obj = event.object
     executor = None
     for ev in get_automatic_events():
         if ev.providedBy(event):
