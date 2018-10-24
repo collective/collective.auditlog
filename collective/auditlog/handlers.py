@@ -34,7 +34,7 @@ except ImportError:
         execute(aq_parent(aq_inner(event.object)), event)
 
 
-def execute_event(event, object=None):
+def execute_event(obj, event):
     executor = None
     for ev in get_automatic_events():
         if ev.providedBy(event):
@@ -57,7 +57,7 @@ def moved_event(event):
     obj = event.object
     if not (IContentish.providedBy(obj) or IComment.providedBy(obj)):
         return
-    execute_event(event)
+    execute_event(obj, event)
 
 
 def created_event(event):
@@ -76,7 +76,7 @@ def created_event(event):
         cr_handlers._status.delayed_events[
             'IObjectInitializedEvent-audit-%s' % getUID(obj)] = event
     elif IContentish.providedBy(obj) or IComment.providedBy(obj):
-        execute_event(event)
+        execute_event(obj, event)
     else:
         return
 
@@ -104,7 +104,7 @@ def archetypes_initialized(event):
     if delayed_event is not None:
         cr_handlers._status.delayed_events[
             'IObjectInitializedEvent-audit-%s' % getUID(obj)] = None
-        execute_event(delayed_event)
+        execute_event(obj, delayed_event)
 
 
 def get_automatic_events():
