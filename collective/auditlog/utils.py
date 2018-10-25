@@ -76,7 +76,7 @@ def getUser(request=None):
     try:
         portal_membership = getToolByName(site, 'portal_membership')
         user = portal_membership.getAuthenticatedMember()
-        username = user.getUsername()
+        username = user.getUserName()
     except AttributeError:
         user = request and request.other.get('AUTHENTICATED_USER') or None
         if user is not None:
