@@ -116,6 +116,11 @@
     handler=".handlers.execute_event"
     />
 
+  <subscriber
+    for="zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+    handler=".handlers.execute_event"
+    />
+
   <!-- object added and removed inherit from this event -->
   <subscriber
     for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
