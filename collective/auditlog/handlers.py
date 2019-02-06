@@ -1,5 +1,6 @@
 from importlib import import_module
 from zope.component import getUtility
+from zope.component.interfaces import ComponentLookupError
 from zope.lifecycleevent import IObjectAddedEvent
 from zope.lifecycleevent import IObjectRemovedEvent
 from zope.lifecycleevent import IObjectCopiedEvent
@@ -119,15 +120,19 @@ def get_automatic_events():
     except AttributeError:
         installed = False
     if installed:
-        registry = getUtility(IRegistry)
-        key = 'collective.auditlog.interfaces.IAuditLogSettings.automaticevents'
-        automaticevents = registry[key]
-        for ev in automaticevents:
-            module, interface = ev.rsplit('.', 1)
-            imported = import_module(module)
-            automatic = getattr(imported, interface, None)
-            if automatic is not None:
-                events.append(automatic)
+        try:
+            registry = getUtility(IRegistry)
+            key = 'collective.auditlog.interfaces.IAuditLogSettings.automaticevents'
+            automaticevents = registry[key]
+            for ev in automaticevents:
+                module, interface = ev.rsplit('.', 1)
+                imported = import_module(module)
+                automatic = getattr(imported, interface, None)
+                if automatic is not None:
+                    events.append(automatic)
+        except ComponentLookupError:
+            # no registry, no events
+            pass
     return events
 
 
