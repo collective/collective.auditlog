@@ -47,6 +47,12 @@ tracking of actions performed on working copies.
 All that is left is to configure the new Content Rules
 to track the content types and actions you desire.
 
+Upgrading
+=========
+
+If you are upgrading from an older version, you will need to run the
+upgrade steps from the add-ons control panel.
+
 USAGE
 =====
 For now, collective.auditlog uses SQLAlchemy for storing data. To use
@@ -87,6 +93,47 @@ zope-conf-additional =
 There is now a view for the audit log entries, located at @@auditlog-view.
 There is no link to it from the control panel at the moment. The view uses
 infinite scrollong rather than pagination for looking at the logs.
+
+Searching the audit log
+=======================
+
+Audit logs are stored in a SQL table, so you can use any SQL database tool
+to analyse the audit log. However, sometimes you may need to query the logs
+in the context of the Plone objects that generated them, for which the
+information stored in SQL is not enough. For this purpose,
+collective.auditlog offers a catalog based mechanism which can be used to
+query the logs using any Plone based indexes available at the time of
+logging. This can be used, for example, to develop a portlet that shows the
+latest documents that have been modified.
+
+To enable catalog-based logging, choose sql+zodb storage in the audit log
+control panel. Information will still be stored in the SQL database, but
+a special catalog will be enabled to store plone indexing information as
+well.
+
+Once this storage is enabled, you can search the logs using a catalog-like
+query:
+
+from datetime import datetime
+from collective.auditlog.catalog import searchAudited
+
+from = datatime(2018,6,1)
+to = datetime(2018,12,31)
+query = {'portal_type': 'Document',
+         'review_state': 'published'}
+audited = searchAudited(from_date=from,
+                        to_date=to,
+                        actions=['added', 'modified'],
+                        **query)
+
+All of the parameters are optional, but an empty query will return all
+indexed objects, so use with care.
+
+Note that the query will return catalog records, and any documents that have
+multiple actions performed in the selected date range, will only appear once
+in the list. There are also catalog records for deleted items, so a query
+can be made to look for those even if they are gone from Plone.
+
 
 Celery Integration
 ==================
