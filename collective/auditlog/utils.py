@@ -1,8 +1,11 @@
 from Products.CMFCore.utils import getToolByName
 from collective.auditlog import td
 from collective.auditlog.async import queueJob
+from collective.auditlog.catalog import catalogEntry
 from datetime import datetime
+from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
+from zope.component import getUtility
 from zope.component.hooks import getSite as getSiteHook
 from zope.globalrequest import getRequest
 from Zope2 import app
@@ -111,9 +114,14 @@ def getObjectInfo(obj, request=None):
     return data
 
 
-def addLogEntry(data):
+def addLogEntry(obj, data):
+    registry = getUtility(IRegistry)
+    storage = registry['collective.auditlog.interfaces.IAuditLogSettings.storage']  # noqa
+
     tdata = td.get()
     if not tdata.registered:
         tdata.register()
-
     queueJob(getSite(), **data)
+
+    if storage != 'sql':
+        catalogEntry(obj, data)

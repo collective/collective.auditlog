@@ -50,7 +50,7 @@ to track the content types and actions you desire.
 USAGE
 =====
 For now, collective.auditlog uses SQLAlchemy for storing data. To use
-postgres, it's necessary to add the 'pyscopg2' egg to the buildout. Once
+postgres, it's necessary to add the 'psycopg2' egg to the buildout. Once
 the product is installed, add the correct connection URL to the product
 setup. Example:
 

@@ -50,4 +50,22 @@
       source="*"
       />
 
+  <genericsetup:upgradeStep
+      title="Update the registry records"
+      description=""
+      destination="1006"
+      handler=".to1001.fix_registry_records"
+      profile="collective.auditlog:default"
+      source="*"
+      />
+
+  <genericsetup:upgradeDepends
+      title="Add new catalog"
+      description=""
+      destination="1007"
+      import_steps="toolset"
+      profile="collective.auditlog:default"
+      source="*"
+      />
+
 </configure>

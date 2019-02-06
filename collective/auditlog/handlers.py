@@ -138,7 +138,7 @@ def get_automatic_events():
 
 def log_entry(obj, data, request=None):
     data.update(getObjectInfo(obj, request=request))
-    addLogEntry(data)
+    addLogEntry(obj, data)
 
 
 def custom_event(event):

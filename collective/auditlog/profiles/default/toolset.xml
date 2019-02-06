@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<tool-setup>
+
+  <required tool_id="audit_catalog"
+           class="collective.auditlog.catalog.AuditCatalog"/>
+
+</tool-setup>

@@ -12,6 +12,7 @@ except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
+from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.interfaces import (
     IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
 from zope.lifecycleevent.interfaces import (
@@ -198,7 +199,7 @@ class AuditActionExecutor(object):
         data.update(getObjectInfo(obj))
         data['action'] = action
 
-        addLogEntry(data)
+        addLogEntry(obj, data)
         return True
 
 

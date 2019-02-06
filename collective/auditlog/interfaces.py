@@ -43,6 +43,21 @@ class IAuditLogSettings(Interface):
     This allows you to set the database connection string.
     """
 
+    storage = schema.Choice(
+        title=_(u"Log storage"),
+        description=_(
+            u"help_auditlog_storage",
+            default=(
+                u"Audit Log is designed for use with a SQL database, "
+                u"but the data can be stored in the ZODB catalog for "
+                u"allowing audit log searches with catalog indexes."
+            )
+        ),
+        required=True,
+        default="sql",
+        values=('sql', 'sql+zodb'),
+    )
+
     connectionstring = schema.TextLine(
         title=_(u"Audit Log Connection String"),
         description=_(
