@@ -16,6 +16,10 @@ Changelog
 - ability to specify the sqlalchemy DSN in config file
   [enfold]
 
+- Notify an event before storing audit log entry.
+  [enfold]
+
+
 1.3.3 (2018-07-12)
 ------------------
 

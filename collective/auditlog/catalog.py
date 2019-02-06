@@ -1,20 +1,17 @@
 from datetime import datetime
 
 from zope.interface import Interface, implements
-from zope.globalrequest import getRequest
 
 from AccessControl import ClassSecurityInfo
 from Globals import InitializeClass
-from Products.CMFPlone.utils import base_hasattr
-from Products.CMFPlone.utils import safe_callable
-from Products.CMFCore.permissions import ManagePortal
-from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.ZCatalog import ZCatalog
+from Products.CMFCore.interfaces._content import ICatalogAware
 from Products.CMFPlone.CatalogTool import CatalogTool
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer
 from Products.ZCTextIndex.Lexicon import StopWordRemover
+from plone.api import portal as portal_api
 
 from collective.auditlog import db
 from collective.auditlog.models import LogEntry
@@ -24,9 +21,11 @@ class Empty(object):
     """
     """
 
+
 class IAuditCatalog(Interface):
     """
     """
+
 
 class AuditCatalog(CatalogTool):
     """
@@ -61,8 +60,7 @@ class AuditCatalog(CatalogTool):
             l = PLexicon('audit_lexicon', '', HTMLWordSplitter(),
                     CaseNormalizer(), StopWordRemover())
             self._setObject('audit_lexicon', l)
-        req = getRequest()
-        catalog = getToolByName(req.other['PUBLISHED'], 'portal_catalog')
+        catalog = portal_api.get_tool('portal_catalog')
         indexes = catalog._catalog.indexes
         for name, index in indexes.items():
             if name in self._catalog.indexes.keys():
@@ -81,8 +79,11 @@ class AuditCatalog(CatalogTool):
 
 InitializeClass(AuditCatalog)
 
+
 def catalogEntry(obj, data):
-    catalog = getToolByName(obj, 'audit_catalog')
+    if not ICatalogAware.providedBy(obj):
+        return
+    catalog = portal_api.get_tool('audit_catalog')
     catalog.updateIndexes()
     action = getattr(obj, 'audited_action', None)
     if action is None:
@@ -93,6 +94,7 @@ def catalogEntry(obj, data):
     obj.audited_action = action
     obj.last_audited_date = datetime.now()
     catalog.catalog_object(obj)
+
 
 def searchAudited(from_date=None, to_date=None, actions=None, **query):
     session = db.getSession()
@@ -105,5 +107,5 @@ def searchAudited(from_date=None, to_date=None, actions=None, **query):
         lines = lines.filter(LogEntry.action.in_(actions))
     uids = [line.uid for line in lines]
     uids = list(set(uids))
-    catalog = getToolByName(obj, 'audit_catalog')
+    catalog = portal_api.get_tool('audit_catalog')
     return catalog.unrestrictedSearchResults(UID=uids, **query)

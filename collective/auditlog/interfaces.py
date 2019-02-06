@@ -132,3 +132,18 @@ class AuditableActionPerformedEvent(object):
         self.request = request
         self.action = action
         self.info = info
+
+
+class IBeforeStoreAuditlogEntryEvent(Interface):
+    """ Event fired before storing an entry into the auditlog"""
+
+    object = Attribute('The subject of the event.')
+    data = Attribute('The data stored in the log')
+
+
+@implementer(IBeforeStoreAuditlogEntryEvent)
+class BeforeStoreAuditlogEntryEvent(object):
+
+    def __init__(self, object, data):
+        self.object = object
+        self.data = data
