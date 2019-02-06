@@ -22,6 +22,8 @@ EVENT_TYPES = [
      'An object has been added'),
     ('zope.lifecycleevent.interfaces.IObjectModifiedEvent',
      'An object has been modified'),
+    ('zope.lifecycleevent.interfaces.IObjectRemovedEvent',
+     'An object has been removed'),
     ('OFS.interfaces.IObjectClonedEvent',
      'An object has been copied'),
     ('Products.CMFCore.interfaces.IActionSucceededEvent',

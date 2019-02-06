@@ -1,7 +1,6 @@
 from importlib import import_module
 from zope.component import getUtility
 from zope.lifecycleevent import IObjectAddedEvent
-from zope.lifecycleevent import IObjectModifiedEvent
 from zope.lifecycleevent import IObjectRemovedEvent
 from zope.lifecycleevent import IObjectCopiedEvent
 from plone.app.discussion.interfaces import IComment
@@ -41,7 +40,7 @@ def execute_event(obj, event=None):
         obj = event.object
     executor = None
     for ev in get_automatic_events():
-        if ev.providedBy(event):
+        if ev.providedBy(event) and obj is not None:
             executor = AuditActionExecutor(None, None, event)
             executor()
             break

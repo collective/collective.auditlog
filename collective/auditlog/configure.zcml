@@ -76,6 +76,11 @@
     name="An object has been added"
     />
   <interface
+    interface="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+    type="plone.contentrules.rule.interfaces.IRuleEventType"
+    name="An object has been created"
+    />
+  <interface
     interface="OFS.interfaces.IObjectClonedEvent"
     type="plone.contentrules.rule.interfaces.IRuleEventType"
     name="An object has been copied"
