@@ -4,7 +4,8 @@ Changelog
 1.4.0a3 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Fix soft dependency on formlib (#22)
+  [ale-rt]
 
 
 1.4.0a2 (2018-10-11)
