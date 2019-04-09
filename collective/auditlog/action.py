@@ -27,7 +27,6 @@ from Products.CMFCore.utils import getToolByName
 from zope.component import adapter
 from zope.component import getUtility
 from zope.component.hooks import getSite
-from zope.formlib import form
 from zope.globalrequest import getRequest
 from zope.interface import implementer
 from zope.interface import Interface
@@ -47,6 +46,15 @@ try:
 except ImportError:
     class IPloneFormGenField(Interface):
         pass
+
+try:
+    # Plone4 only (formlib)
+    from zope.formlib import form
+    HAS_FORMLIB = True
+except ImportError:
+    form = None
+    HAS_FORMLIB = False  # Plone 5 will use z3c.form
+
 
 logger = logging.getLogger('collective.auditlog')
 
@@ -300,18 +308,24 @@ class AuditActionExecutor(object):
 
 
 class AuditAddForm(AddForm):
-    form_fields = form.FormFields(IAuditAction)  # needed for Plone4 (formlib)
+
+    # Plone4 only
+    form_fields = form.FormFields(IAuditAction) if HAS_FORMLIB else []
     schema = IAuditAction  # needed for Plone5 (z3c.form)
     label = u"Add Audit Action"
     form_name = u"Configure element"
 
     def create(self, data):
         a = AuditAction()
-        form.applyChanges(a, self.form_fields, data)
+        HAS_FORMLIB and form.applyChanges(a, self.form_fields, data)
         return a
 
 
 class AuditEditForm(EditForm):
-    form_fields = form.FormFields(IAuditAction)
+
+    # Plone4 only
+    form_fields = form.FormFields(IAuditAction) if HAS_FORMLIB else []
+    schema = IAuditAction  # needed for Plone5 (z3c.form)
+
     label = u"Edit Audit Action"
     form_name = u"Configure element"
