@@ -1,7 +1,7 @@
 Changelog
 =========
 
-1.4.0a3 (unreleased)
+1.4.0a3 (2019-04-10)
 --------------------
 
 - Fix soft dependency on formlib (#22)
