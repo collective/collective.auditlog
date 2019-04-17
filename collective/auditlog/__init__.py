@@ -1,3 +1,4 @@
+import permissions
 import transaction
 from App.Undo import decode64
 from App.Undo import UndoSupport

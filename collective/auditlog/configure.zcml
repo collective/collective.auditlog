@@ -20,6 +20,7 @@
       provides="Products.GenericSetup.interfaces.EXTENSION"
       />
 
+  <include file="permissions.zcml" />
   <include file="profiles.zcml" />
   <include file="action.zcml" />
   <include package=".upgrades" />
@@ -44,7 +45,7 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
       class="collective.auditlog.browser.LogView"
       template="logview.pt"
-      permission="cmf.ModifyPortalContent"
+      permission="collective.auditlog.ViewAuditlog"
       />
 
   <interface

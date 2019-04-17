@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<rolemap>
+  <roles>
+    <role name="Auditlog Viewer" />
+  </roles>
+  <permissions>
+    <permission name="collective.auditlog: View Auditlog" acquire="True">
+      <role name="Manager" />
+      <role name="Site Administrator" />
+      <role name="Auditlog Viewer" />
+    </permission>
+  </permissions>
+</rolemap>

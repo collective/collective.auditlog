@@ -19,6 +19,9 @@ Changelog
 - Notify an event before storing audit log entry.
   [enfold]
 
+- Use custom permission for viewing audit log.
+  [enfold]
+
 
 1.3.3 (2018-07-12)
 ------------------

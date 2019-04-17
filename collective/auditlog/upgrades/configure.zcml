@@ -68,4 +68,13 @@
       source="*"
       />
 
+  <genericsetup:upgradeDepends
+      title="Add new permission"
+      description=""
+      destination="1008"
+      import_steps="rolemap actions"
+      profile="collective.auditlog:default"
+      source="*"
+      />
+
 </configure>
