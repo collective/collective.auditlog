@@ -56,6 +56,20 @@ class TestActions(unittest.TestCase):
         self.request = self.layer['request'].clone()
         login(self.portal, TEST_USER_NAME)
         setRoles(self.portal, TEST_USER_ID, ['Manager'])
+        registry_key = '{iface}.automaticevents'.format(
+            iface=IAuditLogSettings.__identifier__
+        )
+        registry = getUtility(IRegistry)
+        registry[registry_key] = [
+            u'plone.app.iterate.interfaces.ICheckinEvent',
+            u'plone.app.iterate.interfaces.IBeforeCheckoutEvent',
+            u'plone.app.iterate.interfaces.ICancelCheckoutEvent',
+            u'zope.lifecycleevent.interfaces.IObjectMovedEvent',
+            u'OFS.interfaces.IObjectClonedEvent',
+            u'zope.lifecycleevent.interfaces.IObjectAddedEvent',
+            u'zope.lifecycleevent.interfaces.IObjectModifiedEvent',
+            u'Products.CMFCore.interfaces.IActionSucceededEvent',
+        ]
 
     def create_page(self, title='Page'):
         ''' Create a page and return it

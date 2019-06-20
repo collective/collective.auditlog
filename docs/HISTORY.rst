@@ -22,6 +22,9 @@ Changelog
 - Use custom permission for viewing audit log.
   [enfold]
 
+- Fix tests.
+  [enfold]
+
 
 1.3.3 (2018-07-12)
 ------------------
