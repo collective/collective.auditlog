@@ -13,20 +13,20 @@ zope_conf = getConfiguration()
 product_conf = getattr(zope_conf, 'product_config', {})
 config = product_conf.get('collective.auditlog', {})
 
+engine = None
+session_factory = None
+
 
 def getEngine(conn_string=None, conn_parameters=None, req=None):
     """
     Cache this on the request object
     """
-    if req is None:
-        req = getRequest()
-    if req and 'sa.engine' in req.environ:
-        engine = req.environ['sa.engine']
-    else:
+    global engine
+    if engine is None:
+        registry = getUtility(IRegistry)
         if conn_string is None:
             conn_string = config.get('audit-connection-string', None)
         if conn_string is None:
-            registry = getUtility(IRegistry)
             conn_string = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionstring']  # noqa
         if conn_parameters is None:
             conn_parameters = config.get('audit-connection-params', None)
@@ -37,24 +37,17 @@ def getEngine(conn_string=None, conn_parameters=None, req=None):
         elif isinstance(conn_parameters, basestring):
             conn_parameters = loads(conn_parameters)
         engine = create_engine(conn_string, **conn_parameters)
-        if req:
-            req.environ['sa.engine'] = engine
     return engine
 
 
-def getSession(conn_string=None, engine=None, req=None):
+def getSession(conn_string=None, req=None):
     """
     same, cache on request object
     """
+    global engine, session_factory
     if engine is None:
         engine = getEngine(conn_string)
-    if req is None:
-        req = getRequest()
-    if req and 'sa.session' in req.environ:
-        session = req.environ['sa.session']
-    else:
-        Session = scoped_session(sessionmaker(bind=engine))
-        session = Session()
-        if req:
-            req.environ['sa.session'] = session
+    if session_factory is None:
+        session_factory = scoped_session(sessionmaker(bind=engine))
+    session = session_factory()
     return session

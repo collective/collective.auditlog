@@ -1,5 +1,4 @@
 from Products.CMFCore.utils import getToolByName
-from collective.auditlog import td
 from collective.auditlog.async import queueJob
 from collective.auditlog.catalog import catalogEntry
 from collective.auditlog.interfaces import BeforeStoreAuditlogEntryEvent
@@ -120,9 +119,6 @@ def addLogEntry(obj, data):
     registry = getUtility(IRegistry)
     storage = registry['collective.auditlog.interfaces.IAuditLogSettings.storage']  # noqa
     notify(BeforeStoreAuditlogEntryEvent(obj, data))
-    tdata = td.get()
-    if not tdata.registered:
-        tdata.register()
     queueJob(getSite(), **data)
 
     if storage != 'sql':

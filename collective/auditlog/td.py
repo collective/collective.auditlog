@@ -54,6 +54,7 @@ class DataManager(object):
                 logger.error('Error during audit log commit. '
                              'Error stack: %s' % (traceback.format_exc()))
         self.td.reset()
+        self._clear_session()
 
     def tpc_begin(self, trans):
         pass
@@ -63,6 +64,7 @@ class DataManager(object):
 
     def tpc_finish(self, trans):
         self.td.reset()
+        self._clear_session()
 
     def tpc_abort(self, trans):
         pass
@@ -73,6 +75,7 @@ class DataManager(object):
             # so content rules can match again
             cr_handlers.close(None)
         self.td.reset()
+        self._clear_session()
 
     @property
     def savepoint(self):
@@ -89,6 +92,11 @@ class DataManager(object):
     def sortKey(self):
         # Sort normally
         return "collective.auditlog"
+
+    def _clear_session(self):
+        if self._session is not None:
+            db.session_factory.remove()
+            self._session = None
 
 
 @implementer(IDataManagerSavepoint)

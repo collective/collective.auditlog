@@ -25,6 +25,9 @@ Changelog
 - Fix tests.
   [enfold]
 
+- Fix db connection leak.
+  [enfold]
+
 
 1.3.3 (2018-07-12)
 ------------------
