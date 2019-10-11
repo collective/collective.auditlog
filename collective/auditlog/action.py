@@ -19,9 +19,6 @@ from plone.contentrules.rule.interfaces import IRuleElementData
 from plone.contentrules.rule.rule import RuleExecutable
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
-from Products.Archetypes.interfaces import IBaseObject
-from Products.Archetypes.interfaces import IObjectEditedEvent
-from Products.Archetypes.interfaces import IObjectInitializedEvent
 from Products.CMFCore.interfaces import IActionSucceededEvent
 from Products.CMFCore.utils import getToolByName
 from zope.component import adapter
@@ -40,6 +37,24 @@ import inspect
 import logging
 import warnings
 
+
+class IMissingInterface(Interface):
+    pass
+
+try:
+    from Products.Archetypes.interfaces import IBaseObject
+except ImportError:
+    IBaseObject = IMissingInterface
+
+try:
+    from Products.Archetypes.interfaces import IObjectEditedEvent
+except ImportError:
+    IObjectEditedEvent = IMissingInterface
+
+try:
+    from Products.Archetypes.interfaces import IObjectInitializedEvent
+except ImportError:
+    IObjectInitializedEvent = IMissingInterface
 
 try:
     from Products.PloneFormGen.interfaces import IPloneFormGenField

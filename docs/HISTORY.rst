@@ -4,7 +4,8 @@ Changelog
 1.4.0a4 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Make Arhcetype a soft dependency
+  [ale-rt]
 
 
 1.4.0a3 (2019-04-10)

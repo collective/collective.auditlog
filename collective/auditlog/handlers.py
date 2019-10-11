@@ -1,11 +1,21 @@
-from zope.component.hooks import getSite
-from zope.lifecycleevent.interfaces import (
-    IObjectRemovedEvent, IObjectAddedEvent, IObjectCopiedEvent)
-from plone.app.discussion.interfaces import IComment
-from Products.CMFCore.interfaces import IContentish
+# coding=utf-8
 from collective.auditlog.utils import getUID
 from plone.app.contentrules import handlers as cr_handlers
-from Products.Archetypes.interfaces import IBaseObject
+from plone.app.discussion.interfaces import IComment
+from Products.CMFCore.interfaces import IContentish
+from zope.component.hooks import getSite
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectCopiedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
+
+
+class IMissingInterface(Interface):
+    pass
+
+try:
+    from Products.Archetypes.interfaces import IBaseObject
+except ImportError:
+    IBaseObject = IMissingInterface
 
 try:
     from plone.app.contentrules.handlers import (
