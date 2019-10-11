@@ -4,6 +4,9 @@ Changelog
 1.4 (unreleased)
 ----------------
 
+- Make Arhcetype a soft dependency.
+  [ale-rt]
+
 - Align with Plone code style: black, isort.
   [thet]
 

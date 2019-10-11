@@ -1,3 +1,4 @@
+# coding=utf-8
 from collective.auditlog.action import AuditActionExecutor
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
@@ -7,15 +8,25 @@ from importlib import import_module
 from plone.app.contentrules import handlers as cr_handlers
 from plone.app.discussion.interfaces import IComment
 from plone.registry.interfaces import IRegistry
-from Products.Archetypes.interfaces import IBaseObject
 from Products.CMFCore.interfaces import IContentish
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
-from zope.lifecycleevent import IObjectAddedEvent
-from zope.lifecycleevent import IObjectCopiedEvent
-from zope.lifecycleevent import IObjectRemovedEvent
+from zope.interface import Interface
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectCopiedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 import json
+
+
+class IMissingInterface(Interface):
+    pass
+
+
+try:
+    from Products.Archetypes.interfaces import IBaseObject
+except ImportError:
+    IBaseObject = IMissingInterface
 
 
 try:
@@ -156,7 +167,7 @@ def custom_event(event):
     info = event.info
     if info:
         try:
-            tmp = json.loads(info)
+            tmp = json.loads(info)  # noqa
         except ValueError:
             info = json.dumps({"info": info})
 

@@ -129,9 +129,10 @@
     />
 
   <subscriber
-    for="Products.Archetypes.interfaces.IObjectInitializedEvent"
-    handler=".handlers.archetypes_initialized"
-    />
+      zcml:condition="installed Products.Archetypes"
+      for="Products.Archetypes.interfaces.IObjectInitializedEvent"
+      handler=".handlers.archetypes_initialized"
+      />
 
   <subscriber
     for="OFS.interfaces.IObjectClonedEvent"
