@@ -14,7 +14,6 @@ from plone.app.iterate.interfaces import IBeforeCheckoutEvent
 from plone.app.iterate.interfaces import ICancelCheckoutEvent
 from plone.app.iterate.interfaces import ICheckinEvent
 from plone.app.iterate.interfaces import IWorkingCopy
-from plone.app.iterate.relation import WorkingCopyRelation
 from plone.contentrules.rule.interfaces import IExecutable
 from plone.contentrules.rule.interfaces import IRuleElementData
 from plone.contentrules.rule.rule import RuleExecutable
@@ -67,6 +66,12 @@ except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
+
+try:
+    from plone.app.iterate.relation import WorkingCopyRelation
+except ImportError:
+    # Import will fail if we do not have Products.Archetypes
+    WorkingCopyRelation = None
 
 try:
     # Plone4 only (formlib)
@@ -271,7 +276,10 @@ class AuditActionExecutor(object):
             # if enabled in control panel, use original object and move
             # working copy path to working_copy
             data["working_copy"] = "/".join(obj.getPhysicalPath())
-            relationships = obj.getReferences(WorkingCopyRelation.relationship)
+            if WorkingCopyRelation:
+                relationships = obj.getReferences(WorkingCopyRelation.relationship)
+            else:
+                relationships = []
             # check relationships, if none, something is wrong, not logging
             # action
             if len(relationships) <= 0:
