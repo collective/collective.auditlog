@@ -4,6 +4,7 @@ from plone.app.contentrules import handlers as cr_handlers
 from plone.app.discussion.interfaces import IComment
 from Products.CMFCore.interfaces import IContentish
 from zope.component.hooks import getSite
+from zope.interface import Interface
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent
