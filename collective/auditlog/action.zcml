@@ -29,7 +29,7 @@
         title="Audit"
         description="Audit action"
         for="*"
-        event="zope.component.interfaces.IObjectEvent"
+        event="zope.interface.interfaces.IObjectEvent"
         addview="plone.actions.Audit"
         editview="edit"
         schema=".action.IAuditAction"

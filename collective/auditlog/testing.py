@@ -5,7 +5,7 @@ from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
-from plone.testing import z2
+from plone.testing import zope as zope_testing
 from zope.configuration import xmlconfig
 
 try:
@@ -24,7 +24,7 @@ class AuditLog(PloneSandboxLayer):
         import collective.auditlog
         xmlconfig.file('configure.zcml', collective.auditlog,
                        context=configurationContext)
-        z2.installProduct(app, 'collective.auditlog')
+        zope_testing.installProduct(app, 'collective.auditlog')
 
     def setUpPloneSite(self, portal):
         # install into the Plone site
