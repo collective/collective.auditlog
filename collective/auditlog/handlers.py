@@ -10,8 +10,8 @@ from plone.app.discussion.interfaces import IComment
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import IContentish
 from zope.component import getUtility
-from zope.component.interfaces import ComponentLookupError
 from zope.interface import Interface
+from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent
 from zope.lifecycleevent.interfaces import IObjectRemovedEvent

@@ -5,8 +5,13 @@ from plone.app.testing import IntegrationTesting
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
-from plone.testing import z2
 from zope.configuration import xmlconfig
+
+
+try:
+    from plone.testing import zope as zope_testing
+except ImportError:
+    from plone.testing import z2 as zope_testing
 
 
 try:
@@ -29,7 +34,8 @@ class AuditLog(PloneSandboxLayer):
         xmlconfig.file(
             "configure.zcml", collective.auditlog, context=configurationContext
         )
-        z2.installProduct(app, "collective.auditlog")
+        zope_testing.installProduct(app, "collective.auditlog")
+
         # no async for testing
         from collective.auditlog import async
 

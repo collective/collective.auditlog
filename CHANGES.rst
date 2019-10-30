@@ -4,6 +4,9 @@ Changelog
 1.4 (unreleased)
 ----------------
 
+- Plone 5.2 compatibility.
+  [thet]
+
 - Make Arhcetype a soft dependency.
   [ale-rt]
 
