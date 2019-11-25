@@ -28,6 +28,9 @@ Changelog
 - Fix db connection leak.
   [enfold]
 
+- Use valid json in info field.
+  [enfold]
+
 
 1.3.3 (2018-07-12)
 ------------------

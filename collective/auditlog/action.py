@@ -1,3 +1,4 @@
+import json
 from Acquisition import aq_parent
 from OFS.SimpleItem import SimpleItem
 from zope.component import adapts
@@ -12,7 +13,6 @@ except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
-from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.interfaces import (
     IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
 from zope.lifecycleevent.interfaces import (
@@ -129,16 +129,18 @@ class AuditActionExecutor(object):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
                 if rule is None or 'Rename' in rule.rule.title:
-                    data['info'] = 'previous id: %s' % event.oldName
+                    info = {'previous_id': event.oldName}
+                    data['info'] = json.dumps(info)
                     action = 'rename'
                 else:
                     # cut out here, double action for this event
                     return True
             else:
                 if rule is None or 'Moved' in rule.rule.title:
-                    data['info'] = 'previous location: %s/%s' % (
-                        '/'.join(event.oldParent.getPhysicalPath()),
-                        event.oldName)
+                    parent_path = '/'.join(event.oldParent.getPhysicalPath())
+                    previous_location = parent_path + '/' + event.oldName
+                    info = {'previous_location': previous_location}
+                    data['info'] = json.dumps(info)
                     action = 'moved'
                 else:
                     # step out immediately since this could be a double action
@@ -146,15 +148,15 @@ class AuditActionExecutor(object):
         elif IObjectModifiedEvent.providedBy(event):
             action = 'modified'
         elif IActionSucceededEvent.providedBy(event):
-            data['info'] = 'workflow transition: %s; comments: %s' % (
-                event.action,
-                self.get_history_comment(),
-            )
+            info = {'transition': event.action,
+                    'comments': self.get_history_comment()}
+            data['info'] = json.dumps(info)
             action = 'workflow'
         elif IObjectClonedEvent.providedBy(event):
             action = 'copied'
         elif ICheckinEvent.providedBy(event):
-            data['info'] = event.message
+            info = {'message': event.message}
+            data['info'] = json.dumps(info)
             action = 'checked in'
             req.environ['disable.auditlog'] = True
             data['working_copy'] = '/'.join(obj.getPhysicalPath())
@@ -169,7 +171,8 @@ class AuditActionExecutor(object):
             obj = event.baseline
         elif IUserLoggedInEvent.providedBy(event):
             action = 'logged in'
-            data['info'] = event.object.getUserName()
+            info = {'user': event.object.getUserName()}
+            data['info'] = json.dumps(info)
         elif IUserLoggedOutEvent.providedBy(event):
             action = 'logged out'
         else:

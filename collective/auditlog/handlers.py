@@ -1,3 +1,4 @@
+import json
 from importlib import import_module
 from zope.component import getUtility
 from zope.component.interfaces import ComponentLookupError
@@ -144,5 +145,12 @@ def log_entry(obj, data, request=None):
 def custom_event(event):
     obj = event.object
     request = getattr(event, 'request', None)
+    info = event.info
+    if info:
+        try:
+            tmp = json.loads(info)
+        except ValueError:
+            info = json.dumps({'info': info})
+
     data = {'info': event.info, 'action': event.action}
     log_entry(obj, data, request)
