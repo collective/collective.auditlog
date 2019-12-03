@@ -31,7 +31,6 @@ def get():
 
 @implementer(ISavepointDataManager)
 class DataManager(object):
-
     def __init__(self, td):
         self._session = None
         self.td = td
@@ -42,7 +41,7 @@ class DataManager(object):
         if self._session is None:
             self._session = db.getSession()
             engine = db.getEngine()
-            if not engine.dialect.has_table(engine, 'audit'):
+            if not engine.dialect.has_table(engine, "audit"):
                 Base.metadata.create_all(bind=engine)
         return self._session
 
@@ -51,8 +50,10 @@ class DataManager(object):
             try:
                 self.session.commit()
             except:
-                logger.error('Error during audit log commit. '
-                             'Error stack: %s' % (traceback.format_exc()))
+                logger.error(
+                    "Error during audit log commit. "
+                    "Error stack: %s" % (traceback.format_exc())
+                )
         self.td.reset()
         self._clear_session()
 
@@ -101,7 +102,6 @@ class DataManager(object):
 
 @implementer(IDataManagerSavepoint)
 class Savepoint:
-
     def __init__(self, dm):
         self.dm = dm
         self.old = dm.session.new.copy()
@@ -118,7 +118,6 @@ class Savepoint:
 
 
 class TransactionData(object):
-
     def __init__(self):
         self.joined = False
         self.registered = False

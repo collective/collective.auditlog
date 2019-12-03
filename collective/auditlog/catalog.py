@@ -34,44 +34,48 @@ class AuditCatalog(CatalogTool):
 
     implements(IAuditCatalog)
 
-    title = 'specific catalog'
-    id = 'audit_catalog'
-    portal_type = meta_type = 'AuditCatalog'
+    title = "specific catalog"
+    id = "audit_catalog"
+    portal_type = meta_type = "AuditCatalog"
     plone_tool = 1
 
     security = ClassSecurityInfo()
-    _properties=(
-      {'id':'title', 'type': 'string', 'mode':'w'},)
+    _properties = ({"id": "title", "type": "string", "mode": "w"},)
 
     def __init__(self):
         ZCatalog.__init__(self, self.id)
         self.updateIndexes()
 
     def updateIndexes(self):
-        if not getattr(self, 'audit_lexicon', None):
+        if not getattr(self, "audit_lexicon", None):
             # installing, add lexicon, indexes and metadata
-            self.addIndex('last_audited_date', 'DateIndex')
-            self.addIndex('audited_action', 'KeywordIndex')
-            self.addColumn('Title')
-            self.addColumn('id')
-            self.addColumn('UID')
-            self.addColumn('last_audited_date')
-            self.addColumn('audited_action')
-            l = PLexicon('audit_lexicon', '', HTMLWordSplitter(),
-                    CaseNormalizer(), StopWordRemover())
-            self._setObject('audit_lexicon', l)
-        catalog = portal_api.get_tool('portal_catalog')
+            self.addIndex("last_audited_date", "DateIndex")
+            self.addIndex("audited_action", "KeywordIndex")
+            self.addColumn("Title")
+            self.addColumn("id")
+            self.addColumn("UID")
+            self.addColumn("last_audited_date")
+            self.addColumn("audited_action")
+            l = PLexicon(
+                "audit_lexicon",
+                "",
+                HTMLWordSplitter(),
+                CaseNormalizer(),
+                StopWordRemover(),
+            )
+            self._setObject("audit_lexicon", l)
+        catalog = portal_api.get_tool("portal_catalog")
         indexes = catalog._catalog.indexes
         for name, index in indexes.items():
             if name in self._catalog.indexes.keys():
                 continue
-            if index.meta_type == 'DateRecurringIndex':
+            if index.meta_type == "DateRecurringIndex":
                 continue
-            elif index.meta_type == 'ZCTextIndex':
+            elif index.meta_type == "ZCTextIndex":
                 extras = Empty()
                 extras.doc_attr = name
-                extras.index_type = 'Okapi BM25 Rank'
-                extras.lexicon_id = 'audit_lexicon'
+                extras.index_type = "Okapi BM25 Rank"
+                extras.lexicon_id = "audit_lexicon"
                 self.addIndex(name, index.meta_type, extras)
             else:
                 self.addIndex(name, index.meta_type)
@@ -83,14 +87,14 @@ InitializeClass(AuditCatalog)
 def catalogEntry(obj, data):
     if not ICatalogAware.providedBy(obj):
         return
-    catalog = portal_api.get_tool('audit_catalog')
+    catalog = portal_api.get_tool("audit_catalog")
     catalog.updateIndexes()
-    action = getattr(obj, 'audited_action', None)
+    action = getattr(obj, "audited_action", None)
     if action is None:
-        action = [data['action']]
+        action = [data["action"]]
     else:
-        if data['action'] not in action:
-            action.append(data['action'])
+        if data["action"] not in action:
+            action.append(data["action"])
     obj.audited_action = action
     obj.last_audited_date = datetime.now()
     catalog.catalog_object(obj)
@@ -107,5 +111,5 @@ def searchAudited(from_date=None, to_date=None, actions=None, **query):
         lines = lines.filter(LogEntry.action.in_(actions))
     uids = [line.uid for line in lines]
     uids = list(set(uids))
-    catalog = portal_api.get_tool('audit_catalog')
+    catalog = portal_api.get_tool("audit_catalog")
     return catalog.unrestrictedSearchResults(UID=uids, **query)

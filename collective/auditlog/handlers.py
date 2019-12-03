@@ -18,10 +18,14 @@ from Products.Archetypes.interfaces import IBaseObject
 
 try:
     from plone.app.contentrules.handlers import (
-        execute_rules, execute, is_portal_factory)
+        execute_rules,
+        execute,
+        is_portal_factory,
+    )
 except ImportError:
     from Acquisition import aq_inner, aq_parent
     from plone.app.contentrules.handlers import execute, is_portal_factory
+
     # copied from plone.app.iterate 2.0:
 
     def execute_rules(event):
@@ -48,15 +52,14 @@ def execute_event(obj, event=None):
             break
     if executor is None:
         # plone sends some events twice, first wrapped. Ignore those.
-        if getattr(event, 'object', None) is not None:
+        if getattr(event, "object", None) is not None:
             execute_rules(event)
 
 
 def moved_event(event):
     # only execute moved event if it's not a added or removed event since
     # those are handled elsewhere and they base off of this event class
-    if (IObjectAddedEvent.providedBy(event) or
-            IObjectRemovedEvent.providedBy(event)):
+    if IObjectAddedEvent.providedBy(event) or IObjectRemovedEvent.providedBy(event):
         return
 
     obj = event.object
@@ -79,7 +82,8 @@ def created_event(event):
     if IBaseObject.providedBy(obj):
         cr_handlers.init()
         cr_handlers._status.delayed_events[
-            'IObjectInitializedEvent-audit-%s' % getUID(obj)] = event
+            "IObjectInitializedEvent-audit-%s" % getUID(obj)
+        ] = event
     elif IContentish.providedBy(obj) or IComment.providedBy(obj):
         execute_event(obj, event)
     else:
@@ -88,7 +92,7 @@ def created_event(event):
 
 def loggedout_event(event):
     obj = event.object
-    data = {'info': '', 'action': 'logged out'}
+    data = {"info": "", "action": "logged out"}
     log_entry(obj, data)
 
 
@@ -105,10 +109,12 @@ def archetypes_initialized(event):
 
     cr_handlers.init()
     delayed_event = cr_handlers._status.delayed_events.get(
-        'IObjectInitializedEvent-audit-%s' % getUID(obj), None)
+        "IObjectInitializedEvent-audit-%s" % getUID(obj), None
+    )
     if delayed_event is not None:
         cr_handlers._status.delayed_events[
-            'IObjectInitializedEvent-audit-%s' % getUID(obj)] = None
+            "IObjectInitializedEvent-audit-%s" % getUID(obj)
+        ] = None
         execute_event(obj, delayed_event)
 
 
@@ -117,16 +123,16 @@ def get_automatic_events():
     site = getSite()
     try:
         qi = site.portal_quickinstaller
-        installed = qi.isProductInstalled('collective.auditlog')
+        installed = qi.isProductInstalled("collective.auditlog")
     except AttributeError:
         installed = False
     if installed:
         try:
             registry = getUtility(IRegistry)
-            key = 'collective.auditlog.interfaces.IAuditLogSettings.automaticevents'
+            key = "collective.auditlog.interfaces.IAuditLogSettings.automaticevents"
             automaticevents = registry[key]
             for ev in automaticevents:
-                module, interface = ev.rsplit('.', 1)
+                module, interface = ev.rsplit(".", 1)
                 imported = import_module(module)
                 automatic = getattr(imported, interface, None)
                 if automatic is not None:
@@ -144,13 +150,13 @@ def log_entry(obj, data, request=None):
 
 def custom_event(event):
     obj = event.object
-    request = getattr(event, 'request', None)
+    request = getattr(event, "request", None)
     info = event.info
     if info:
         try:
             tmp = json.loads(info)
         except ValueError:
-            info = json.dumps({'info': info})
+            info = json.dumps({"info": info})
 
-    data = {'info': event.info, 'action': event.action}
+    data = {"info": event.info, "action": event.action}
     log_entry(obj, data, request)

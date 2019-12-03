@@ -4,6 +4,9 @@ Changelog
 1.4 (unreleased)
 ----------------
 
+- Align with Plone code style: black.
+  [thet]
+
 - Fix soft dependency on formlib (#22)
   [ale-rt]
 

@@ -10,8 +10,8 @@ from zope.globalrequest import getRequest
 
 
 zope_conf = getConfiguration()
-product_conf = getattr(zope_conf, 'product_config', {})
-config = product_conf.get('collective.auditlog', {})
+product_conf = getattr(zope_conf, "product_config", {})
+config = product_conf.get("collective.auditlog", {})
 
 engine = None
 session_factory = None
@@ -25,13 +25,17 @@ def getEngine(conn_string=None, conn_parameters=None, req=None):
     if engine is None:
         registry = getUtility(IRegistry)
         if conn_string is None:
-            conn_string = config.get('audit-connection-string', None)
+            conn_string = config.get("audit-connection-string", None)
         if conn_string is None:
-            conn_string = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionstring']  # noqa
+            conn_string = registry[
+                "collective.auditlog.interfaces.IAuditLogSettings.connectionstring"
+            ]  # noqa
         if conn_parameters is None:
-            conn_parameters = config.get('audit-connection-params', None)
+            conn_parameters = config.get("audit-connection-params", None)
         if conn_parameters is None:
-            conn_parameters = registry['collective.auditlog.interfaces.IAuditLogSettings.connectionparameters']  # noqa
+            conn_parameters = registry[
+                "collective.auditlog.interfaces.IAuditLogSettings.connectionparameters"
+            ]  # noqa
         if not conn_parameters:
             conn_parameters = {}
         elif isinstance(conn_parameters, basestring):

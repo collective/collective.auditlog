@@ -47,19 +47,22 @@ import warnings
 try:
     from Products.PloneFormGen.interfaces import IPloneFormGenField
 except ImportError:
+
     class IPloneFormGenField(Interface):
         pass
+
 
 try:
     # Plone4 only (formlib)
     from zope.formlib import form
+
     HAS_FORMLIB = True
 except ImportError:
     form = None
     HAS_FORMLIB = False  # Plone 5 will use z3c.form
 
 
-logger = logging.getLogger('collective.auditlog')
+logger = logging.getLogger("collective.auditlog")
 
 
 class IAuditAction(Interface):
@@ -68,14 +71,13 @@ class IAuditAction(Interface):
 
 @implementer(IAuditAction, IRuleElementData)
 class AuditAction(SimpleItem):
-    element = 'plone.actions.Audit'
+    element = "plone.actions.Audit"
     summary = u"Audit"
 
 
 @implementer(IExecutable)
 @adapter(Interface, IAuditAction, Interface)
 class AuditActionExecutor(object):
-
     def __init__(self, context, element, event):
         self.context = context
         self.element = element
@@ -84,19 +86,19 @@ class AuditActionExecutor(object):
     @property
     @memoize
     def request(self):
-        ''' Try to get a request
-        '''
+        """ Try to get a request
+        """
         return getRequest()
 
     @property
     @memoize
     def rule(self):
-        ''' Check up the stack the rule that invoked this action
-        '''
+        """ Check up the stack the rule that invoked this action
+        """
         # start higher in the stack
         frame = inspect.currentframe().f_back.f_back
         while frame:
-            rule = frame.f_locals.get('self', None)
+            rule = frame.f_locals.get("self", None)
             if isinstance(rule, RuleExecutable):
                 return rule
             frame = frame.f_back
@@ -105,17 +107,17 @@ class AuditActionExecutor(object):
     def canExecute(self, rule=None, req=None):
         if rule is not None or req is not None:
             msg = (
-                'In the next releases the rule and req parameters '
-                'will not be supported anymore. '
-                'In case you want to customize this product '
-                'use the request and rule properties'
+                "In the next releases the rule and req parameters "
+                "will not be supported anymore. "
+                "In case you want to customize this product "
+                "use the request and rule properties"
             )
             warnings.warn(msg, DeprecationWarning)
 
         if req is None:
             req = self.request
 
-        if req.environ.get('disable.auditlog', False):
+        if req.environ.get("disable.auditlog", False):
             return False
 
         event = self.event
@@ -131,49 +133,51 @@ class AuditActionExecutor(object):
                 return False
         # if archetypes, initialization also does move events
         if (
-            IObjectMovedEvent.providedBy(event) and
-            IBaseObject.providedBy(obj) and
-            obj.checkCreationFlag()
+            IObjectMovedEvent.providedBy(event)
+            and IBaseObject.providedBy(obj)
+            and obj.checkCreationFlag()
         ):
             return False
 
         return True
 
     def get_history_comment(self):
-        ''' Given an object and a IActionSucceededEvent,
+        """ Given an object and a IActionSucceededEvent,
         extract the comment of the transition.
-        '''
+        """
         action = self.event.action
         if not action:
-            return ''
+            return ""
         history = self.event.object.workflow_history
         for transition in reversed(history[self.event.workflow.id]):
-            if transition.get('action') == action:
-                return transition.get('comments', '')
-        return ''
+            if transition.get("action") == action:
+                return transition.get("comments", "")
+        return ""
 
     @property
     @memoize
     def trackWorkingCopies(self):
         registry = getUtility(IRegistry)
-        return registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']  # noqa
+        return registry[
+            "collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies"
+        ]  # noqa
 
     def _getObjectInfo(self, obj):
         return getObjectInfo(obj, self.request)
 
     @memoize
     def getLogEntry(self):
-        ''' Get's a log entry for your action
-        '''
+        """ Get's a log entry for your action
+        """
         event = self.event
         obj = event.object
-        data = {'info': ''}
+        data = {"info": ""}
 
         # order of those checks is important since some interfaces
         # base off the others
         if IPloneFormGenField.providedBy(obj):
             # if ploneformgen field, use parent object for modified data
-            data['field'] = obj.getId()
+            data["field"] = obj.getId()
             obj = aq_parent(obj)
 
         # the order of those interface checks matters since some interfaces
@@ -181,65 +185,64 @@ class AuditActionExecutor(object):
         if IObjectRemovedEvent.providedBy(event):
             # need to keep track of removed events so it doesn't get called
             # more than once for each object
-            action = 'removed'
+            action = "removed"
         elif (
-            IObjectInitializedEvent.providedBy(event) or
-            IObjectCreatedEvent.providedBy(event) or
-            IObjectAddedEvent.providedBy(event)
+            IObjectInitializedEvent.providedBy(event)
+            or IObjectCreatedEvent.providedBy(event)
+            or IObjectAddedEvent.providedBy(event)
         ):
-            action = 'added'
+            action = "added"
         elif IObjectMovedEvent.providedBy(event):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
-                if rule is None or 'Rename' in self.rule.rule.title:
-                    info = {'previous_id': event.oldName}
-                    data['info'] = json.dumps(info)
-                    action = 'rename'
+                if rule is None or "Rename" in self.rule.rule.title:
+                    info = {"previous_id": event.oldName}
+                    data["info"] = json.dumps(info)
+                    action = "rename"
                 else:
                     # cut out here, double action for this event
                     return True
             else:
-                if rule is None or 'Moved' in self.rule.rule.title:
-                    parent_path = '/'.join(event.oldParent.getPhysicalPath())
-                    previous_location = u'{0}/{1}'.format(parent_path, event.oldName)
-                    info = {'previous_location': previous_location}
-                    data['info'] = json.dumps(info)
-                    action = 'moved'
+                if rule is None or "Moved" in self.rule.rule.title:
+                    parent_path = "/".join(event.oldParent.getPhysicalPath())
+                    previous_location = u"{0}/{1}".format(parent_path, event.oldName)
+                    info = {"previous_location": previous_location}
+                    data["info"] = json.dumps(info)
+                    action = "moved"
                 else:
                     # step out immediately since this could be a double action
                     return True
         elif IObjectModifiedEvent.providedBy(event):
-            action = 'modified'
+            action = "modified"
         elif IActionSucceededEvent.providedBy(event):
-            info = {'transition': event.action,
-                    'comments': self.get_history_comment()}
-            data['info'] = json.dumps(info)
-            action = 'workflow'
+            info = {"transition": event.action, "comments": self.get_history_comment()}
+            data["info"] = json.dumps(info)
+            action = "workflow"
         elif IObjectClonedEvent.providedBy(event):
-            action = 'copied'
+            action = "copied"
         elif ICheckinEvent.providedBy(event):
-            info = {'message': event.message}
-            data['info'] = json.dumps(info)
-            action = 'checked in'
-            self.request.environ['disable.auditlog'] = True
-            data['working_copy'] = '/'.join(obj.getPhysicalPath())
+            info = {"message": event.message}
+            data["info"] = json.dumps(info)
+            action = "checked in"
+            self.request.environ["disable.auditlog"] = True
+            data["working_copy"] = "/".join(obj.getPhysicalPath())
             obj = event.baseline
         elif IBeforeCheckoutEvent.providedBy(event):
-            action = 'checked out'
-            self.request.environ['disable.auditlog'] = True
+            action = "checked out"
+            self.request.environ["disable.auditlog"] = True
         elif ICancelCheckoutEvent.providedBy(event):
-            action = 'cancel check out'
-            self.request.environ['disable.auditlog'] = True
-            data['working_copy'] = '/'.join(obj.getPhysicalPath())
+            action = "cancel check out"
+            self.request.environ["disable.auditlog"] = True
+            data["working_copy"] = "/".join(obj.getPhysicalPath())
             obj = event.baseline
         elif IUserLoggedInEvent.providedBy(event):
-            action = 'logged in'
-            info = {'user': event.object.getUserName()}
-            data['info'] = json.dumps(info)
+            action = "logged in"
+            info = {"user": event.object.getUserName()}
+            data["info"] = json.dumps(info)
         elif IUserLoggedOutEvent.providedBy(event):
-            action = 'logged out'
+            action = "logged out"
         else:
-            logger.warn('no action matched')
+            logger.warn("no action matched")
             return True
 
         if IWorkingCopy.providedBy(obj):
@@ -247,13 +250,12 @@ class AuditActionExecutor(object):
             # enabled
             if not self.trackWorkingCopies:
                 # if not enabled, we only care about checked messages
-                if 'check' not in action:
+                if "check" not in action:
                     return True
             # if enabled in control panel, use original object and move
             # working copy path to working_copy
-            data['working_copy'] = '/'.join(obj.getPhysicalPath())
-            relationships = obj.getReferences(
-                WorkingCopyRelation.relationship)
+            data["working_copy"] = "/".join(obj.getPhysicalPath())
+            relationships = obj.getReferences(WorkingCopyRelation.relationship)
             # check relationships, if none, something is wrong, not logging
             # action
             if len(relationships) <= 0:
@@ -261,7 +263,7 @@ class AuditActionExecutor(object):
             obj = relationships[0]
 
         data.update(self._getObjectInfo(obj))
-        data['action'] = action
+        data["action"] = action
         return data
 
     def _addLogEntry(self, logentry):

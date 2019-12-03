@@ -19,18 +19,18 @@ def getUID(context):
     if uid is not None:
         return uid
 
-    if hasattr(context, 'UID'):
+    if hasattr(context, "UID"):
         return context.UID()
 
     try:
-        return '/'.join(context.getPhysicalPath())
+        return "/".join(context.getPhysicalPath())
     except AttributeError:
         pass
 
     try:
         return context.id
     except AttributeError:
-        return 'unknown'
+        return "unknown"
 
 
 def getHostname(request):
@@ -57,15 +57,15 @@ def getSite():
     if site is None:
         # user might be at zope root level. Try to guess site
         zope_root = app()
-        plone_sites = zope_root.objectIds('Plone Site')
+        plone_sites = zope_root.objectIds("Plone Site")
         if len(plone_sites) == 1:
             # just one plone site, safe bet
             site = zope_root[plone_sites[0]]
         elif len(plone_sites) > 1:
             # many sites. Might be an undo attempt
             request = getRequest()
-            if request and 'transaction_info' in request.other:
-                info = ' '.join(request.other['transaction_info'])
+            if request and "transaction_info" in request.other:
+                info = " ".join(request.other["transaction_info"])
                 for plone_site in plone_sites:
                     if " /{}/".format(plone_site) in info:
                         site = zope_root[plone_site]
@@ -73,14 +73,14 @@ def getSite():
 
 
 def getUser(request):
-    username = 'unknown'
+    username = "unknown"
     try:
-        portal_membership = getToolByName(getSite(), 'portal_membership')
+        portal_membership = getToolByName(getSite(), "portal_membership")
         user = portal_membership.getAuthenticatedMember()
         username = user.getUserName()
     except AttributeError:
         try:
-            username = request.other.get('AUTHENTICATED_USER').getUserName()
+            username = request.other.get("AUTHENTICATED_USER").getUserName()
         except AttributeError:
             pass
     return username
@@ -101,9 +101,11 @@ def getObjectInfo(obj, request):
         user=getUser(request),
         site_name=getHostname(request),
         uid=getUID(obj),
-        type=getattr(obj, 'portal_type', ''),
-        title=obj.Title() if getattr(obj, 'Title', False) else obj_id,
-        path='/'.join(obj.getPhysicalPath()) if getattr(obj, 'getPhysicalPath', False) else '/'
+        type=getattr(obj, "portal_type", ""),
+        title=obj.Title() if getattr(obj, "Title", False) else obj_id,
+        path="/".join(obj.getPhysicalPath())
+        if getattr(obj, "getPhysicalPath", False)
+        else "/",
     )
     return data
 
@@ -119,6 +121,8 @@ def addLogEntry(obj, data):
     queueJob(getSite(), **data)
 
     registry = getUtility(IRegistry)
-    storage = registry['collective.auditlog.interfaces.IAuditLogSettings.storage']  # noqa
-    if storage != 'sql':
+    storage = registry[
+        "collective.auditlog.interfaces.IAuditLogSettings.storage"
+    ]  # noqa
+    if storage != "sql":
         catalogEntry(obj, data)
