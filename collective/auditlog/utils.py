@@ -1,15 +1,17 @@
-from Products.CMFCore.utils import getToolByName
+# coding=utf-8
+from collective.auditlog import td
 from collective.auditlog.async import queueJob
 from collective.auditlog.catalog import catalogEntry
 from collective.auditlog.interfaces import BeforeStoreAuditlogEntryEvent
 from datetime import datetime
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
+from Products.CMFCore.utils import getToolByName
+from Zope2 import app
 from zope.component import getUtility
 from zope.component.hooks import getSite as getSiteHook
 from zope.event import notify
 from zope.globalrequest import getRequest
-from Zope2 import app
 
 
 def getUID(context):
@@ -35,9 +37,6 @@ def getHostname(request):
     """
     stolen from the developer manual
     """
-    if request is None:
-        return None
-
     if "HTTP_X_FORWARDED_HOST" in request.environ:
         # Virtual host
         host = request.environ["HTTP_X_FORWARDED_HOST"]
@@ -73,30 +72,25 @@ def getSite():
     return site
 
 
-def getUser(request=None):
-    if request is None:
-        request = getRequest()
-    site = getSite()
+def getUser(request):
+    username = 'unknown'
     try:
-        portal_membership = getToolByName(site, 'portal_membership')
+        portal_membership = getToolByName(getSite(), 'portal_membership')
         user = portal_membership.getAuthenticatedMember()
         username = user.getUserName()
     except AttributeError:
-        user = request and request.other.get('AUTHENTICATED_USER') or None
-        if user is not None:
-            username = user.getUserName()
-        else:
-            username = 'unknown'
+        try:
+            username = request.other.get('AUTHENTICATED_USER').getUserName()
+        except AttributeError:
+            pass
     return username
 
 
-def getObjectInfo(obj, request=None):
+def getObjectInfo(obj, request):
     """ Get basic information about an object for logging.
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
-    if request is None:
-        request = getRequest()
     obj_id = obj.id
     if callable(obj_id):
         obj_id = obj_id()
@@ -108,18 +102,23 @@ def getObjectInfo(obj, request=None):
         site_name=getHostname(request),
         uid=getUID(obj),
         type=getattr(obj, 'portal_type', ''),
-        title=getattr(obj, 'Title', False) and obj.Title() or obj_id,
-        path=(getattr(obj, 'getPhysicalPath', False) and
-              '/'.join(obj.getPhysicalPath()) or '/')
+        title=obj.Title() if getattr(obj, 'Title', False) else obj_id,
+        path='/'.join(obj.getPhysicalPath()) if getattr(obj, 'getPhysicalPath', False) else '/'
     )
     return data
 
 
 def addLogEntry(obj, data):
-    registry = getUtility(IRegistry)
-    storage = registry['collective.auditlog.interfaces.IAuditLogSettings.storage']  # noqa
+    if not data:
+        return
+    tdata = td.get()
+    if not tdata.registered:
+        tdata.register()
+
     notify(BeforeStoreAuditlogEntryEvent(obj, data))
     queueJob(getSite(), **data)
 
+    registry = getUtility(IRegistry)
+    storage = registry['collective.auditlog.interfaces.IAuditLogSettings.storage']  # noqa
     if storage != 'sql':
         catalogEntry(obj, data)

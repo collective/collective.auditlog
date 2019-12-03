@@ -39,7 +39,6 @@ setup(
         'setuptools',
         'sqlalchemy',
         'five.globalrequest',
-        'five.formlib',  # plone 5
     ],
     extras_require={
         'async': [

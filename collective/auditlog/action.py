@@ -1,41 +1,64 @@
-import json
+# coding=utf-8
+from Acquisition import aq_base
 from Acquisition import aq_parent
+from collective.auditlog.utils import addLogEntry
+from collective.auditlog.utils import getObjectInfo
+from collective.auditlog.async import queueJob
+from collective.auditlog.utils import getUID
+from datetime import datetime
+from OFS.interfaces import IObjectClonedEvent
 from OFS.SimpleItem import SimpleItem
-from zope.component import adapts
-from zope.interface import Interface, implements
-from zope.formlib import form
+from plone.app.contentrules.browser.formhelper import AddForm
+from plone.app.contentrules.browser.formhelper import EditForm
+from plone.app.iterate.interfaces import IBeforeCheckoutEvent
+from plone.app.iterate.interfaces import ICancelCheckoutEvent
+from plone.app.iterate.interfaces import ICheckinEvent
+from plone.app.iterate.interfaces import IWorkingCopy
+from plone.app.iterate.relation import WorkingCopyRelation
+from plone.contentrules.rule.interfaces import IExecutable
+from plone.contentrules.rule.interfaces import IRuleElementData
+from plone.contentrules.rule.rule import RuleExecutable
+from plone.memoize.instance import memoize
+from plone.registry.interfaces import IRegistry
+from Products.Archetypes.interfaces import IBaseObject
+from Products.Archetypes.interfaces import IObjectEditedEvent
+from Products.Archetypes.interfaces import IObjectInitializedEvent
+from Products.CMFCore.interfaces import IActionSucceededEvent
+from Products.CMFCore.utils import getToolByName
+from Products.PluggableAuthService.interfaces.events import IUserLoggedInEvent
+from Products.PluggableAuthService.interfaces.events import IUserLoggedOutEvent
+from zope.component import adapter
+from zope.component import getUtility
+from zope.globalrequest import getRequest
+from zope.interface import implementer
+from zope.interface import Interface
+from zope.lifecycleevent.interfaces import IObjectAddedEvent
+from zope.lifecycleevent.interfaces import IObjectCreatedEvent
+from zope.lifecycleevent.interfaces import IObjectModifiedEvent
+from zope.lifecycleevent.interfaces import IObjectMovedEvent
+from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
-from plone.app.contentrules.browser.formhelper import AddForm, EditForm
-from plone.contentrules.rule.interfaces import IRuleElementData, IExecutable
+import inspect
+import json
+import logging
+import warnings
+
+
 try:
     from Products.PloneFormGen.interfaces import IPloneFormGenField
 except ImportError:
     class IPloneFormGenField(Interface):
         pass
 
-from Products.Archetypes.interfaces import (
-    IObjectInitializedEvent, IObjectEditedEvent, IBaseObject)
-from zope.lifecycleevent.interfaces import (
-    IObjectCreatedEvent, IObjectModifiedEvent,
-    IObjectMovedEvent, IObjectRemovedEvent, IObjectAddedEvent)
-from plone.app.iterate.relation import WorkingCopyRelation
-from OFS.interfaces import IObjectClonedEvent
+try:
+    # Plone4 only (formlib)
+    from zope.formlib import form
+    HAS_FORMLIB = True
+except ImportError:
+    form = None
+    HAS_FORMLIB = False  # Plone 5 will use z3c.form
 
-import inspect
-from plone.app.iterate.interfaces import (
-    ICheckinEvent, IBeforeCheckoutEvent, ICancelCheckoutEvent,
-    IWorkingCopy)
-from Products.CMFCore.interfaces import IActionSucceededEvent
-from Products.PluggableAuthService.interfaces.events import (
-    IUserLoggedInEvent, IUserLoggedOutEvent)
-from zope.globalrequest import getRequest
-from zope.component import getUtility
-from plone.registry.interfaces import IRegistry
 
-from collective.auditlog.utils import getObjectInfo
-from collective.auditlog.utils import addLogEntry
-
-import logging
 logger = logging.getLogger('collective.auditlog')
 
 
@@ -43,38 +66,77 @@ class IAuditAction(Interface):
     pass
 
 
+@implementer(IAuditAction, IRuleElementData)
 class AuditAction(SimpleItem):
-    implements(IAuditAction, IRuleElementData)
     element = 'plone.actions.Audit'
     summary = u"Audit"
 
 
+@implementer(IExecutable)
+@adapter(Interface, IAuditAction, Interface)
 class AuditActionExecutor(object):
-    implements(IExecutable)
-    adapts(Interface, IAuditAction, Interface)
 
     def __init__(self, context, element, event):
         self.context = context
         self.element = element
         self.event = event
 
-    def canExecute(self, rule, req):
+    @property
+    @memoize
+    def request(self):
+        ''' Try to get a request
+        '''
+        return getRequest()
+
+    @property
+    @memoize
+    def rule(self):
+        ''' Check up the stack the rule that invoked this action
+        '''
+        # start higher in the stack
+        frame = inspect.currentframe().f_back.f_back
+        while frame:
+            rule = frame.f_locals.get('self', None)
+            if isinstance(rule, RuleExecutable):
+                return rule
+            frame = frame.f_back
+        return None
+
+    def canExecute(self, rule=None, req=None):
+        if rule is not None or req is not None:
+            msg = (
+                'In the next releases the rule and req parameters '
+                'will not be supported anymore. '
+                'In case you want to customize this product '
+                'use the request and rule properties'
+            )
+            warnings.warn(msg, DeprecationWarning)
+
+        if req is None:
+            req = self.request
+
+        if req.environ.get('disable.auditlog', False):
+            return False
+
         event = self.event
         obj = event.object
-        event_iface = [i for i in event.__implemented__.interfaces()][0]
+        event_iface = next(event.__implemented__.interfaces())
 
         # for archetypes we need to make sure we're getting the right moved
         # event here so we do not duplicate
-        if (not IObjectEditedEvent.providedBy(event) and
-                rule is not None and event_iface != rule.rule.event):
-            return False
+        if not IObjectEditedEvent.providedBy(event):
+            if rule is None:
+                rule = self.rule
+            if rule and event_iface != rule.rule.event:
+                return False
         # if archetypes, initialization also does move events
-        if (IObjectMovedEvent.providedBy(event) and
-                IBaseObject.providedBy(obj) and
-                obj.checkCreationFlag()):
+        if (
+            IObjectMovedEvent.providedBy(event) and
+            IBaseObject.providedBy(obj) and
+            obj.checkCreationFlag()
+        ):
             return False
-        if req.environ.get('disable.auditlog', False):
-            return False
+
         return True
 
     def get_history_comment(self):
@@ -90,26 +152,25 @@ class AuditActionExecutor(object):
                 return transition.get('comments', '')
         return ''
 
-    def __call__(self):
-        req = getRequest()
-        if req.environ.get('disable.auditlog', False):
-            return True
+    @property
+    @memoize
+    def trackWorkingCopies(self):
+        registry = getUtility(IRegistry)
+        return registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']  # noqa
 
+    def _getObjectInfo(self, obj):
+        return getObjectInfo(obj, self.request)
+
+    @memoize
+    def getLogEntry(self):
+        ''' Get's a log entry for your action
+        '''
         event = self.event
         obj = event.object
+        data = {'info': ''}
+
         # order of those checks is important since some interfaces
         # base off the others
-        rule = inspect.stack()[1][0].f_locals.get('self', None)
-        registry = getUtility(IRegistry)
-        trackWorkingCopies = registry['collective.auditlog.interfaces.IAuditLogSettings.trackworkingcopies']  # noqa
-
-        if not self.canExecute(rule, req):
-            return True  # cut out early, we can't do this event
-
-        data = {
-            'info': ''
-        }
-
         if IPloneFormGenField.providedBy(obj):
             # if ploneformgen field, use parent object for modified data
             data['field'] = obj.getId()
@@ -121,14 +182,16 @@ class AuditActionExecutor(object):
             # need to keep track of removed events so it doesn't get called
             # more than once for each object
             action = 'removed'
-        elif (IObjectInitializedEvent.providedBy(event) or
-                IObjectCreatedEvent.providedBy(event) or
-                IObjectAddedEvent.providedBy(event)):
+        elif (
+            IObjectInitializedEvent.providedBy(event) or
+            IObjectCreatedEvent.providedBy(event) or
+            IObjectAddedEvent.providedBy(event)
+        ):
             action = 'added'
         elif IObjectMovedEvent.providedBy(event):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
-                if rule is None or 'Rename' in rule.rule.title:
+                if rule is None or 'Rename' in self.rule.rule.title:
                     info = {'previous_id': event.oldName}
                     data['info'] = json.dumps(info)
                     action = 'rename'
@@ -136,9 +199,9 @@ class AuditActionExecutor(object):
                     # cut out here, double action for this event
                     return True
             else:
-                if rule is None or 'Moved' in rule.rule.title:
+                if rule is None or 'Moved' in self.rule.rule.title:
                     parent_path = '/'.join(event.oldParent.getPhysicalPath())
-                    previous_location = parent_path + '/' + event.oldName
+                    previous_location = u'{0}/{1}'.format(parent_path, event.oldName)
                     info = {'previous_location': previous_location}
                     data['info'] = json.dumps(info)
                     action = 'moved'
@@ -158,15 +221,15 @@ class AuditActionExecutor(object):
             info = {'message': event.message}
             data['info'] = json.dumps(info)
             action = 'checked in'
-            req.environ['disable.auditlog'] = True
+            self.request.environ['disable.auditlog'] = True
             data['working_copy'] = '/'.join(obj.getPhysicalPath())
             obj = event.baseline
         elif IBeforeCheckoutEvent.providedBy(event):
             action = 'checked out'
-            req.environ['disable.auditlog'] = True
+            self.request.environ['disable.auditlog'] = True
         elif ICancelCheckoutEvent.providedBy(event):
             action = 'cancel check out'
-            req.environ['disable.auditlog'] = True
+            self.request.environ['disable.auditlog'] = True
             data['working_copy'] = '/'.join(obj.getPhysicalPath())
             obj = event.baseline
         elif IUserLoggedInEvent.providedBy(event):
@@ -182,43 +245,60 @@ class AuditActionExecutor(object):
         if IWorkingCopy.providedBy(obj):
             # if working copy, iterate, check if Track Working Copies is
             # enabled
-            if trackWorkingCopies:
-                # if enabled in control panel, use original object and move
-                # working copy path to working_copy
-                data['working_copy'] = '/'.join(obj.getPhysicalPath())
-                relationships = obj.getReferences(
-                    WorkingCopyRelation.relationship)
-                # check relationships, if none, something is wrong, not logging
-                # action
-                if len(relationships) > 0:
-                    obj = relationships[0]
-                else:
-                    return True
-            else:
+            if not self.trackWorkingCopies:
                 # if not enabled, we only care about checked messages
                 if 'check' not in action:
                     return True
+            # if enabled in control panel, use original object and move
+            # working copy path to working_copy
+            data['working_copy'] = '/'.join(obj.getPhysicalPath())
+            relationships = obj.getReferences(
+                WorkingCopyRelation.relationship)
+            # check relationships, if none, something is wrong, not logging
+            # action
+            if len(relationships) <= 0:
+                return True
+            obj = relationships[0]
 
-        data.update(getObjectInfo(obj))
+        data.update(self._getObjectInfo(obj))
         data['action'] = action
+        return data
 
-        addLogEntry(obj, data)
+    def _addLogEntry(self, logentry):
+        addLogEntry(self.event.object, logentry)
+
+    def __call__(self):
+        try:  # Remove in 1.4
+            can_execute = self.canExecute()
+        except TypeError:
+            # This grants the compatibility with previous versions of the code
+            # in which the two parameters were required
+            can_execute = self.canExecute(self.rule, self.request)
+
+        if can_execute:
+            self._addLogEntry(self.getLogEntry())
         return True
 
 
 class AuditAddForm(AddForm):
-    form_fields = form.FormFields(IAuditAction)  # needed for Plone4 (formlib)
+
+    # Plone4 only
+    form_fields = form.FormFields(IAuditAction) if HAS_FORMLIB else []
     schema = IAuditAction  # needed for Plone5 (z3c.form)
     label = u"Add Audit Action"
     form_name = u"Configure element"
 
     def create(self, data):
         a = AuditAction()
-        form.applyChanges(a, self.form_fields, data)
+        HAS_FORMLIB and form.applyChanges(a, self.form_fields, data)
         return a
 
 
 class AuditEditForm(EditForm):
-    form_fields = form.FormFields(IAuditAction)
+
+    # Plone4 only
+    form_fields = form.FormFields(IAuditAction) if HAS_FORMLIB else []
+    schema = IAuditAction  # needed for Plone5 (z3c.form)
+
     label = u"Edit Audit Action"
     form_name = u"Configure element"

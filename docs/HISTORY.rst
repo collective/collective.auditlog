@@ -4,6 +4,16 @@ Changelog
 1.3.4 (unreleased)
 ------------------
 
+- Fix soft dependency on formlib (#22)
+  [ale-rt]
+
+- Speed up rule retrieval
+  [ale-rt]
+
+- Added some memoized properties and methods to the `AuditActionExecutor` class
+  for easier customization
+  [ale-rt]
+
 - collective.celery integration
   [enfold]
 
