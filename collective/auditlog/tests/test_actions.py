@@ -18,6 +18,7 @@ from zope.lifecycleevent import ObjectCreatedEvent
 import os
 import transaction
 import unittest
+import json
 
 
 class tempDb(object):
@@ -160,10 +161,16 @@ class TestActions(unittest.TestCase):
                 'publish',
             )
             self.assertEqual(db.logs[-1].action, u'workflow')
+            info = json.loads(db.logs[-1].info)
             self.assertEqual(
-                db.logs[-1].info,
-                u"workflow transition: publish; comments: "
+                info['transition'],
+                u"publish"
             )
+            self.assertEqual(
+                info['comments'],
+                u""
+            )
+
             self.reset_rule_filter()
             # ... retract the test page (adding a comment)
             pw.doActionFor(
@@ -172,8 +179,12 @@ class TestActions(unittest.TestCase):
                 comment="I've been commented ♥"
             )
             self.assertEqual(db.logs[-1].action, u'workflow')
+            info = json.loads(db.logs[-1].info)
             self.assertEqual(
-                db.logs[-1].info,
-                u"workflow transition: retract; "
-                u"comments: I've been commented \u2665"
+                info['transition'],
+                u"retract"
+            )
+            self.assertEqual(
+                info['comments'],
+                u"I've been commented \u2665"
             )
