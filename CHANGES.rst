@@ -1,8 +1,8 @@
 Changelog
 =========
 
-1.3.4 (unreleased)
-------------------
+1.4 (unreleased)
+----------------
 
 - Fix soft dependency on formlib (#22)
   [ale-rt]
