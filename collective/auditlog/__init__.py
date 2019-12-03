@@ -40,7 +40,3 @@ def manage_undo_transactions_with_audit(self,
 
 # monkey patch undo to be able to audit ZMI undo operations
 UndoSupport.manage_undo_transactions = manage_undo_transactions_with_audit
-
-
-def initialize(context):
-    """Initializer called when used as a Zope 2 product."""
