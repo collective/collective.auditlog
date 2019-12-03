@@ -37,7 +37,7 @@ class tempDb(object):
     def __enter__(self):
         self.registry = registry = getUtility(IRegistry)
         registry[self.registry_key] = (
-            u'sqlite:///%s?check_same_thread=true' % (self.tempfilename)
+            u'sqlite:///%s' % (self.tempfilename)
         )
         self.session = getSession()
         Base.metadata.create_all(self.session.bind.engine)
