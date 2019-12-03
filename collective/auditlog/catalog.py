@@ -1,20 +1,18 @@
-from datetime import datetime
-
-from zope.interface import Interface, implements
-
 from AccessControl import ClassSecurityInfo
+from collective.auditlog import db
+from collective.auditlog.models import LogEntry
+from datetime import datetime
 from Globals import InitializeClass
-from Products.ZCatalog.ZCatalog import ZCatalog
+from plone.api import portal as portal_api
 from Products.CMFCore.interfaces._content import ICatalogAware
 from Products.CMFPlone.CatalogTool import CatalogTool
-from Products.ZCTextIndex.ZCTextIndex import PLexicon
+from Products.ZCatalog.ZCatalog import ZCatalog
 from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer
 from Products.ZCTextIndex.Lexicon import StopWordRemover
-from plone.api import portal as portal_api
-
-from collective.auditlog import db
-from collective.auditlog.models import LogEntry
+from Products.ZCTextIndex.ZCTextIndex import PLexicon
+from zope.interface import implements
+from zope.interface import Interface
 
 
 class Empty(object):

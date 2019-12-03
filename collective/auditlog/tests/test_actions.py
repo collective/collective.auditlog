@@ -4,9 +4,11 @@ from collective.auditlog.interfaces import IAuditLogSettings
 from collective.auditlog.models import Base
 from collective.auditlog.models import LogEntry
 from collective.auditlog.testing import AuditLog_FUNCTIONAL_TESTING
-from plone.app.testing import setRoles, login
-from plone.app.testing import TEST_USER_ID, TEST_USER_NAME
 from plone.app.contentrules.handlers import _status
+from plone.app.testing import login
+from plone.app.testing import setRoles
+from plone.app.testing import TEST_USER_ID
+from plone.app.testing import TEST_USER_NAME
 from plone.registry.interfaces import IRegistry
 from Products.Archetypes.event import ObjectEditedEvent
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -15,10 +17,11 @@ from tempfile import mkstemp
 from zope.component import getUtility
 from zope.event import notify
 from zope.lifecycleevent import ObjectCreatedEvent
+
+import json
 import os
 import transaction
 import unittest
-import json
 
 
 class tempDb(object):

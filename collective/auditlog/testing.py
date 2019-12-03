@@ -8,6 +8,7 @@ from plone.app.testing import TEST_USER_ID
 from plone.testing import z2
 from zope.configuration import xmlconfig
 
+
 try:
     from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
 

@@ -1,10 +1,11 @@
-import permissions
-import transaction
 from App.Undo import decode64
 from App.Undo import UndoSupport
+from collective.auditlog.interfaces import AuditableActionPerformedEvent
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
-from collective.auditlog.interfaces import AuditableActionPerformedEvent
+
+import permissions
+import transaction
 
 
 MessageFactory = MessageFactory("collective.auditlog")

@@ -4,7 +4,7 @@ Changelog
 1.4 (unreleased)
 ----------------
 
-- Align with Plone code style: black.
+- Align with Plone code style: black, isort.
   [thet]
 
 - Fix soft dependency on formlib (#22)

@@ -1,20 +1,22 @@
-import json
-from importlib import import_module
-from zope.component import getUtility
-from zope.component.interfaces import ComponentLookupError
-from zope.lifecycleevent import IObjectAddedEvent
-from zope.lifecycleevent import IObjectRemovedEvent
-from zope.lifecycleevent import IObjectCopiedEvent
-from plone.app.discussion.interfaces import IComment
-from plone.registry.interfaces import IRegistry
-from Products.CMFCore.interfaces import IContentish
 from collective.auditlog.action import AuditActionExecutor
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
 from collective.auditlog.utils import getSite
 from collective.auditlog.utils import getUID
+from importlib import import_module
 from plone.app.contentrules import handlers as cr_handlers
+from plone.app.discussion.interfaces import IComment
+from plone.registry.interfaces import IRegistry
 from Products.Archetypes.interfaces import IBaseObject
+from Products.CMFCore.interfaces import IContentish
+from zope.component import getUtility
+from zope.component.interfaces import ComponentLookupError
+from zope.lifecycleevent import IObjectAddedEvent
+from zope.lifecycleevent import IObjectCopiedEvent
+from zope.lifecycleevent import IObjectRemovedEvent
+
+import json
+
 
 try:
     from plone.app.contentrules.handlers import (

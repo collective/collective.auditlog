@@ -5,6 +5,7 @@ from collective.auditlog.models import LogEntry
 from Products.CMFPlone.utils import safe_unicode
 from zope.component import getUtility
 
+
 try:
     from plone.app.async.interfaces import IAsyncService
 

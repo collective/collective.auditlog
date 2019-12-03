@@ -5,16 +5,18 @@ So we get to do something funky with aborting transactions and joining in
 on the zope transaction
 """
 
-import threading
-from logging import getLogger
-
-from zope.interface import implementer
-from transaction.interfaces import ISavepointDataManager, IDataManagerSavepoint
-import transaction as transaction_manager
-from collective.auditlog.models import Base
 from collective.auditlog import db
+from collective.auditlog.models import Base
+from logging import getLogger
 from plone.app.contentrules import handlers as cr_handlers
+from transaction.interfaces import IDataManagerSavepoint
+from transaction.interfaces import ISavepointDataManager
+from zope.interface import implementer
+
+import threading
 import traceback
+import transaction as transaction_manager
+
 
 logger = getLogger(__name__)
 

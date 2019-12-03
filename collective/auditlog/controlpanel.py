@@ -1,6 +1,7 @@
 # coding=utf-8
 from collective.auditlog.db import config
-from collective.auditlog.interfaces import IAuditLogSettings, _
+from collective.auditlog.interfaces import _
+from collective.auditlog.interfaces import IAuditLogSettings
 from plone.app.registry.browser import controlpanel
 
 

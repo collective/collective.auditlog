@@ -1,6 +1,6 @@
-from Products.Five.browser import BrowserView
 from collective.auditlog import db
 from collective.auditlog.models import LogEntry
+from Products.Five.browser import BrowserView
 from sqlalchemy import desc
 from sqlalchemy import or_
 
