@@ -1,7 +1,7 @@
 # coding=utf-8
 from Acquisition import aq_base
 from Acquisition import aq_parent
-from collective.auditlog.async import queueJob
+from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
 from collective.auditlog.utils import getUID

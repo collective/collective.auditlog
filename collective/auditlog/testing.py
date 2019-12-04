@@ -35,9 +35,9 @@ class AuditLog(PloneSandboxLayer):
         zope_testing.installProduct(app, "collective.auditlog")
 
         # no async for testing
-        from collective.auditlog import async
+        import collective.auditlog.asyncqueue
 
-        async.queue_job = False
+        collective.auditlog.asyncqueuqueuee.queue_job = False
 
     def setUpPloneSite(self, portal):
         # install into the Plone site

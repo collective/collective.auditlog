@@ -10,7 +10,7 @@ try:
     from plone.app.async.interfaces import IAsyncService
 
     ASYNC_INSTALLED = True
-except ImportError:
+except (ImportError, SyntaxError):
     ASYNC_INSTALLED = False
 
 try:

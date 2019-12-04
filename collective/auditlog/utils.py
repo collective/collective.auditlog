@@ -1,6 +1,6 @@
 # coding=utf-8
 from collective.auditlog import td
-from collective.auditlog.async import queueJob
+from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.catalog import catalogEntry
 from collective.auditlog.interfaces import BeforeStoreAuditlogEntryEvent
 from datetime import datetime
