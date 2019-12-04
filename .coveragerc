@@ -1,0 +1,6 @@
+[report]
+include =
+    collective/*
+omit =
+    */test*
+    */upgrades/*

@@ -31,12 +31,16 @@ setup(
     author_email="Joel@rain2odesigns.com",
     url="http://svn.plone.org/svn/collective/",
     license="GPL",
-    packages=find_packages(exclude=["ez_setup"]),
+    packages=find_packages(),
     namespace_packages=["collective"],
     include_package_data=True,
     zip_safe=False,
     install_requires=["setuptools", "sqlalchemy", "plone.app.contentrules",],
-    extras_require={"async": ["plone.app.async",], "celery": ["collective.celery",]},
+    extras_require={
+        "async": ["plone.app.async",],
+        "celery": ["collective.celery",],
+        "test": ["plone.app.testing",],
+    },
     entry_points="""
       # -*- Entry points: -*-
 
