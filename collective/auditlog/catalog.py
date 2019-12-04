@@ -2,7 +2,6 @@ from AccessControl import ClassSecurityInfo
 from collective.auditlog import db
 from collective.auditlog.models import LogEntry
 from datetime import datetime
-from Globals import InitializeClass
 from plone.api import portal as portal_api
 from Products.CMFCore.interfaces._content import ICatalogAware
 from Products.CMFPlone.CatalogTool import CatalogTool
@@ -13,6 +12,15 @@ from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from zope.interface import implements
 from zope.interface import Interface
+
+
+try:
+    from AccessControl.class_init import InitializeClass
+except ImportError:
+    try:
+        from App.class_init import InitializeClass
+    except ImportError:
+        from Globals import InitializeClass
 
 
 class Empty(object):
