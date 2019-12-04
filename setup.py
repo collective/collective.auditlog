@@ -37,7 +37,7 @@ setup(
     namespace_packages=["collective"],
     include_package_data=True,
     zip_safe=False,
-    install_requires=["setuptools", "sqlalchemy", "five.globalrequest",],
+    install_requires=["setuptools", "sqlalchemy", "plone.app.contentrules",],
     extras_require={"async": ["plone.app.async",], "celery": ["collective.celery",]},
     entry_points="""
       # -*- Entry points: -*-
