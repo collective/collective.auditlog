@@ -19,16 +19,6 @@ from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 import json
 
 
-class IMissingInterface(Interface):
-    pass
-
-
-try:
-    from Products.Archetypes.interfaces import IBaseObject
-except ImportError:
-    IBaseObject = IMissingInterface
-
-
 try:
     from plone.app.contentrules.handlers import (
         execute_rules,
@@ -89,46 +79,14 @@ def created_event(event):
 
     if IObjectCopiedEvent.providedBy(event):
         return  # ignore this event since we're listening to cloned instead
-    # The object added event executes too early for Archetypes objects.
-    # We need to delay execution until we receive a subsequent
-    # IObjectInitializedEvent
-    if IBaseObject.providedBy(obj):
-        cr_handlers.init()
-        cr_handlers._status.delayed_events[
-            "IObjectInitializedEvent-audit-%s" % getUID(obj)
-        ] = event
-    elif IContentish.providedBy(obj) or IComment.providedBy(obj):
+    if IContentish.providedBy(obj) or IComment.providedBy(obj):
         execute_event(obj, event)
-    else:
-        return
 
 
 def loggedout_event(event):
     obj = event.object
     data = {"info": "", "action": "logged out"}
     log_entry(obj, data)
-
-
-def archetypes_initialized(event):
-    """Pick up the delayed IObjectAddedEvent when an Archetypes object is
-    initialised.
-    """
-    obj = event.object
-    if is_portal_factory(obj):
-        return
-
-    if not IBaseObject.providedBy(obj):
-        return
-
-    cr_handlers.init()
-    delayed_event = cr_handlers._status.delayed_events.get(
-        "IObjectInitializedEvent-audit-%s" % getUID(obj), None
-    )
-    if delayed_event is not None:
-        cr_handlers._status.delayed_events[
-            "IObjectInitializedEvent-audit-%s" % getUID(obj)
-        ] = None
-        execute_event(obj, delayed_event)
 
 
 def get_automatic_events():

@@ -80,12 +80,7 @@ class TestActions(unittest.TestCase):
             type_name="Document", id="page", title=title,
         )
         obj = self.portal[obj_id]
-        try:
-            # AT only
-            self.portal.page.unmarkCreationFlag()
-            notify(ObjectInitializedEvent(obj))
-        except AttributeError:
-            notify(ObjectCreatedEvent(obj))
+        notify(ObjectAddedEvent(obj))
         # We need to commit here so that _p_jar isn't None and move will work
         transaction.savepoint(optimistic=True)
         return obj
@@ -105,13 +100,6 @@ class TestActions(unittest.TestCase):
         with tempDb() as db:
             self.create_page(title="Pàge")
             self.assertEqual(db.logs[-1].action, "added")
-
-    def test_edit(self):
-        self.create_page()
-
-        with tempDb() as db:
-            notify(ObjectEditedEvent(self.portal.page))
-            self.assertEqual(db.logs[-1].action, "modified")
 
     @unittest.skip("The ObjectModifiedEvent seems not to be fired")
     def test_moved(self):

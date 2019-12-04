@@ -4,6 +4,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Drop support for Archetypes.
+  [thet]
+
 - Plone 5.2 compatibility.
   Drop Support for Plone 5.0 and 4.3 (Both are missing zope.interface.interfaces.IObjectEvent).
   [thet]

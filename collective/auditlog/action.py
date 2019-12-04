@@ -40,47 +40,11 @@ import logging
 import warnings
 
 
-class IMissingInterface(Interface):
-    pass
-
-
-try:
-    from Products.Archetypes.interfaces import IBaseObject
-except ImportError:
-    IBaseObject = IMissingInterface
-
-try:
-    from Products.Archetypes.interfaces import IObjectEditedEvent
-except ImportError:
-    IObjectEditedEvent = IMissingInterface
-
-try:
-    from Products.Archetypes.interfaces import IObjectInitializedEvent
-except ImportError:
-    IObjectInitializedEvent = IMissingInterface
-
-try:
-    from Products.PloneFormGen.interfaces import IPloneFormGenField
-except ImportError:
-
-    class IPloneFormGenField(Interface):
-        pass
-
-
 try:
     from plone.app.iterate.relation import WorkingCopyRelation
 except ImportError:
     # Import will fail if we do not have Products.Archetypes
     WorkingCopyRelation = None
-
-try:
-    # Plone4 only (formlib)
-    from zope.formlib import form
-
-    HAS_FORMLIB = True
-except ImportError:
-    form = None
-    HAS_FORMLIB = False  # Plone 5 will use z3c.form
 
 
 logger = logging.getLogger("collective.auditlog")
@@ -145,19 +109,9 @@ class AuditActionExecutor(object):
         obj = event.object
         event_iface = next(event.__implemented__.interfaces())
 
-        # for archetypes we need to make sure we're getting the right moved
-        # event here so we do not duplicate
-        if not IObjectEditedEvent.providedBy(event):
-            if rule is None:
-                rule = self.rule
-            if rule and event_iface != rule.rule.event:
-                return False
-        # if archetypes, initialization also does move events
-        if (
-            IObjectMovedEvent.providedBy(event)
-            and IBaseObject.providedBy(obj)
-            and obj.checkCreationFlag()
-        ):
+        if rule is None:
+            rule = self.rule
+        if rule and event_iface != rule.rule.event:
             return False
 
         return True
@@ -194,23 +148,14 @@ class AuditActionExecutor(object):
         obj = event.object
         data = {"info": ""}
 
-        # order of those checks is important since some interfaces
-        # base off the others
-        if IPloneFormGenField.providedBy(obj):
-            # if ploneformgen field, use parent object for modified data
-            data["field"] = obj.getId()
-            obj = aq_parent(obj)
-
         # the order of those interface checks matters since some interfaces
         # inherit from others
         if IObjectRemovedEvent.providedBy(event):
             # need to keep track of removed events so it doesn't get called
             # more than once for each object
             action = "removed"
-        elif (
-            IObjectInitializedEvent.providedBy(event)
-            or IObjectCreatedEvent.providedBy(event)
-            or IObjectAddedEvent.providedBy(event)
+        elif IObjectCreatedEvent.providedBy(event) or IObjectAddedEvent.providedBy(
+            event
         ):
             action = "added"
         elif IObjectMovedEvent.providedBy(event):
@@ -308,23 +253,17 @@ class AuditActionExecutor(object):
 
 class AuditAddForm(AddForm):
 
-    # Plone4 only
-    form_fields = form.FormFields(IAuditAction) if HAS_FORMLIB else []
-    schema = IAuditAction  # needed for Plone5 (z3c.form)
+    schema = IAuditAction
     label = u"Add Audit Action"
     form_name = u"Configure element"
 
     def create(self, data):
         a = AuditAction()
-        HAS_FORMLIB and form.applyChanges(a, self.form_fields, data)
         return a
 
 
 class AuditEditForm(EditForm):
 
-    # Plone4 only
-    form_fields = form.FormFields(IAuditAction) if HAS_FORMLIB else []
-    schema = IAuditAction  # needed for Plone5 (z3c.form)
-
+    schema = IAuditAction
     label = u"Edit Audit Action"
     form_name = u"Configure element"
