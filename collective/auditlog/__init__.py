@@ -1,10 +1,10 @@
 from App.Undo import decode64
 from App.Undo import UndoSupport
+from collective.auditlog import permissions
 from collective.auditlog.interfaces import AuditableActionPerformedEvent
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 
-import permissions
 import transaction
 
 
