@@ -5,7 +5,7 @@ from setuptools import setup
 import os
 
 
-version = "1.4.dev0"
+version = "2.0.dev0"
 
 
 long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read(),])
@@ -20,8 +20,6 @@ setup(
     # http://pypi.python.org/pypi?:action=list_classifiers
     classifiers=[
         "Framework :: Plone",
-        "Framework :: Plone :: 4.3",
-        "Framework :: Plone :: 5.0",
         "Framework :: Plone :: 5.1",
         "Framework :: Plone :: 5.2",
         "Programming Language :: Python",

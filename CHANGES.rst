@@ -1,10 +1,11 @@
 Changelog
 =========
 
-1.4 (unreleased)
+2.0 (unreleased)
 ----------------
 
 - Plone 5.2 compatibility.
+  Drop Support for Plone 5.0 and 4.3 (Both are missing zope.interface.interfaces.IObjectEvent).
   [thet]
 
 - Make Arhcetype a soft dependency.
