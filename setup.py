@@ -39,7 +39,11 @@ setup(
     extras_require={
         "async": ["plone.app.async",],
         "celery": ["collective.celery",],
-        "test": ["plone.app.testing", "plone.app.contenttypes", "pysqlite"],
+        "test": [
+            "plone.app.testing",
+            "plone.app.contenttypes",
+            "pysqlite;python_version<'3'",
+        ],
     },
     entry_points="""
       # -*- Entry points: -*-
