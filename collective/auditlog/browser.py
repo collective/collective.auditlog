@@ -3,6 +3,7 @@ from collective.auditlog.models import LogEntry
 from Products.Five.browser import BrowserView
 from sqlalchemy import desc
 from sqlalchemy import or_
+import six
 
 
 class LogView(BrowserView):
@@ -61,7 +62,7 @@ class LogView(BrowserView):
         else:
             lines = session.query(LogEntry).order_by(desc(order))
         if query:
-            query = unicode(query)
+            query = six.text_type(query)
             lines = lines.filter(
                 or_(
                     LogEntry.user.contains(query),

@@ -7,6 +7,7 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from zope.component import getUtility
 from zope.globalrequest import getRequest
+import six
 
 
 zope_conf = getConfiguration()
@@ -38,7 +39,7 @@ def getEngine(conn_string=None, conn_parameters=None, req=None):
             ]  # noqa
         if not conn_parameters:
             conn_parameters = {}
-        elif isinstance(conn_parameters, basestring):
+        elif isinstance(conn_parameters, six.string_types):
             conn_parameters = loads(conn_parameters)
         engine = create_engine(conn_string, **conn_parameters)
     return engine

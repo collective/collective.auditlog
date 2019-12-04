@@ -10,7 +10,7 @@ from Products.ZCTextIndex.HTMLSplitter import HTMLWordSplitter
 from Products.ZCTextIndex.Lexicon import CaseNormalizer
 from Products.ZCTextIndex.Lexicon import StopWordRemover
 from Products.ZCTextIndex.ZCTextIndex import PLexicon
-from zope.interface import implements
+from zope.interface import implementer
 from zope.interface import Interface
 
 
@@ -33,12 +33,11 @@ class IAuditCatalog(Interface):
     """
 
 
+@implementer(IAuditCatalog)
 class AuditCatalog(CatalogTool):
     """
     A specific launch catalog tool
     """
-
-    implements(IAuditCatalog)
 
     title = "specific catalog"
     id = "audit_catalog"
@@ -73,7 +72,7 @@ class AuditCatalog(CatalogTool):
         catalog = portal_api.get_tool("portal_catalog")
         indexes = catalog._catalog.indexes
         for name, index in indexes.items():
-            if name in self._catalog.indexes.keys():
+            if name in list(self._catalog.indexes.keys()):
                 continue
             if index.meta_type == "DateRecurringIndex":
                 continue
