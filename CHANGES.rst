@@ -4,6 +4,9 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Python 3 compatibility.
+  [thet]
+
 - Remove support for plone.app.async.
   Due to  ``async`` being a reserved word, this cannot made Python 3 compatible.
   Use collective.celeries instead.
