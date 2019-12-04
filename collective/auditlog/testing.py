@@ -43,6 +43,7 @@ class AuditLog(PloneSandboxLayer):
         # install into the Plone site
         applyProfile(portal, "plone.app.contenttypes:default")
         applyProfile(portal, "collective.auditlog:default")
+        portal.portal_workflow.setDefaultChain("simple_publication_workflow")
         setRoles(portal, TEST_USER_ID, ("Member", "Manager"))
 
 
