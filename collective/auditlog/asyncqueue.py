@@ -7,13 +7,6 @@ from zope.component import getUtility
 
 
 try:
-    from plone.app.async.interfaces import IAsyncService
-
-    ASYNC_INSTALLED = True
-except (ImportError, SyntaxError):
-    ASYNC_INSTALLED = False
-
-try:
     import collective.celery
     from collective.auditlog.tasks import queue_job
     from celery.utils.log import get_task_logger
@@ -49,16 +42,5 @@ def queueJob(obj, *args, **kwargs):
     """
     if queue_job and kwargs["action"] != "Undo from ZMI":
         queue_job.delay(obj, *args, **kwargs)
-    elif ASYNC_INSTALLED:
-        try:
-            async = getUtility(IAsyncService)
-            async.queueJob(runJob, obj, *args, **kwargs)
-        except:
-            logger.exception(
-                "Error using plone.app.async with "
-                "collective.auditlog. logging without "
-                "plone.app.async..."
-            )
-            runJob(obj, *args, **kwargs)
     else:
         runJob(obj, *args, **kwargs)

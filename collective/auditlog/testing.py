@@ -37,7 +37,7 @@ class AuditLog(PloneSandboxLayer):
         # no async for testing
         import collective.auditlog.asyncqueue
 
-        collective.auditlog.asyncqueuqueuee.queue_job = False
+        collective.auditlog.asyncqueue.queue_job = False
 
     def setUpPloneSite(self, portal):
         # install into the Plone site

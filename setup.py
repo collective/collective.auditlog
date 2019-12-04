@@ -37,7 +37,6 @@ setup(
     zip_safe=False,
     install_requires=["setuptools", "sqlalchemy", "plone.app.contentrules",],
     extras_require={
-        "async": ["plone.app.async",],
         "celery": ["collective.celery",],
         "test": [
             "plone.app.testing",

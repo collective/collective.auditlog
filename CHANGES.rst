@@ -4,6 +4,11 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Remove support for plone.app.async.
+  Due to  ``async`` being a reserved word, this cannot made Python 3 compatible.
+  Use collective.celeries instead.
+  [thet]
+
 - Drop support for Archetypes.
   [thet]
 
