@@ -2,6 +2,7 @@
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
+from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
@@ -14,21 +15,18 @@ except ImportError:
     from plone.testing import z2 as zope_testing
 
 
-try:
-    from plone.app.contenttypes.testing import PLONE_APP_CONTENTTYPES_FIXTURE
-
-    BASE_FIXTURE = PLONE_APP_CONTENTTYPES_FIXTURE
-except ImportError:
-    from plone.app.testing import PLONE_FIXTURE
-
-    BASE_FIXTURE = PLONE_FIXTURE
-
-
 class AuditLog(PloneSandboxLayer):
-    defaultBases = (BASE_FIXTURE,)
+    defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
         # load ZCML
+
+        import plone.app.contenttypes
+
+        xmlconfig.file(
+            "configure.zcml", plone.app.contenttypes, context=configurationContext
+        )
+
         import collective.auditlog
 
         xmlconfig.file(
@@ -43,6 +41,7 @@ class AuditLog(PloneSandboxLayer):
 
     def setUpPloneSite(self, portal):
         # install into the Plone site
+        applyProfile(portal, "plone.app.contenttypes:default")
         applyProfile(portal, "collective.auditlog:default")
         setRoles(portal, TEST_USER_ID, ("Member", "Manager"))
 

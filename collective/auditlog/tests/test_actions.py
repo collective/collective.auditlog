@@ -10,18 +10,26 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.registry.interfaces import IRegistry
-from Products.Archetypes.event import ObjectEditedEvent
-from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from tempfile import mkstemp
 from zope.component import getUtility
 from zope.event import notify
-from zope.lifecycleevent import ObjectCreatedEvent
+from zope.lifecycleevent import ObjectAddedEvent
 
 import json
 import os
 import transaction
 import unittest
+
+
+try:
+    # Archetypes
+    from Products.Archetypes.event import ObjectEditedEvent
+    from Products.Archetypes.event import ObjectInitializedEvent
+
+    HAS_AT = True
+except ImportError:
+    HAS_AT = False
 
 
 class tempDb(object):
@@ -76,9 +84,7 @@ class TestActions(unittest.TestCase):
     def create_page(self, title="Page"):
         """ Create a page and return it
         """
-        obj_id = self.portal.invokeFactory(
-            type_name="Document", id="page", title=title,
-        )
+        obj_id = self.portal.invokeFactory("Document", id="page", title=title,)
         obj = self.portal[obj_id]
         notify(ObjectAddedEvent(obj))
         # We need to commit here so that _p_jar isn't None and move will work
@@ -104,7 +110,7 @@ class TestActions(unittest.TestCase):
     @unittest.skip("The ObjectModifiedEvent seems not to be fired")
     def test_moved(self):
         self.create_page()
-        self.portal.invokeFactory(type_name="Folder", id="folder", Title="folder")
+        self.portal.invokeFactory("Folder", id="folder", Title="folder")
         with tempDb() as db:
             cd = self.portal.manage_cutObjects("page")
             self.portal.folder.manage_pasteObjects(cd)
@@ -113,7 +119,7 @@ class TestActions(unittest.TestCase):
     def test_copied(self):
         self.create_page()
         self.portal.invokeFactory(
-            type_name="Folder", id="folder", title="folder",
+            "Folder", id="folder", title="folder",
         )
         with tempDb() as db:
             cd = self.portal.manage_copyObjects("page")

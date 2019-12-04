@@ -39,7 +39,7 @@ setup(
     extras_require={
         "async": ["plone.app.async",],
         "celery": ["collective.celery",],
-        "test": ["plone.app.testing",],
+        "test": ["plone.app.testing", "plone.app.contenttypes",],
     },
     entry_points="""
       # -*- Entry points: -*-
