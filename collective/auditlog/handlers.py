@@ -3,14 +3,11 @@ from collective.auditlog.action import AuditActionExecutor
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
 from collective.auditlog.utils import getSite
-from collective.auditlog.utils import getUID
 from importlib import import_module
-from plone.app.contentrules import handlers as cr_handlers
 from plone.app.discussion.interfaces import IComment
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import IContentish
 from zope.component import getUtility
-from zope.interface import Interface
 from zope.interface.interfaces import ComponentLookupError
 from zope.lifecycleevent.interfaces import IObjectAddedEvent
 from zope.lifecycleevent.interfaces import IObjectCopiedEvent

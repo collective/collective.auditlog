@@ -3,6 +3,7 @@ from collective.auditlog.models import LogEntry
 from Products.Five.browser import BrowserView
 from sqlalchemy import desc
 from sqlalchemy import or_
+
 import six
 
 

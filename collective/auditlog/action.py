@@ -1,11 +1,7 @@
 # coding=utf-8
-from Acquisition import aq_base
-from Acquisition import aq_parent
 from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
-from collective.auditlog.utils import getUID
-from datetime import datetime
 from OFS.interfaces import IObjectClonedEvent
 from OFS.SimpleItem import SimpleItem
 from plone.app.contentrules.browser.formhelper import AddForm
@@ -20,7 +16,6 @@ from plone.contentrules.rule.rule import RuleExecutable
 from plone.memoize.instance import memoize
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.interfaces import IActionSucceededEvent
-from Products.CMFCore.utils import getToolByName
 from Products.PluggableAuthService.interfaces.events import IUserLoggedInEvent
 from Products.PluggableAuthService.interfaces.events import IUserLoggedOutEvent
 from zope.component import adapter
