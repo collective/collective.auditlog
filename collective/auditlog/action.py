@@ -69,7 +69,6 @@ class AuditActionExecutor(object):
         self.event = event
 
     @property
-    @memoize
     def request(self):
         """ Try to get a request
         """
