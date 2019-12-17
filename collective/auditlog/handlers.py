@@ -111,14 +111,13 @@ def get_automatic_events():
     return events
 
 
-def log_entry(obj, data, request=None):
-    data.update(getObjectInfo(obj, request=request))
+def log_entry(obj, data):
+    data.update(getObjectInfo(obj))
     addLogEntry(obj, data)
 
 
 def custom_event(event):
     obj = event.object
-    request = getattr(event, "request", None)
     info = event.info
     if info:
         try:
@@ -127,4 +126,4 @@ def custom_event(event):
             info = json.dumps({"info": info})
 
     data = {"info": event.info, "action": event.action}
-    log_entry(obj, data, request)
+    log_entry(obj, data)

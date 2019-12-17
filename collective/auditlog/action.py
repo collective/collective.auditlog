@@ -83,27 +83,16 @@ class AuditActionExecutor(object):
             frame = frame.f_back
         return None
 
-    def canExecute(self, rule=None, request=None):
-        if rule is not None or request is not None:
-            msg = (
-                "In the next releases the rule and request parameters "
-                "will not be supported anymore. "
-                "In case you want to customize this product "
-                "use the request and rule properties"
-            )
-            warnings.warn(msg, DeprecationWarning)
-
-        request = request or self.request
-
-        if request.environ.get("disable.auditlog", False):
+    @property
+    def can_execute(self):
+        if self.request.environ.get("disable.auditlog", False):
             return False
 
         event = self.event
         obj = event.object
         event_iface = next(event.__implemented__.interfaces())
 
-        if rule is None:
-            rule = self.rule
+        rule = self.rule
         if rule and event_iface != rule.rule.event:
             return False
 
@@ -131,7 +120,7 @@ class AuditActionExecutor(object):
         ]  # noqa
 
     def _getObjectInfo(self, obj):
-        return getObjectInfo(obj, self.request)
+        return getObjectInfo(obj)
 
     @memoize
     def getLogEntry(self):
@@ -232,14 +221,7 @@ class AuditActionExecutor(object):
         addLogEntry(self.event.object, logentry)
 
     def __call__(self):
-        try:  # Remove in 1.4
-            can_execute = self.canExecute()
-        except TypeError:
-            # This grants the compatibility with previous versions of the code
-            # in which the two parameters were required
-            can_execute = self.canExecute(self.rule, self.request)
-
-        if can_execute:
+        if self.can_execute:
             self._addLogEntry(self.getLogEntry())
         return True
 

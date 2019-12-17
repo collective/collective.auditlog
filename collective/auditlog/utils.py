@@ -33,11 +33,11 @@ def getUID(context):
         return "unknown"
 
 
-def getHostname(request=None):
+def getHostname():
     """
     stolen from the developer manual
     """
-    request = request or getRequest()
+    request = getRequest()
     if "HTTP_X_FORWARDED_HOST" in request.environ:
         # Virtual host
         host = request.environ["HTTP_X_FORWARDED_HOST"]
@@ -73,8 +73,7 @@ def getSite():
     return site
 
 
-def getUser(request=None):
-    request = request or getRequest()
+def getUser():
     username = "unknown"
     try:
         portal_membership = getToolByName(getSite(), "portal_membership")
@@ -82,18 +81,17 @@ def getUser(request=None):
         username = user.getUserName()
     except AttributeError:
         try:
-            username = request.other.get("AUTHENTICATED_USER").getUserName()
+            username = getRequest().other.get("AUTHENTICATED_USER").getUserName()
         except AttributeError:
             pass
     return username
 
 
-def getObjectInfo(obj, request=None):
+def getObjectInfo(obj):
     """ Get basic information about an object for logging.
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
-    request = request or getRequest()
     obj_id = obj.id
     if callable(obj_id):
         obj_id = obj_id()
@@ -101,8 +99,8 @@ def getObjectInfo(obj, request=None):
         obj_id = "Zope"
     data = dict(
         performed_on=datetime.utcnow(),
-        user=getUser(request),
-        site_name=getHostname(request),
+        user=getUser(),
+        site_name=getHostname(),
         uid=getUID(obj),
         type=getattr(obj, "portal_type", ""),
         title=obj.Title() if getattr(obj, "Title", False) else obj_id,

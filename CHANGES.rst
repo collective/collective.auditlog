@@ -4,6 +4,13 @@ Changelog
 2.0 (unreleased)
 ----------------
 
+- Remove inconsistent passing of ``request`` parameter and use zope.globalrequest instead.
+  [thet]
+
+- Remove deprecations.
+  action.canExecute is renamed to ``can_execute``, takes no paramters and is a property.
+  [thet]
+
 - Python 3 compatibility.
   [thet]
 
