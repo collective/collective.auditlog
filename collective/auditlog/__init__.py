@@ -35,4 +35,4 @@ def manage_undo_transactions_with_audit(self, transaction_info=(), REQUEST=None)
 
 
 # monkey patch undo to be able to audit ZMI undo operations
-UndoSupport.manage_undo_transactions = manage_undo_transactions_with_audit
+## UndoSupport.manage_undo_transactions = manage_undo_transactions_with_audit

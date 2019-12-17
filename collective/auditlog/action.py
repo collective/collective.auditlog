@@ -65,7 +65,7 @@ class AuditActionExecutor(object):
 
     @property
     def request(self):
-        """ Try to get a request
+        """Try to get a request
         """
         return getRequest()
 
@@ -83,20 +83,19 @@ class AuditActionExecutor(object):
             frame = frame.f_back
         return None
 
-    def canExecute(self, rule=None, req=None):
-        if rule is not None or req is not None:
+    def canExecute(self, rule=None, request=None):
+        if rule is not None or request is not None:
             msg = (
-                "In the next releases the rule and req parameters "
+                "In the next releases the rule and request parameters "
                 "will not be supported anymore. "
                 "In case you want to customize this product "
                 "use the request and rule properties"
             )
             warnings.warn(msg, DeprecationWarning)
 
-        if req is None:
-            req = self.request
+        request = request or self.request
 
-        if req.environ.get("disable.auditlog", False):
+        if request.environ.get("disable.auditlog", False):
             return False
 
         event = self.event

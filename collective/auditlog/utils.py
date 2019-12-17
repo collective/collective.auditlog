@@ -33,10 +33,11 @@ def getUID(context):
         return "unknown"
 
 
-def getHostname(request):
+def getHostname(request=None):
     """
     stolen from the developer manual
     """
+    request = request or getRequest()
     if "HTTP_X_FORWARDED_HOST" in request.environ:
         # Virtual host
         host = request.environ["HTTP_X_FORWARDED_HOST"]
@@ -72,7 +73,8 @@ def getSite():
     return site
 
 
-def getUser(request):
+def getUser(request=None):
+    request = request or getRequest()
     username = "unknown"
     try:
         portal_membership = getToolByName(getSite(), "portal_membership")
@@ -86,11 +88,12 @@ def getUser(request):
     return username
 
 
-def getObjectInfo(obj, request):
+def getObjectInfo(obj, request=None):
     """ Get basic information about an object for logging.
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
+    request = request or getRequest()
     obj_id = obj.id
     if callable(obj_id):
         obj_id = obj_id()
