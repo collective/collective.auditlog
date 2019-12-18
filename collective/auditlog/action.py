@@ -143,7 +143,7 @@ class AuditActionExecutor(object):
         elif IObjectMovedEvent.providedBy(event):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
-                if rule is None or "Rename" in self.rule.rule.title:
+                if self.rule is None or "Rename" in self.rule.rule.title:
                     info = {"previous_id": event.oldName}
                     data["info"] = json.dumps(info)
                     action = "rename"
@@ -151,7 +151,7 @@ class AuditActionExecutor(object):
                     # cut out here, double action for this event
                     return True
             else:
-                if rule is None or "Moved" in self.rule.rule.title:
+                if self.rule is None or "Moved" in self.rule.rule.title:
                     parent_path = "/".join(event.oldParent.getPhysicalPath())
                     previous_location = u"{0}/{1}".format(parent_path, event.oldName)
                     info = {"previous_location": previous_location}
