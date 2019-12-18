@@ -80,12 +80,6 @@ def created_event(event):
         execute_event(obj, event)
 
 
-def loggedout_event(event):
-    obj = event.object
-    data = {"info": "", "action": "logged out"}
-    log_entry(obj, data)
-
-
 def get_automatic_events():
     events = []
     site = getSite()
