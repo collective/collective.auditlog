@@ -126,7 +126,8 @@ def getObjectInfo(obj):
 
 
 def addLogEntry(obj, data):
-    if not data:
+    # XXX getLogEntry sometime returns True, probably it should just return None
+    if not data or data == True:
         return
     tdata = td.get()
     if not tdata.registered:
