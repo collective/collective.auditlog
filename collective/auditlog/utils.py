@@ -14,6 +14,20 @@ from zope.event import notify
 from zope.globalrequest import getRequest
 
 
+def is_installed():
+    try:
+        site = getSite()
+        qi = getToolByName(site, "portal_quickinstaller")
+        installed = qi.isProductInstalled("collective.auditlog")
+        registry = getUtility(IRegistry, context=site)
+        installed = (
+            "collective.auditlog.interfaces.IAuditLogSettings.storage" in registry
+        )
+    except AttributeError:
+        installed = False
+    return installed
+
+
 def getUID(context):
     uid = IUUID(context, None)
     if uid is not None:

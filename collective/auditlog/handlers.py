@@ -3,6 +3,7 @@ from collective.auditlog.action import AuditActionExecutor
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
 from collective.auditlog.utils import getSite
+from collective.auditlog.utils import is_installed
 from importlib import import_module
 from plone.app.discussion.interfaces import IComment
 from plone.registry.interfaces import IRegistry
@@ -40,6 +41,8 @@ except ImportError:
 
 
 def execute_event(obj, event=None):
+    if not is_installed():
+        return
     if event is None:
         # ActionSuceededEvent does not send an object first
         event = obj
@@ -84,24 +87,18 @@ def get_automatic_events():
     events = []
     site = getSite()
     try:
-        qi = site.portal_quickinstaller
-        installed = qi.isProductInstalled("collective.auditlog")
-    except AttributeError:
-        installed = False
-    if installed:
-        try:
-            registry = getUtility(IRegistry)
-            key = "collective.auditlog.interfaces.IAuditLogSettings.automaticevents"
-            automaticevents = registry[key]
-            for ev in automaticevents:
-                module, interface = ev.rsplit(".", 1)
-                imported = import_module(module)
-                automatic = getattr(imported, interface, None)
-                if automatic is not None:
-                    events.append(automatic)
-        except ComponentLookupError:
-            # no registry, no events
-            pass
+        registry = getUtility(IRegistry, context=site)
+        key = "collective.auditlog.interfaces.IAuditLogSettings.automaticevents"
+        automaticevents = registry[key]
+        for ev in automaticevents:
+            module, interface = ev.rsplit(".", 1)
+            imported = import_module(module)
+            automatic = getattr(imported, interface, None)
+            if automatic is not None:
+                events.append(automatic)
+    except ComponentLookupError:
+        # no registry, no events
+        pass
     return events
 
 
