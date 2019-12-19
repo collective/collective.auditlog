@@ -9,6 +9,7 @@ from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Zope2 import app
 from zope.component import getUtility
+from zope.component import queryUtility
 from zope.component.hooks import getSite as getSiteHook
 from zope.event import notify
 from zope.globalrequest import getRequest
@@ -19,9 +20,11 @@ def is_installed():
         site = getSite()
         qi = getToolByName(site, "portal_quickinstaller")
         installed = qi.isProductInstalled("collective.auditlog")
-        registry = getUtility(IRegistry, context=site)
+        registry = queryUtility(IRegistry, context=site)
         installed = (
-            "collective.auditlog.interfaces.IAuditLogSettings.storage" in registry
+            installed
+            and registry
+            and ("collective.auditlog.interfaces.IAuditLogSettings.storage" in registry)
         )
     except AttributeError:
         installed = False
