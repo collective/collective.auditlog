@@ -1,35 +1,50 @@
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-      xmlns:tal="http://xml.zope.org/namespaces/tal"
-      xmlns:metal="http://xml.zope.org/namespaces/metal"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
       lang="en"
       metal:use-macro="here/prefs_main_template/macros/master"
-      i18n:domain="plone">
+      xml:lang="en"
+      i18n:domain="plone"
+>
 
-<body>
-<div metal:fill-slot="prefs_configlet_main">
+  <body>
+    <div metal:fill-slot="prefs_configlet_main">
 
-    <a id="setup-link" class="link-parent"
-       tal:attributes="href view/control_panel_url"
-       i18n:translate="">
+      <a class="link-parent"
+         id="setup-link"
+         tal:attributes="
+           href view/control_panel_url;
+         "
+         i18n:translate=""
+      >
         Site Setup
-    </a>
+      </a>
 
-    <h1 class="documentFirstHeading" tal:content="view/label">View Title</h1>
-    <p>
-      <a tal:attributes="href string:${portal_url}/@@auditlog-view?order=performed_on&direction=desc"><img tal:attributes="src string:${portal_url}/topic_icon.png"> View Audit Log</a>
-    </p>
+      <h1 class="documentFirstHeading"
+          tal:content="view/label"
+      >View Title</h1>
+      <p>
+        <a tal:attributes="
+             href string:${portal_url}/@@auditlog-view?order=performed_on&amp;direction=desc;
+           "
+        ><img tal:attributes="
+                 src string:${portal_url}/topic_icon.png;
+               "
+          />
+          View Audit Log</a>
+      </p>
 
-    <div metal:use-macro="context/global_statusmessage/macros/portal_message">
+      <div metal:use-macro="context/global_statusmessage/macros/portal_message">
       Portal status message
-    </div>
+      </div>
 
-    <div id="content-core">
+      <div id="content-core">
         <div id="layout-contents">
-            <span tal:replace="structure view/contents" />
+          <span tal:replace="structure view/contents"></span>
         </div>
-    </div>
+      </div>
 
-</div>
-</body>
+    </div>
+  </body>
 </html>

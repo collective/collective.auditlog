@@ -3,7 +3,6 @@ from collective.auditlog import db
 from collective.auditlog import td
 from collective.auditlog.models import LogEntry
 from Products.CMFPlone.utils import safe_unicode
-from zope.component import getUtility
 
 
 try:

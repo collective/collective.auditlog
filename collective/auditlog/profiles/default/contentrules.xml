@@ -1,186 +1,262 @@
 <?xml version="1.0"?>
 <contentrules>
- <rule name="rule-100" title="Store Workflow Transitions"
-    description="This stores all actions of sending content through workflow into the Data Warehouse"
-    enabled="False" event="Products.CMFCore.interfaces.IActionSucceededEvent"
-    stop-after="False">
-  <conditions>
-<condition type="plone.conditions.PortalType">
-     <property name="check_types">
+  <rule description="This stores all actions of sending content through workflow into the Data Warehouse"
+        enabled="False"
+        event="Products.CMFCore.interfaces.IActionSucceededEvent"
+        name="rule-100"
+        stop-after="False"
+        title="Store Workflow Transitions"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
 
-    </property>
-   </condition>
+        </property>
+      </condition>
 
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
- <rule name="rule-101" title="Store Check-out"
-    description="This stores the action of checking out any content into the Data Warehouse"
-    enabled="False" event="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-     <property name="check_types">
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of checking out any content into the Data Warehouse"
+        enabled="False"
+        event="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
+        name="rule-101"
+        stop-after="False"
+        title="Store Check-out"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
 
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
- <rule name="rule-102" title="Store Cancel checkout" 
-	description="This stores the action of cancelling a checkout of any content into the Data Warehouse" 
-	enabled="False"
-    event="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-     <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of cancelling a checkout of any content into the Data Warehouse"
+        enabled="False"
+        event="plone.app.iterate.interfaces.ICancelCheckoutEvent"
+        name="rule-102"
+        stop-after="False"
+        title="Store Cancel checkout"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
 
-     </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
-  <rule name="rule-103" title="Store Check-In"
-    description="This stores the action of checking in any content into the Data Warehouse"
-    enabled="False" event="plone.app.iterate.interfaces.ICheckinEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
- <rule name="rule-104" title="Store Object Moved"
-    description="This stores the action of any content being moved from one container to another (Cut/Paste) into the Data Warehouse"
-    enabled="False" event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-     <property name="check_types">
-     </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
-<rule name="rule-105" title="Store Object Deleted"
-    description="This stores the action of deleting any content from a container. This is only triggered when Link Integrity has been triggered and confirmed."
-    enabled="False" event="zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-     <property name="check_types">
-     </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
- <rule name="rule-106" title="Store Object Edits"
-    description="This stores the action of editing any content into the Data Warehouse"
-    enabled="False" event="zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
- <rule name="rule-107" title="Store Object Added"
-    description="This stores the action of adding any new objects to a container into the Data Warehouse"
-    enabled="False" event="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
- <rule name="rule-108" title="Store Object Renamed"
-    description="This stores the action of renaming any content into the Data Warehouse."
-    enabled="False" event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
-</rule>
-<rule name="rule-109" title="Store Object Copied"
-    description="This stores the action of copied any content into the Data Warehouse."
-    enabled="False" event="OFS.interfaces.IObjectClonedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
-</rule>
-<rule name="rule-110" title="Store Object Added"
-    description="This stores the action of adding any new objects to a container into the Data Warehouse"
-    enabled="False" event="zope.lifecycleevent.interfaces.IObjectAddedEvent"
-    stop-after="False">
-  <conditions>
-   <condition type="plone.conditions.PortalType">
-    <property name="check_types">
-    </property>
-   </condition>
-  </conditions>
-  <actions>
-   <action type="plone.actions.Audit">
-   </action>
-  </actions>
- </rule>
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of checking in any content into the Data Warehouse"
+        enabled="False"
+        event="plone.app.iterate.interfaces.ICheckinEvent"
+        name="rule-103"
+        stop-after="False"
+        title="Store Check-In"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of any content being moved from one container to another (Cut/Paste) into the Data Warehouse"
+        enabled="False"
+        event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+        name="rule-104"
+        stop-after="False"
+        title="Store Object Moved"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of deleting any content from a container. This is only triggered when Link Integrity has been triggered and confirmed."
+        enabled="False"
+        event="zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+        name="rule-105"
+        stop-after="False"
+        title="Store Object Deleted"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of editing any content into the Data Warehouse"
+        enabled="False"
+        event="zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+        name="rule-106"
+        stop-after="False"
+        title="Store Object Edits"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of adding any new objects to a container into the Data Warehouse"
+        enabled="False"
+        event="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+        name="rule-107"
+        stop-after="False"
+        title="Store Object Added"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of renaming any content into the Data Warehouse."
+        enabled="False"
+        event="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+        name="rule-108"
+        stop-after="False"
+        title="Store Object Renamed"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of copied any content into the Data Warehouse."
+        enabled="False"
+        event="OFS.interfaces.IObjectClonedEvent"
+        name="rule-109"
+        stop-after="False"
+        title="Store Object Copied"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
+  <rule description="This stores the action of adding any new objects to a container into the Data Warehouse"
+        enabled="False"
+        event="zope.lifecycleevent.interfaces.IObjectAddedEvent"
+        name="rule-110"
+        stop-after="False"
+        title="Store Object Added"
+  >
+    <conditions>
+      <condition type="plone.conditions.PortalType">
+        <property name="check_types">
+        </property>
+      </condition>
+    </conditions>
+    <actions>
+      <action type="plone.actions.Audit">
+      </action>
+    </actions>
+  </rule>
 
- <assignment name="rule-100" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-101" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-102" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-103" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-104" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-105" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-106" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-107" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-108" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-109" bubbles="True" enabled="False" location=""/>
- <assignment name="rule-110" bubbles="True" enabled="False" location=""/>
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-100"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-101"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-102"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-103"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-104"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-105"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-106"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-107"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-108"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-109"
+  />
+  <assignment bubbles="True"
+              enabled="False"
+              location=""
+              name="rule-110"
+  />
 
 </contentrules>

@@ -1,90 +1,131 @@
-<html
-    xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
-    xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal"
-    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
-    lang="en"
-    metal:use-macro="context/main_template/macros/master"
-    i18n:domain="collective.auditlog">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      lang="en"
+      metal:use-macro="context/main_template/macros/master"
+      xml:lang="en"
+      i18n:domain="collective.auditlog"
+>
   <head>
     <metal:block metal:fill-slot="top_slot"
-        tal:define="dummy python:request.set('disable_border', 1);
-                    disable_column_one python:request.set('disable_plone.leftcolumn', 1);
-                    disable_column_two python:request.set('disable_plone.rightcolumn', 1);"
-        />
+                 tal:define="
+                   dummy python:request.set('disable_border', 1);
+                   disable_column_one python:request.set('disable_plone.leftcolumn', 1);
+                   disable_column_two python:request.set('disable_plone.rightcolumn', 1);
+                 "
+    />
     <metal:js fill-slot="javascript_head_slot">
-      <script tal:attributes="src string:${portal_url}/++resource++collective.auditlog/infinitescroll.jquery.js"></script>
+      <script tal:attributes="
+                src string:${portal_url}/++resource++collective.auditlog/infinitescroll.jquery.js;
+              "
+      ></script>
     </metal:js>
   </head>
   <body>
     <metal:title metal:fill-slot="content-title">
-      <h1 class="documentFirstHeading" i18n:translate="">
+      <h1 class="documentFirstHeading"
+          i18n:translate=""
+      >
         Audit Log
       </h1>
     </metal:title>
 
     <metal:content-core metal:fill-slot="content-core">
-	  <form method="get"
-			action=""
-			class="input-group"
-			tal:attributes="action request/URL">
-		  <input type="text"
-				 name="query"
-				 value=""
-				 class=""
-				 placeholder="Enter a search term"
-				 i18n:attributes="placeholder"
-				 tal:attributes="value request/query|nothing" />
-		  <span class="input-group-btn">
-			<input class=""
-				   type="submit"
-				   value="filter"
-				   i18n:attributes="value"/>
-			<a href=""
-			  class="plone-btn plone-btn-default"
-			  role="button"
-			  i18n:translate=""
-			  tal:attributes="href request/URL">clear</a>
-		  </span>
-	  </form>
+      <form class="input-group"
+            action=""
+            method="get"
+            tal:attributes="
+              action request/URL;
+            "
+      >
+        <input class=""
+               name="query"
+               placeholder="Enter a search term"
+               type="text"
+               value=""
+               tal:attributes="
+                 value request/query|nothing;
+               "
+               i18n:attributes="placeholder"
+        />
+        <span class="input-group-btn">
+          <input class=""
+                 type="submit"
+                 value="filter"
+                 i18n:attributes="value"
+          />
+          <a class="plone-btn plone-btn-default"
+             href=""
+             role="button"
+             tal:attributes="
+               href request/URL;
+             "
+             i18n:translate=""
+          >clear</a>
+        </span>
+      </form>
       <table class="listing">
         <tbody id="logview">
-          <tr tal:define="order python:request.get('order', 'performed_on');
-                          direction view/direction">
-            <th tal:repeat="column view/columns" style="white-space: nowrap">
-              <a tal:attributes="href string:${request/URL}?order=${column/name}&direction=${new_direction}"
-                 tal:define="new_direction python:view.new_direction(order, column['name'])"
-                 tal:content="column/label">
+          <tr tal:define="
+                order python:request.get('order', 'performed_on');
+                direction view/direction;
+              "
+          >
+            <th style="white-space: nowrap"
+                tal:repeat="column view/columns"
+            >
+              <a tal:define="
+                   new_direction python:view.new_direction(order, column['name']);
+                 "
+                 tal:content="column/label"
+                 tal:attributes="
+                   href string:${request/URL}?order=${column/name}&amp;direction=${new_direction};
+                 "
+              >
               </a>
               <tal:block condition="python:order==column['name']">
                 <span tal:condition="python:direction == 'asc'">
-                  <img tal:attributes="src string:${portal_url}/arrowTop.png">
+                  <img tal:attributes="
+                         src string:${portal_url}/arrowTop.png;
+                       "
+                  />
                 </span>
                 <span tal:condition="python:direction == 'desc'">
-                  <img tal:attributes="src string:${portal_url}/arrowBottom.png">
+                  <img tal:attributes="
+                         src string:${portal_url}/arrowBottom.png;
+                       "
+                  />
                 </span>
               </tal:block>
             </th>
           </tr>
-          <tr class="logline" tal:repeat="line view/loglines" tal:on-error="string:">
+          <tr class="logline"
+              tal:repeat="line view/loglines"
+              tal:on-error="string:"
+          >
             <td tal:repeat="column view/columns"
-                tal:content="python:getattr(line, column['name'], '')"></td>
+                tal:content="python:getattr(line, column['name'], '')"
+            ></td>
           </tr>
         </tbody>
       </table>
       <div class="navigation">
         <a class="next"
-           tal:attributes="href view/pagination_next">
+           tal:attributes="
+             href view/pagination_next;
+           "
+        >
         </a>
       </div>
-  <script type="text/javascript">
+      <script type="text/javascript">
     $(document).ready(function() {
       $('#logview').infinitescroll({
         itemSelector: '.logline',
         hideNav: '.pagination'
       });
     });
-  </script>
-  </metal:content-core>
+      </script>
+    </metal:content-core>
   </body>
 </html>

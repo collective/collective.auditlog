@@ -1,15 +1,21 @@
 <?xml version="1.0"?>
-<object name="portal_actions" meta_type="Plone Actions Tool"
-   xmlns:i18n="http://xml.zope.org/namespaces/i18n">
-  <object name="user" meta_type="CMF Action Category">
-    <object name="auditlog"  meta_type="CMF Action">
+<object xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+        meta_type="Plone Actions Tool"
+        name="portal_actions"
+>
+  <object meta_type="CMF Action Category"
+          name="user"
+  >
+    <object meta_type="CMF Action"
+            name="auditlog"
+    >
       <property name="title">Audit Log</property>
-      <property name="description"></property>
-      <property name="url_expr">string:${globals_view/navigationRootUrl}/@@auditlog-view?order=performed_on&amp;direction=desc</property>
-      <property name="icon_expr"></property>
+      <property name="description" />
+      <property name="url_expr">string:${globals_view/navigationRootUrl}/@@auditlog-view?order=performed_ondirection=desc</property>
+      <property name="icon_expr" />
       <property name="available_expr">python:member is not None</property>
       <property name="permissions">
-        <element value="collective.auditlog: View Auditlog"/>
+        <element value="collective.auditlog: View Auditlog" />
       </property>
       <property name="visible">True</property>
     </object>

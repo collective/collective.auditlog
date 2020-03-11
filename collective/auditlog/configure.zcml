@@ -3,17 +3,9 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:genericsetup="http://namespaces.zope.org/genericsetup"
     xmlns:zcml="http://namespaces.zope.org/zcml"
-    i18n_domain="collective.auditlog">
+    >
 
   <include package="plone.app.registry" />
-
-  <genericsetup:registerProfile
-      name="default"
-      title="Audit Log"
-      directory="profiles/default"
-      description="Installs the collective.auditlog package"
-      provides="Products.GenericSetup.interfaces.EXTENSION"
-      />
 
   <include file="permissions.zcml" />
   <include file="profiles.zcml" />
@@ -25,9 +17,9 @@
   <browser:page
       name="auditlog-settings"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      permission="cmf.ManagePortal"
       class=".controlpanel.AuditLogSettingsControlPanel"
       template="controlpanel.pt"
-      permission="cmf.ManagePortal"
       />
 
   <browser:resourceDirectory
@@ -38,93 +30,93 @@
   <browser:page
       name="auditlog-view"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      permission="collective.auditlog.ViewAuditlog"
       class="collective.auditlog.browser.LogView"
       template="logview.pt"
-      permission="collective.auditlog.ViewAuditlog"
       />
 
   <interface
-     interface="plone.app.iterate.interfaces.ICheckinEvent"
-     type="plone.contentrules.rule.interfaces.IRuleEventType"
-     name="A working copy has been checked in."
-     />
+      name="A working copy has been checked in."
+      interface="plone.app.iterate.interfaces.ICheckinEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
 
   <interface
-    interface="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
-    type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="An object has been checked out."
-    />
+      name="An object has been checked out."
+      interface="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
 
   <interface
-    interface="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-    type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="A working copy has been cancelled."
-    />
+      name="A working copy has been cancelled."
+      interface="plone.app.iterate.interfaces.ICancelCheckoutEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
 
   <interface
-    interface="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="An object has been moved"
-    />
+      name="An object has been moved"
+      interface="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
   <interface
-    interface="zope.lifecycleevent.interfaces.IObjectAddedEvent"
-    type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="An object has been added"
-    />
+      name="An object has been added"
+      interface="zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
   <interface
-    interface="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
-    type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="An object has been created"
-    />
+      name="An object has been created"
+      interface="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
   <interface
-    interface="OFS.interfaces.IObjectClonedEvent"
-    type="plone.contentrules.rule.interfaces.IRuleEventType"
-    name="An object has been copied"
-    />
+      name="An object has been copied"
+      interface="OFS.interfaces.IObjectClonedEvent"
+      type="plone.contentrules.rule.interfaces.IRuleEventType"
+      />
 
   <!-- Rule triggers -->
   <subscriber
-    for="plone.app.iterate.interfaces.ICheckinEvent"
-    handler=".handlers.execute_event"
-    />
+      for="plone.app.iterate.interfaces.ICheckinEvent"
+      handler=".handlers.execute_event"
+      />
 
   <subscriber
-    for="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
-    handler=".handlers.execute_event"
-    />
+      for="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
+      handler=".handlers.execute_event"
+      />
 
   <subscriber
-    for="plone.app.iterate.interfaces.ICancelCheckoutEvent"
-    handler=".handlers.execute_event"
-    />
+      for="plone.app.iterate.interfaces.ICancelCheckoutEvent"
+      handler=".handlers.execute_event"
+      />
 
   <subscriber
-    for="zope.lifecycleevent.interfaces.IObjectAddedEvent"
-    handler=".handlers.created_event"
-    />
+      for="zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler=".handlers.created_event"
+      />
 
   <subscriber
-      zcml:condition="installed plone.app.dexterity"
       for="plone.dexterity.interfaces.IDexterityContent
            zope.lifecycleevent.IObjectModifiedEvent"
-    handler=".handlers.execute_event"
-    />
+      handler=".handlers.execute_event"
+      zcml:condition="installed plone.app.dexterity"
+      />
 
   <subscriber
-    for="zope.lifecycleevent.interfaces.IObjectRemovedEvent"
-    handler=".handlers.execute_event"
-    />
+      for="zope.lifecycleevent.interfaces.IObjectRemovedEvent"
+      handler=".handlers.execute_event"
+      />
 
   <!-- object added and removed inherit from this event -->
   <subscriber
-    for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
-    handler=".handlers.moved_event"
-    />
+      for="zope.lifecycleevent.interfaces.IObjectMovedEvent"
+      handler=".handlers.moved_event"
+      />
 
   <subscriber
-    for="OFS.interfaces.IObjectClonedEvent"
-    handler=".handlers.execute_event"
-    />
+      for="OFS.interfaces.IObjectClonedEvent"
+      handler=".handlers.execute_event"
+      />
 
   <subscriber
       for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
@@ -142,8 +134,17 @@
       />
 
   <subscriber
-    for="collective.auditlog.interfaces.IAuditableActionPerformedEvent"
-    handler=".handlers.custom_event"
-    />
+      for="collective.auditlog.interfaces.IAuditableActionPerformedEvent"
+      handler=".handlers.custom_event"
+      />
+
+
+  <genericsetup:registerProfile
+      name="default"
+      title="Audit Log"
+      description="Installs the collective.auditlog package"
+      provides="Products.GenericSetup.interfaces.EXTENSION"
+      directory="profiles/default"
+      />
 
 </configure>

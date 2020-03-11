@@ -4,7 +4,9 @@
     <role name="Auditlog Viewer" />
   </roles>
   <permissions>
-    <permission name="collective.auditlog: View Auditlog" acquire="True">
+    <permission acquire="True"
+                name="collective.auditlog: View Auditlog"
+    >
       <role name="Manager" />
       <role name="Site Administrator" />
       <role name="Auditlog Viewer" />

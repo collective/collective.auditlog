@@ -1,5 +1,4 @@
 # coding=utf-8
-from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
 from OFS.interfaces import IObjectClonedEvent
@@ -32,7 +31,6 @@ from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 import inspect
 import json
 import logging
-import warnings
 
 
 try:
@@ -89,7 +87,6 @@ class AuditActionExecutor(object):
             return False
 
         event = self.event
-        obj = event.object
         event_iface = next(event.__implemented__.interfaces())
 
         rule = self.rule

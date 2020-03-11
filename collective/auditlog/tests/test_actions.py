@@ -71,14 +71,14 @@ class TestActions(unittest.TestCase):
         )
         registry = getUtility(IRegistry)
         registry[registry_key] = [
-            u"plone.app.iterate.interfaces.ICheckinEvent",
+            u"OFS.interfaces.IObjectClonedEvent",
             u"plone.app.iterate.interfaces.IBeforeCheckoutEvent",
             u"plone.app.iterate.interfaces.ICancelCheckoutEvent",
-            u"zope.lifecycleevent.interfaces.IObjectMovedEvent",
-            u"OFS.interfaces.IObjectClonedEvent",
+            u"plone.app.iterate.interfaces.ICheckinEvent",
+            u"Products.CMFCore.interfaces.IActionSucceededEvent",
             u"zope.lifecycleevent.interfaces.IObjectAddedEvent",
             u"zope.lifecycleevent.interfaces.IObjectModifiedEvent",
-            u"Products.CMFCore.interfaces.IActionSucceededEvent",
+            u"zope.lifecycleevent.interfaces.IObjectMovedEvent",
         ]
 
     def create_page(self, title="Page"):
