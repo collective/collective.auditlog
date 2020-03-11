@@ -15,9 +15,9 @@ Once installed and called for the first time
 it will create a table called "audit" if it does not already exist,
 so there is no need to create the table manually.
 
-AuditLog attempts to use plone.app.async or collective.celery to 
-perform the store actions, but if that fails it will finish the task 
-directly. The advantage of this is to allow an individual 'worker' 
+AuditLog attempts to use plone.app.async or collective.celery to
+perform the store actions, but if that fails it will finish the task
+directly. The advantage of this is to allow an individual 'worker'
 client to run Async and handle all of these request.
 If there is a lot of activity it will not get backed up.
 Async queues the job up and handles it as it can
@@ -82,13 +82,13 @@ except obj can be set to None if no value is available.
 
 In addition to control panel configuration, connection parameters can be
 set using the zope-conf-additional directive in the buildout. Note that
-this will take precedence over any control panel configuration. Example:
+this will take precedence over any control panel configuration. Example::
 
-zope-conf-additional =
-    <product-config collective.auditlog>
-        audit-connection-string postgres://enfold:enfold@localhost/auditlog
-        audit-connection-params {"pool_recycle": 3600, "echo": true}
-    </product-config>
+    zope-conf-additional =
+        <product-config collective.auditlog>
+            audit-connection-string postgres://enfold:enfold@localhost/auditlog
+            audit-connection-params {"pool_recycle": 3600, "echo": true}
+        </product-config>
 
 There is now a view for the audit log entries, located at @@auditlog-view.
 There is no link to it from the control panel at the moment. The view uses
@@ -112,19 +112,19 @@ a special catalog will be enabled to store plone indexing information as
 well.
 
 Once this storage is enabled, you can search the logs using a catalog-like
-query:
+query::
 
-from datetime import datetime
-from collective.auditlog.catalog import searchAudited
+    from datetime import datetime
+    from collective.auditlog.catalog import searchAudited
 
-from = datatime(2018,6,1)
-to = datetime(2018,12,31)
-query = {'portal_type': 'Document',
-         'review_state': 'published'}
-audited = searchAudited(from_date=from,
-                        to_date=to,
-                        actions=['added', 'modified'],
-                        **query)
+    from = datatime(2018,6,1)
+    to = datetime(2018,12,31)
+    query = {'portal_type': 'Document',
+            'review_state': 'published'}
+    audited = searchAudited(from_date=from,
+                            to_date=to,
+                            actions=['added', 'modified'],
+                            **query)
 
 All of the parameters are optional, but an empty query will return all
 indexed objects, so use with care.
@@ -146,27 +146,27 @@ eggs =
     collective.celery
 
 We still use the celery-broker part, for clarity. The celery part is
-still required, but is simpler:
+still required, but is simpler::
 
-[celery-broker]
-host = 127.0.0.1
-port = 6379
+    [celery-broker]
+    host = 127.0.0.1
+    port = 6379
 
-[celery]
-recipe = zc.recipe.egg
-environment-vars = ${buildout:environment-vars}
-eggs =
-    ${buildout:eggs}
-    flower
-scripts = pcelery flower
+    [celery]
+    recipe = zc.recipe.egg
+    environment-vars = ${buildout:environment-vars}
+    eggs =
+        ${buildout:eggs}
+        flower
+    scripts = pcelery flower
 
 The celery part depends on having some variables added to the main
-environment-vars section:
+environment-vars section::
 
-environment-vars =
-    CELERY_BROKER_URL redis://${celery-broker:host}:${celery-broker:port}
-    CELERY_RESULT_BACKEND redis://${celery-broker:host}:${celery-broker:port}
-    CELERY_TASKS collective.es.index.tasks
+    environment-vars =
+        CELERY_BROKER_URL redis://${celery-broker:host}:${celery-broker:port}
+        CELERY_RESULT_BACKEND redis://${celery-broker:host}:${celery-broker:port}
+        CELERY_TASKS collective.es.index.tasks
 
 Additional Zope configuration
 -----------------------------
