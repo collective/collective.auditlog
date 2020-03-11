@@ -1,4 +1,5 @@
 # coding=utf-8
+from Acquisition import aq_parent
 from collective.auditlog import td
 from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.catalog import catalogEntry
@@ -7,6 +8,8 @@ from datetime import datetime
 from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import get_installer
+from Products.CMFPlone.utils import pretty_title_or_id
 from Zope2 import app
 from zope.component import getUtility
 from zope.component import queryUtility
@@ -18,8 +21,8 @@ from zope.globalrequest import getRequest
 def is_installed():
     try:
         site = getSite()
-        qi = getToolByName(site, "portal_quickinstaller")
-        installed = qi.isProductInstalled("collective.auditlog")
+        installer = get_installer(site)
+        installed = installer.is_product_installed("collective.auditlog")
         registry = queryUtility(IRegistry, context=site)
         installed = (
             installed
@@ -120,7 +123,7 @@ def getObjectInfo(obj):
         site_name=getHostname(),
         uid=getUID(obj),
         type=getattr(obj, "portal_type", ""),
-        title=obj.Title() if getattr(obj, "Title", False) else obj_id,
+        title=pretty_title_or_id(aq_parent(obj), obj),
         path="/".join(obj.getPhysicalPath())
         if getattr(obj, "getPhysicalPath", False)
         else "/",

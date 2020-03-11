@@ -8,12 +8,6 @@ from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
 
 
-try:
-    from plone.testing import zope as zope_testing
-except ImportError:
-    from plone.testing import z2 as zope_testing
-
-
 class AuditLog(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
@@ -24,7 +18,6 @@ class AuditLog(PloneSandboxLayer):
 
         self.loadZCML(package=plone.app.contenttypes)
         self.loadZCML(package=collective.auditlog)
-        zope_testing.installProduct(app, "collective.auditlog")
 
         collective.auditlog.asyncqueue.queue_job = False
 
