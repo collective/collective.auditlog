@@ -5,10 +5,10 @@ The package allows you to audit actions being done on your site.
 It accomplishes this by using configurable content rules.
 
 By default, after you activate this package,
-it'll create all the content rules
+it will create all the content rules
 that can be used for auditing with only the Page type to audit OOTB.
 If you want to audit more types of objects,
-you'll need to configure the content rules.
+you will need to configure the content rules.
 
 The audits are stored into a relational database.
 Once installed and called for the first time
@@ -58,9 +58,9 @@ USAGE
 For now, collective.auditlog uses SQLAlchemy for storing data. To use
 postgres, it's necessary to add the 'psycopg2' egg to the buildout. Once
 the product is installed, add the correct connection URL to the product
-setup. Example:
+setup. Example::
 
-postgresql://enfold:enfold@localhost/auditlog
+    postgresql://enfold:enfold@localhost/auditlog
 
 By default, collective.auditlog uses content rules to define which events
 to capture. An additional mechanism has been added that allows the site to
@@ -69,11 +69,11 @@ Simply choose from the picklist in the config for this to work. If no
 events are selected, no logging will occur.
 
 It is possible to log custom events from application code by using the
-AuditableActionPerformedEvent, like this:
+AuditableActionPerformedEvent, like this::
 
-from zope event import notify
-from collective.auditlog.interfaces import AuditableActionPerformedEvent
-notify(AuditableActionPerformedEvent(obj, request, "action", "note"))
+    from zope event import notify
+    from collective.auditlog.interfaces import AuditableActionPerformedEvent
+    notify(AuditableActionPerformedEvent(obj, request, "action", "note"))
 
 'obj', refers to the affected content object; 'request' is the current zope
 request, 'action' and 'note' correspond to the logged action and its
@@ -138,12 +138,12 @@ can be made to look for those even if they are gone from Plone.
 Celery Integration
 ==================
 The collective.celery package requires adding the celery and
-collective.celery eggs to the mian buildout section eggs. Example:
+collective.celery eggs to the mian buildout section eggs. Example::
 
-eggs =
-    celery
-    Plone
-    collective.celery
+    eggs =
+        celery
+        Plone
+        collective.celery
 
 We still use the celery-broker part, for clarity. The celery part is
 still required, but is simpler::
@@ -182,16 +182,17 @@ Monitoring celery tasks
 
 Celery needs to be started as an independent process. It's recommended to
 use supervisord for this. To try it out from the command line, you can run
+use supervisord for this. To try it out from the command line, you can run
 "bin/pcelery worker" from the buildout directory. Note that the script is
-now named 'pcelery' and it needs a path to the zope configuration. Example:
+now named 'pcelery' and it needs a path to the zope configuration. Example::
 
-$ bin/pcelery worker parts/client1/etc/zope.conf
+    $ bin/pcelery worker parts/client1/etc/zope.conf
 
 Flower is included in this setup. Run "bin/flower" from the buildout
 directory and consult the dashboard at http://localhost:5555 using a
-browser. Note that the broker is now a requried parameter:
+browser. Note that the broker is now a requried parameter::
 
-$ bin/flower --broker redis://127.0.0.1:6379
+    $ bin/flower --broker redis://127.0.0.1:6379
 
 Dependencies
 ============
