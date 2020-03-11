@@ -1,8 +1,8 @@
 Changelog
 =========
 
-2.0 (unreleased)
-----------------
+2.0.0a1 (2020-03-11)
+--------------------
 
 - Remove inconsistent passing of ``request`` parameter and use zope.globalrequest instead.
   [thet]
