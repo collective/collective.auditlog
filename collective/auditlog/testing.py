@@ -6,7 +6,6 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import setRoles
 from plone.app.testing import TEST_USER_ID
-from zope.configuration import xmlconfig
 
 
 try:
@@ -19,28 +18,17 @@ class AuditLog(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
-        # load ZCML
-
         import plone.app.contenttypes
-
-        xmlconfig.file(
-            "configure.zcml", plone.app.contenttypes, context=configurationContext
-        )
-
         import collective.auditlog
-
-        xmlconfig.file(
-            "configure.zcml", collective.auditlog, context=configurationContext
-        )
-        zope_testing.installProduct(app, "collective.auditlog")
-
-        # no async for testing
         import collective.auditlog.asyncqueue
+
+        self.loadZCML(package=plone.app.contenttypes)
+        self.loadZCML(package=collective.auditlog)
+        zope_testing.installProduct(app, "collective.auditlog")
 
         collective.auditlog.asyncqueue.queue_job = False
 
     def setUpPloneSite(self, portal):
-        # install into the Plone site
         applyProfile(portal, "plone.app.contenttypes:default")
         applyProfile(portal, "collective.auditlog:default")
         portal.portal_workflow.setDefaultChain("simple_publication_workflow")
