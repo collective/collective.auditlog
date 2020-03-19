@@ -83,7 +83,8 @@ class AuditActionExecutor(object):
 
     @property
     def can_execute(self):
-        if self.request.environ.get("disable.auditlog", False):
+        environ = getattr(self.request, "environ", {})
+        if environ.get("disable.auditlog", False):
             return False
 
         event = self.event
@@ -126,6 +127,7 @@ class AuditActionExecutor(object):
         event = self.event
         obj = event.object
         data = {"info": ""}
+        environ = getattr(self.request, "environ", {})
 
         # the order of those interface checks matters since some interfaces
         # inherit from others
@@ -169,15 +171,15 @@ class AuditActionExecutor(object):
             info = {"message": event.message}
             data["info"] = json.dumps(info)
             action = "checked in"
-            self.request.environ["disable.auditlog"] = True
+            environ["disable.auditlog"] = True
             data["working_copy"] = "/".join(obj.getPhysicalPath())
             obj = event.baseline
         elif IBeforeCheckoutEvent.providedBy(event):
             action = "checked out"
-            self.request.environ["disable.auditlog"] = True
+            environ["disable.auditlog"] = True
         elif ICancelCheckoutEvent.providedBy(event):
             action = "cancel check out"
-            self.request.environ["disable.auditlog"] = True
+            environ["disable.auditlog"] = True
             data["working_copy"] = "/".join(obj.getPhysicalPath())
             obj = event.baseline
         elif IUserLoggedInEvent.providedBy(event):
