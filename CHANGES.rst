@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0a2 (unreleased)
+2.0.0a2 (2020-03-19)
 --------------------
 
 - Fix request not having an environment attribute in instance scripts
