@@ -4,6 +4,10 @@ Changelog
 2.0.0a3 (unreleased)
 --------------------
 
+- Add ``collective.auditlog.EventTypesVocabulary`` vocabulary.
+  This one can be extended by providing a own implementation with ``<includeOverride>``.
+  [thet]
+
 - Connection parameters should be optional.
   [thet]
 

@@ -3,60 +3,8 @@ from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 from zope.interface.declarations import implementer
 from zope.interface.interface import Attribute
-from zope.schema.vocabulary import SimpleTerm
-from zope.schema.vocabulary import SimpleVocabulary
-
 
 _ = MessageFactory("collective.auditlog")
-
-EVENT_TYPES = [
-    (
-        "Products.CMFCore.interfaces.IActionSucceededEvent",
-        "A workflow action succeeded",
-    ),
-    (
-        "plone.app.iterate.interfaces.IBeforeCheckoutEvent",
-        "An object has been checked out.",
-    ),
-    (
-        "plone.app.iterate.interfaces.ICancelCheckoutEvent",
-        "A working copy has been cancelled.",
-    ),
-    (
-        "plone.app.iterate.interfaces.ICheckinEvent",
-        "A working copy has been checked in.",
-    ),
-    (
-        "zope.lifecycleevent.interfaces.IObjectMovedEvent",  # noqa for black
-        "An object has been moved",
-    ),
-    (
-        "zope.lifecycleevent.interfaces.IObjectRemovedEvent",
-        "An object has been removed",
-    ),
-    (
-        "zope.lifecycleevent.interfaces.IObjectModifiedEvent",
-        "An object has been modified",
-    ),
-    (
-        "zope.lifecycleevent.interfaces.IObjectAddedEvent",  # noqa for black
-        "An object has been added",
-    ),
-    (
-        "OFS.interfaces.IObjectClonedEvent",  # noqa for black
-        "An object has been copied",
-    ),
-    (
-        "Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent",
-        "A user logged in",
-    ),
-    (
-        "Products.PluggableAuthService.interfaces.events.IUserLoggedOutEvent",
-        "A user logged out",
-    ),
-]
-
-EVENT_TYPES_VOCAB = [SimpleTerm(e[0], e[0], e[1]) for e in EVENT_TYPES]
 
 
 class IAuditLogSettings(Interface):
@@ -130,7 +78,7 @@ class IAuditLogSettings(Interface):
             ),
         ),
         default=[],
-        value_type=schema.Choice(vocabulary=SimpleVocabulary(EVENT_TYPES_VOCAB)),
+        value_type=schema.Choice(vocabulary='collective.auditlog.EventTypesVocabulary'),
     )
 
 
