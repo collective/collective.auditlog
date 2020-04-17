@@ -39,4 +39,5 @@
       event="zope.interface.interfaces.IObjectEvent"
       schema=".action.IAuditAction"
       />
+
 </configure>

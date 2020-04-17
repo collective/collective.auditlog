@@ -11,8 +11,8 @@ _ = MessageFactory("collective.auditlog")
 
 EVENT_TYPES = [
     (
-        "plone.app.iterate.interfaces.ICheckinEvent",
-        "A working copy has been checked in.",
+        "Products.CMFCore.interfaces.IActionSucceededEvent",
+        "A workflow action succeeded",
     ),
     (
         "plone.app.iterate.interfaces.IBeforeCheckoutEvent",
@@ -22,20 +22,29 @@ EVENT_TYPES = [
         "plone.app.iterate.interfaces.ICancelCheckoutEvent",
         "A working copy has been cancelled.",
     ),
-    ("zope.lifecycleevent.interfaces.IObjectMovedEvent", "An object has been moved"),
-    ("zope.lifecycleevent.interfaces.IObjectAddedEvent", "An object has been added"),
     (
-        "zope.lifecycleevent.interfaces.IObjectModifiedEvent",
-        "An object has been modified",
+        "plone.app.iterate.interfaces.ICheckinEvent",
+        "A working copy has been checked in.",
+    ),
+    (
+        "zope.lifecycleevent.interfaces.IObjectMovedEvent",  # noqa for black
+        "An object has been moved",
     ),
     (
         "zope.lifecycleevent.interfaces.IObjectRemovedEvent",
         "An object has been removed",
     ),
-    ("OFS.interfaces.IObjectClonedEvent", "An object has been copied"),
     (
-        "Products.CMFCore.interfaces.IActionSucceededEvent",
-        "A workflow action succeeded",
+        "zope.lifecycleevent.interfaces.IObjectModifiedEvent",
+        "An object has been modified",
+    ),
+    (
+        "zope.lifecycleevent.interfaces.IObjectAddedEvent",  # noqa for black
+        "An object has been added",
+    ),
+    (
+        "OFS.interfaces.IObjectClonedEvent",  # noqa for black
+        "An object has been copied",
     ),
     (
         "Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent",

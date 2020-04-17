@@ -126,8 +126,10 @@ class AuditActionExecutor(object):
         """
         event = self.event
         obj = event.object
-        data = {"info": ""}
         environ = getattr(self.request, "environ", {})
+        action = None
+        info = None
+        working_copy = None
 
         # the order of those interface checks matters since some interfaces
         # inherit from others
@@ -143,49 +145,44 @@ class AuditActionExecutor(object):
             # moves can also be renames. Check the parent object
             if event.oldParent == event.newParent:
                 if self.rule is None or "Rename" in self.rule.rule.title:
-                    info = {"previous_id": event.oldName}
-                    data["info"] = json.dumps(info)
                     action = "rename"
+                    info = {"previous_id": event.oldName}
                 else:
                     # cut out here, double action for this event
                     return True
             else:
                 if self.rule is None or "Moved" in self.rule.rule.title:
+                    action = "moved"
                     parent_path = "/".join(event.oldParent.getPhysicalPath())
                     previous_location = u"{0}/{1}".format(parent_path, event.oldName)
                     info = {"previous_location": previous_location}
-                    data["info"] = json.dumps(info)
-                    action = "moved"
                 else:
-                    # step out immediately since this could be a double action
+                    # cut out here, double action for this event
                     return True
         elif IObjectModifiedEvent.providedBy(event):
             action = "modified"
         elif IActionSucceededEvent.providedBy(event):
-            info = {"transition": event.action, "comments": self.get_history_comment()}
-            data["info"] = json.dumps(info)
             action = "workflow"
+            info = {"transition": event.action, "comments": self.get_history_comment()}
         elif IObjectClonedEvent.providedBy(event):
             action = "copied"
         elif ICheckinEvent.providedBy(event):
             info = {"message": event.message}
-            data["info"] = json.dumps(info)
             action = "checked in"
+            working_copy = "/".join(obj.getPhysicalPath())
             environ["disable.auditlog"] = True
-            data["working_copy"] = "/".join(obj.getPhysicalPath())
             obj = event.baseline
         elif IBeforeCheckoutEvent.providedBy(event):
             action = "checked out"
             environ["disable.auditlog"] = True
         elif ICancelCheckoutEvent.providedBy(event):
             action = "cancel check out"
+            working_copy = "/".join(obj.getPhysicalPath())
             environ["disable.auditlog"] = True
-            data["working_copy"] = "/".join(obj.getPhysicalPath())
             obj = event.baseline
         elif IUserLoggedInEvent.providedBy(event):
             action = "logged in"
             info = {"user": event.object.getUserName()}
-            data["info"] = json.dumps(info)
         elif IUserLoggedOutEvent.providedBy(event):
             action = "logged out"
         else:
@@ -201,7 +198,7 @@ class AuditActionExecutor(object):
                     return True
             # if enabled in control panel, use original object and move
             # working copy path to working_copy
-            data["working_copy"] = "/".join(obj.getPhysicalPath())
+            working_copy = "/".join(obj.getPhysicalPath())
             if WorkingCopyRelation:
                 relationships = obj.getReferences(WorkingCopyRelation.relationship)
             else:
@@ -212,8 +209,12 @@ class AuditActionExecutor(object):
                 return True
             obj = relationships[0]
 
-        data.update(self._getObjectInfo(obj))
+        data = self._getObjectInfo(obj)
         data["action"] = action
+        if info:
+            data["info"] = json.dumps(info)
+        if working_copy:
+            data["working_copy"] = working_copy
         return data
 
     def _addLogEntry(self, logentry):
