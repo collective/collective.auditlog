@@ -4,7 +4,8 @@ Changelog
 2.0.0a3 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Connection parameters should be optional.
+  [thet]
 
 
 2.0.0a2 (2020-03-19)

@@ -102,7 +102,7 @@ class IAuditLogSettings(Interface):
                 u'E.g.: \'{"pool_recycle": 3600, "echo": true}\' '
             ),
         ),
-        required=True,
+        required=False,
         default=u"",
     )
 
