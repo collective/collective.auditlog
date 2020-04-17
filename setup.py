@@ -2,10 +2,8 @@
 from setuptools import find_packages
 from setuptools import setup
 
-import os
 
-
-version = "2.0.0a2.dev0"
+version = "2.0.0a3.dev0"
 
 
 long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read(),])

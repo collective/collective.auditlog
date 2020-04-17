@@ -1,10 +1,17 @@
 Changelog
 =========
 
-2.0.0a2 (unreleased)
+2.0.0a3 (unreleased)
 --------------------
 
 - Nothing changed yet.
+
+
+2.0.0a2 (2020-03-19)
+--------------------
+
+- Fix request not having an environment attribute in instance scripts
+  [ale-rt]
 
 
 2.0.0a1 (2020-03-11)

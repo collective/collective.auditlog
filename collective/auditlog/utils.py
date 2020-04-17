@@ -58,12 +58,13 @@ def getHostname():
     stolen from the developer manual
     """
     request = getRequest()
-    if "HTTP_X_FORWARDED_HOST" in request.environ:
+    environ = getattr(request, "environ", {})
+    if "HTTP_X_FORWARDED_HOST" in environ:
         # Virtual host
-        host = request.environ["HTTP_X_FORWARDED_HOST"]
-    elif "HTTP_HOST" in request.environ:
+        host = environ["HTTP_X_FORWARDED_HOST"]
+    elif "HTTP_HOST" in environ:
         # Direct client request
-        host = request.environ["HTTP_HOST"]
+        host = environ["HTTP_HOST"]
     else:
         return None
 
