@@ -1,6 +1,7 @@
 # coding=utf-8
 from Acquisition import aq_base
 from Acquisition.interfaces import IAcquisitionWrapper
+from collective.auditlog import db
 from collective.auditlog import td
 from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.catalog import catalogEntry
@@ -12,7 +13,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
 from Zope2 import app
 from zope.component import getUtility
-from zope.component import queryUtility
 from zope.component.hooks import getSite as getSiteHook
 from zope.event import notify
 from zope.globalrequest import getRequest
@@ -43,13 +43,8 @@ def is_installed():
         site = getSite()
         installer = get_installer(site)
         installed = installer.is_product_installed("collective.auditlog")
-        registry = queryUtility(IRegistry, context=site)
-        storage = (
-            registry.get("collective.auditlog.interfaces.IAuditLogSettings.storage")
-            if registry
-            else False
-        )
-        installed = installed and storage
+        storage = db.getEngine()
+        installed = installed and storage is not None
     except AttributeError:
         installed = False
     return installed

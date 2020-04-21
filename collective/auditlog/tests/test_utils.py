@@ -1,6 +1,7 @@
 # coding=utf-8
 from collective.auditlog.testing import AuditLog_INTEGRATION_TESTING
 from collective.auditlog import utils
+from plone import api
 
 import unittest
 
@@ -77,3 +78,19 @@ class TestUtils(unittest.TestCase):
             type("TestClass", (object,), {"id": "test no title but id"})()
         )
         self.assertEqual(info["title"], "test no title but id (id)")
+
+    def test_is_installed(self):
+        """Should return true, if test setup was run properly.
+        """
+        self.assertTrue(utils.is_installed())
+
+    def test_not_installed(self):
+        """Should return false, if connection parameters are missing.
+        """
+        from collective.auditlog import db
+
+        db.engine = None  # resetting global engine
+        api.portal.set_registry_record(
+            "collective.auditlog.interfaces.IAuditLogSettings.connectionstring", u""
+        )
+        self.assertFalse(utils.is_installed())

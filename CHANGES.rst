@@ -4,6 +4,9 @@ Changelog
 2.0.0a3 (unreleased)
 --------------------
 
+- Fix ``is_installed`` method to also work with configuration set via ``zope.conf``.
+  [thet]
+
 - Provide more object info in case for missing path, title or portal type information.
   In the first case an object id is tried to used, in the second case the string representation of the Python object.
   This way some more useable information is presented in case of deletion of content rules and the like.

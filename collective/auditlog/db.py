@@ -28,9 +28,11 @@ def getEngine(conn_string=None, conn_parameters=None, req=None):
         if conn_string is None:
             conn_string = config.get("audit-connection-string", None)
         if conn_string is None:
-            conn_string = registry[
+            conn_string = registry.get(
                 "collective.auditlog.interfaces.IAuditLogSettings.connectionstring"
-            ]
+            )
+        if not conn_string:
+            return
         if conn_parameters is None:
             conn_parameters = config.get("audit-connection-params", None)
         if conn_parameters is None:
