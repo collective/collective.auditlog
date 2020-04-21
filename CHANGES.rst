@@ -4,7 +4,20 @@ Changelog
 2.0.0a3 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Fix ``is_installed`` method to also work with configuration set via ``zope.conf``.
+  [thet]
+
+- Provide more object info in case for missing path, title or portal type information.
+  In the first case an object id is tried to used, in the second case the string representation of the Python object.
+  This way some more useable information is presented in case of deletion of content rules and the like.
+  [thet]
+
+- Add ``collective.auditlog.EventTypesVocabulary`` vocabulary.
+  This one can be extended by providing a own implementation with ``<includeOverride>``.
+  [thet]
+
+- Connection parameters should be optional.
+  [thet]
 
 
 2.0.0a2 (2020-03-19)

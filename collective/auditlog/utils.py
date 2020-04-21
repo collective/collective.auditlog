@@ -1,5 +1,7 @@
 # coding=utf-8
-from Acquisition import aq_parent
+from Acquisition import aq_base
+from Acquisition.interfaces import IAcquisitionWrapper
+from collective.auditlog import db
 from collective.auditlog import td
 from collective.auditlog.asyncqueue import queueJob
 from collective.auditlog.catalog import catalogEntry
@@ -9,69 +11,11 @@ from plone.registry.interfaces import IRegistry
 from plone.uuid.interfaces import IUUID
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import get_installer
-from Products.CMFPlone.utils import pretty_title_or_id
 from Zope2 import app
 from zope.component import getUtility
-from zope.component import queryUtility
 from zope.component.hooks import getSite as getSiteHook
 from zope.event import notify
 from zope.globalrequest import getRequest
-
-
-def is_installed():
-    try:
-        site = getSite()
-        installer = get_installer(site)
-        installed = installer.is_product_installed("collective.auditlog")
-        registry = queryUtility(IRegistry, context=site)
-        installed = (
-            installed
-            and registry
-            and ("collective.auditlog.interfaces.IAuditLogSettings.storage" in registry)
-        )
-    except AttributeError:
-        installed = False
-    return installed
-
-
-def getUID(context):
-    uid = IUUID(context, None)
-    if uid is not None:
-        return uid
-
-    if hasattr(context, "UID"):
-        return context.UID()
-
-    try:
-        return "/".join(context.getPhysicalPath())
-    except AttributeError:
-        pass
-
-    try:
-        return context.id
-    except AttributeError:
-        return "unknown"
-
-
-def getHostname():
-    """
-    stolen from the developer manual
-    """
-    request = getRequest()
-    environ = getattr(request, "environ", {})
-    if "HTTP_X_FORWARDED_HOST" in environ:
-        # Virtual host
-        host = environ["HTTP_X_FORWARDED_HOST"]
-    elif "HTTP_HOST" in environ:
-        # Direct client request
-        host = environ["HTTP_HOST"]
-    else:
-        return None
-
-    # separate to domain name and port sections
-    host = host.split(":")[0].lower()
-
-    return host
 
 
 def getSite():
@@ -94,6 +38,47 @@ def getSite():
     return site
 
 
+def is_installed():
+    try:
+        site = getSite()
+        installer = get_installer(site)
+        installed = installer.is_product_installed("collective.auditlog")
+        storage = db.getEngine()
+        installed = installed and storage is not None
+    except AttributeError:
+        installed = False
+    return installed
+
+
+def getUID(context):
+    uid = IUUID(context, None)
+    if uid is not None:
+        return uid
+
+    uid = getattr(context, "UID", None)
+    return uid() if callable(uid) else uid
+
+
+def getHostname():
+    """Stolen from the developer manual.
+    """
+    request = getRequest()
+    environ = getattr(request, "environ", {})
+    if "HTTP_X_FORWARDED_HOST" in environ:
+        # Virtual host
+        host = environ["HTTP_X_FORWARDED_HOST"]
+    elif "HTTP_HOST" in environ:
+        # Direct client request
+        host = environ["HTTP_HOST"]
+    else:
+        return None
+
+    # separate to domain name and port sections
+    host = host.split(":")[0].lower()
+
+    return host
+
+
 def getUser():
     username = "unknown"
     try:
@@ -113,28 +98,44 @@ def getObjectInfo(obj):
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
-    obj_id = obj.id
-    if callable(obj_id):
-        obj_id = obj_id()
-    if not obj_id:
-        obj_id = "Zope"
-    data = dict(
-        performed_on=datetime.utcnow(),
-        user=getUser(),
-        site_name=getHostname(),
-        uid=getUID(obj),
-        type=getattr(obj, "portal_type", ""),
-        title=pretty_title_or_id(aq_parent(obj), obj),
-        path="/".join(obj.getPhysicalPath())
-        if getattr(obj, "getPhysicalPath", False)
-        else "/",
-    )
+    obj_base = obj
+    if IAcquisitionWrapper.providedBy(obj):
+        obj_base = aq_base(obj)
+
+    id = getattr(obj_base, "id", None)
+    id = "{} (id)".format(id) if id else None
+
+    path = id
+    if getattr(obj, "getPhysicalPath", False):
+        try:
+            path = "/".join(obj.getPhysicalPath())
+        except AttributeError:
+            pass
+
+    title = getattr(obj_base, "title", getattr(obj_base, "Title", id))
+    title = title() if callable(title) else title
+
+    portal_type = getattr(obj_base, "portal_type", None)
+    if not portal_type:
+        portal_type = "{}.{} (Python class)".format(
+            obj.__class__.__module__, obj.__class__.__name__
+        )
+
+    data = {
+        "path": path,
+        "performed_on": datetime.utcnow(),
+        "site_name": getHostname(),
+        "title": title,
+        "type": portal_type,
+        "uid": getUID(obj_base),
+        "user": getUser(),
+    }
     return data
 
 
 def addLogEntry(obj, data):
     # XXX getLogEntry sometime returns True, probably it should just return None
-    if not data or data == True:
+    if not data or data is True:
         return
     tdata = td.get()
     if not tdata.registered:

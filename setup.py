@@ -35,7 +35,12 @@ setup(
     namespace_packages=["collective"],
     include_package_data=True,
     zip_safe=False,
-    install_requires=["setuptools", "sqlalchemy", "plone.app.contentrules",],
+    install_requires=[
+        "setuptools",
+        "sqlalchemy",
+        "plone.app.contentrules",
+        "plone.api",
+    ],
     extras_require={
         "celery": ["collective.celery",],
         "test": [

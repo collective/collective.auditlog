@@ -138,6 +138,10 @@
       handler=".handlers.custom_event"
       />
 
+  <utility
+      component=".vocabularies.EventTypesVocabulary"
+      name="collective.auditlog.EventTypesVocabulary"
+      />
 
   <genericsetup:registerProfile
       name="default"
