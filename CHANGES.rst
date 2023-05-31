@@ -1,10 +1,12 @@
 Changelog
 =========
 
-2.0.0a3 (unreleased)
---------------------
+2.0.0 (2023-05-31)
+------------------
 
-- Nothing changed yet.
+- Re-release 2.0.0a2 as 2.0.0.
+  This will be the last release supporting Python2.7.
+  [ale-rt]
 
 
 2.0.0a2 (2020-03-19)
