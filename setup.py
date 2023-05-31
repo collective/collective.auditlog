@@ -42,7 +42,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "setuptools",
-        "sqlalchemy<2",
+        "sqlalchemy>=1.4,<2",
         "plone.app.contentrules",
     ],
     python_requires=">=3.7",
