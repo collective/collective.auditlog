@@ -1,12 +1,16 @@
-# coding=utf-8
 from setuptools import find_packages
 from setuptools import setup
 
 
-version = "2.0.1.dev0"
+version = "3.0.0.dev0"
 
 
-long_description = "\n\n".join([open("README.rst").read(), open("CHANGES.rst").read(),])
+long_description = "\n\n".join(
+    [
+        open("README.rst").read(),
+        open("CHANGES.rst").read(),
+    ]
+)
 
 
 setup(
@@ -17,13 +21,14 @@ setup(
     # Get more strings from
     # http://pypi.python.org/pypi?:action=list_classifiers
     classifiers=[
+        "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-        "Framework :: Plone :: 5.1",
         "Framework :: Plone :: 5.2",
         "Framework :: Plone :: Addon",
+        "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Operating System :: OS Independent",
     ],
     keywords="Plone Audit Log",
@@ -35,9 +40,16 @@ setup(
     namespace_packages=["collective"],
     include_package_data=True,
     zip_safe=False,
-    install_requires=["setuptools", "sqlalchemy", "plone.app.contentrules",],
+    install_requires=[
+        "setuptools",
+        "sqlalchemy<2",
+        "plone.app.contentrules",
+    ],
+    python_requires=">=3.7",
     extras_require={
-        "celery": ["collective.celery",],
+        "celery": [
+            "collective.celery",
+        ],
         "test": [
             "plone.app.testing",
             "plone.app.contenttypes",

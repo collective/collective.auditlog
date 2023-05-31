@@ -67,7 +67,7 @@
 
     $.infinitescroll.prototype = {
 
-        /*	
+        /*
             ----------------------------
             Private methods
             ----------------------------
@@ -262,7 +262,7 @@
             } else if (path.match(/^(.*?)\b2\b(.*?$)/)) {
                 path = path.match(/^(.*?)\b2\b(.*?$)/).slice(1);
 
-                // if there is any 2 in the url at all.    
+                // if there is any 2 in the url at all.
             } else if (path.match(/^(.*?)2(.*?$)/)) {
 
                 // page= is used in django:
@@ -282,7 +282,7 @@
                     path = path.match(/^(.*?page=)1(\/.*|$)/).slice(1);
                     return path;
                 } else {
-                    this._debug('Sorry, we couldn\'t parse your Next (Previous Posts) URL. Verify your the css selector points to the correct A tag. If you still get this error: yell, scream, and kindly ask for help at infinite-scroll.com.');
+                    this._debug('Sorry, we could not parse your Next (Previous Posts) URL. Verify your the css selector points to the correct A tag. If you still get this error: yell, scream, and kindly ask for help at infinite-scroll.com.');
                     // Get rid of isInvalidPage to allow permalink to state
                     opts.state.isInvalidPage = true;  //prevent it from running on this page.
                 }
@@ -402,7 +402,7 @@
 
             this._debug('math:', pixelsFromWindowBottomToBottom, opts.pixelsFromNavToBottom);
 
-            // if distance remaining in the scroll (including buffer) is less than the orignal nav to bottom....
+            // if distance remaining in the scroll (including buffer) is less than the original nav to bottom....
             return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromNavToBottom);
 
         },
@@ -481,7 +481,7 @@
                 $(this).parent().fadeOut(opts.loading.speed);
             });
 
-            // user provided callback when done    
+            // user provided callback when done
             opts.errorCallback.call($(opts.contentSelector)[0],'done');
         },
 
@@ -497,7 +497,7 @@
             return true;
         },
 
-        /*	
+        /*
             ----------------------------
             Public methods
             ----------------------------
@@ -533,7 +533,7 @@
 			// increment the URL bit. e.g. /page/3/
 			opts.state.currPage++;
 
-            // Manually control maximum page 
+            // Manually control maximum page
             if ( opts.maxPage != undefined && opts.state.currPage > opts.maxPage ){
                 this.destroy();
                 return;
@@ -686,7 +686,7 @@
     };
 
 
-    /*	
+    /*
         ----------------------------
         Infinite Scroll function
         ----------------------------
@@ -700,7 +700,7 @@
         - https://github.com/jsor/jcarousel/blob/master/lib/jquery.jcarousel.js
 
         Masonry
-        - https://github.com/desandro/masonry/blob/master/jquery.masonry.js		
+        - https://github.com/desandro/masonry/blob/master/jquery.masonry.js
 
 */
 
@@ -711,7 +711,7 @@
 
         switch (thisCall) {
 
-            // method 
+            // method
             case 'string':
                 var args = Array.prototype.slice.call(arguments, 1);
 
@@ -735,7 +735,7 @@
 
             break;
 
-            // creation 
+            // creation
             case 'object':
 
                 this.each(function () {
@@ -770,7 +770,7 @@
 
 
 
-    /* 
+    /*
      * smartscroll: debounced scroll event for jQuery *
      * https://github.com/lukeshumard/smartscroll
      * Based on smartresize by @louis_remi: https://github.com/lrbabe/jquery.smartresize.js *

@@ -6,73 +6,73 @@
   <genericsetup:upgradeStep
       title="Update the registry records"
       description=""
+      profile="collective.auditlog:default"
+      source="*"
       destination="1001"
       handler=".to1001.fix_registry_records"
-      profile="collective.auditlog:default"
-      source="*"
       />
 
   <genericsetup:upgradeStep
       title="Update the registry records"
       description=""
+      profile="collective.auditlog:default"
+      source="*"
       destination="1002"
       handler=".to1001.fix_registry_records"
-      profile="collective.auditlog:default"
-      source="*"
       />
 
   <genericsetup:upgradeStep
       title="Update the registry records"
       description=""
+      profile="collective.auditlog:default"
+      source="*"
       destination="1003"
       handler=".to1001.fix_registry_records"
-      profile="collective.auditlog:default"
-      source="*"
       />
 
   <genericsetup:upgradeStep
       title="Update the registry records"
       description=""
+      profile="collective.auditlog:default"
+      source="*"
       destination="1004"
       handler=".to1001.fix_registry_records"
-      profile="collective.auditlog:default"
-      source="*"
       />
 
   <genericsetup:upgradeStep
       title="Update the registry records"
       description=""
+      profile="collective.auditlog:default"
+      source="*"
       destination="1005"
       handler=".to1001.fix_registry_records"
-      profile="collective.auditlog:default"
-      source="*"
       />
 
   <genericsetup:upgradeStep
       title="Update the registry records"
       description=""
-      destination="1006"
-      handler=".to1001.fix_registry_records"
       profile="collective.auditlog:default"
       source="*"
+      destination="1006"
+      handler=".to1001.fix_registry_records"
       />
 
   <genericsetup:upgradeDepends
       title="Add new catalog"
       description=""
-      destination="1007"
-      import_steps="toolset"
       profile="collective.auditlog:default"
       source="*"
+      destination="1007"
+      import_steps="toolset"
       />
 
   <genericsetup:upgradeDepends
       title="Add new permission"
       description=""
-      destination="1008"
-      import_steps="rolemap actions"
       profile="collective.auditlog:default"
       source="*"
+      destination="1008"
+      import_steps="rolemap actions"
       />
 
 </configure>

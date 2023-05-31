@@ -1,4 +1,3 @@
-# coding=utf-8
 from collective.auditlog.db import getSession
 from collective.auditlog.interfaces import IAuditLogSettings
 from collective.auditlog.models import Base
@@ -22,18 +21,7 @@ import transaction
 import unittest
 
 
-try:
-    # Archetypes
-    from Products.Archetypes.event import ObjectEditedEvent
-    from Products.Archetypes.event import ObjectInitializedEvent
-
-    HAS_AT = True
-except ImportError:
-    HAS_AT = False
-
-
-class tempDb(object):
-
+class tempDb:
     registry_key = "{iface}.connectionstring".format(
         iface=IAuditLogSettings.__identifier__
     )
@@ -48,7 +36,7 @@ class tempDb(object):
 
     def __enter__(self):
         self.registry = registry = getUtility(IRegistry)
-        registry[self.registry_key] = u"sqlite:///%s" % (self.tempfilename)
+        registry[self.registry_key] = "sqlite:///%s" % (self.tempfilename)
         self.session = getSession()
         Base.metadata.create_all(self.session.bind.engine)
         return self
@@ -58,7 +46,6 @@ class tempDb(object):
 
 
 class TestActions(unittest.TestCase):
-
     layer = AuditLog_FUNCTIONAL_TESTING
 
     def setUp(self):
@@ -71,20 +58,23 @@ class TestActions(unittest.TestCase):
         )
         registry = getUtility(IRegistry)
         registry[registry_key] = [
-            u"OFS.interfaces.IObjectClonedEvent",
-            u"plone.app.iterate.interfaces.IBeforeCheckoutEvent",
-            u"plone.app.iterate.interfaces.ICancelCheckoutEvent",
-            u"plone.app.iterate.interfaces.ICheckinEvent",
-            u"Products.CMFCore.interfaces.IActionSucceededEvent",
-            u"zope.lifecycleevent.interfaces.IObjectAddedEvent",
-            u"zope.lifecycleevent.interfaces.IObjectModifiedEvent",
-            u"zope.lifecycleevent.interfaces.IObjectMovedEvent",
+            "OFS.interfaces.IObjectClonedEvent",
+            "plone.app.iterate.interfaces.IBeforeCheckoutEvent",
+            "plone.app.iterate.interfaces.ICancelCheckoutEvent",
+            "plone.app.iterate.interfaces.ICheckinEvent",
+            "Products.CMFCore.interfaces.IActionSucceededEvent",
+            "zope.lifecycleevent.interfaces.IObjectAddedEvent",
+            "zope.lifecycleevent.interfaces.IObjectModifiedEvent",
+            "zope.lifecycleevent.interfaces.IObjectMovedEvent",
         ]
 
     def create_page(self, title="Page"):
-        """ Create a page and return it
-        """
-        obj_id = self.portal.invokeFactory("Document", id="page", title=title,)
+        """Create a page and return it"""
+        obj_id = self.portal.invokeFactory(
+            "Document",
+            id="page",
+            title=title,
+        )
         obj = self.portal[obj_id]
         notify(ObjectAddedEvent(obj))
         # We need to commit here so that _p_jar isn't None and move will work
@@ -92,7 +82,7 @@ class TestActions(unittest.TestCase):
         return obj
 
     def reset_rule_filter(self):
-        """ If we want to execute a rule multiple times in the same test
+        """If we want to execute a rule multiple times in the same test
         we need to reset the rule filter, mocking a fresh request
         """
         _status.rule_filter.reset()
@@ -119,7 +109,9 @@ class TestActions(unittest.TestCase):
     def test_copied(self):
         self.create_page()
         self.portal.invokeFactory(
-            "Folder", id="folder", title="folder",
+            "Folder",
+            id="folder",
+            title="folder",
         )
         with tempDb() as db:
             cd = self.portal.manage_copyObjects("page")
@@ -147,17 +139,18 @@ class TestActions(unittest.TestCase):
         with tempDb() as db:
             # publish and ...
             pw.doActionFor(
-                self.portal.page, "publish",
+                self.portal.page,
+                "publish",
             )
-            self.assertEqual(db.logs[-1].action, u"workflow")
+            self.assertEqual(db.logs[-1].action, "workflow")
             info = json.loads(db.logs[-1].info)
-            self.assertEqual(info["transition"], u"publish")
-            self.assertEqual(info["comments"], u"")
+            self.assertEqual(info["transition"], "publish")
+            self.assertEqual(info["comments"], "")
 
             self.reset_rule_filter()
             # ... retract the test page (adding a comment)
             pw.doActionFor(self.portal.page, "retract", comment="I've been commented ♥")
-            self.assertEqual(db.logs[-1].action, u"workflow")
+            self.assertEqual(db.logs[-1].action, "workflow")
             info = json.loads(db.logs[-1].info)
-            self.assertEqual(info["transition"], u"retract")
-            self.assertEqual(info["comments"], u"I've been commented \u2665")
+            self.assertEqual(info["transition"], "retract")
+            self.assertEqual(info["comments"], "I've been commented \u2665")

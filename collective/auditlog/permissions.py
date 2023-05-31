@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from AccessControl.SecurityInfo import ModuleSecurityInfo
 from Products.CMFCore.permissions import setDefaultRoles
 

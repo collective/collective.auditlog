@@ -1,4 +1,3 @@
-# coding=utf-8
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import IntegrationTesting
@@ -12,9 +11,9 @@ class AuditLog(PloneSandboxLayer):
     defaultBases = (PLONE_FIXTURE,)
 
     def setUpZope(self, app, configurationContext):
-        import plone.app.contenttypes
         import collective.auditlog
         import collective.auditlog.asyncqueue
+        import plone.app.contenttypes
 
         self.loadZCML(package=plone.app.contenttypes)
         self.loadZCML(package=collective.auditlog)

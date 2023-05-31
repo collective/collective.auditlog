@@ -4,11 +4,8 @@ from Products.Five.browser import BrowserView
 from sqlalchemy import desc
 from sqlalchemy import or_
 
-import six
-
 
 class LogView(BrowserView):
-
     page_size = 100
 
     columns = [
@@ -63,7 +60,7 @@ class LogView(BrowserView):
         else:
             lines = session.query(LogEntry).order_by(desc(order))
         if query:
-            query = six.text_type(query)
+            query = str(query)
             lines = lines.filter(
                 or_(
                     LogEntry.user.contains(query),

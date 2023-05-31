@@ -1,4 +1,3 @@
-# coding=utf-8
 from Acquisition import aq_parent
 from collective.auditlog import td
 from collective.auditlog.asyncqueue import queueJob
@@ -89,7 +88,7 @@ def getSite():
             if request and "transaction_info" in request.other:
                 info = " ".join(request.other["transaction_info"])
                 for plone_site in plone_sites:
-                    if " /{}/".format(plone_site) in info:
+                    if f" /{plone_site}/" in info:
                         site = zope_root[plone_site]
     return site
 
@@ -109,7 +108,7 @@ def getUser():
 
 
 def getObjectInfo(obj):
-    """ Get basic information about an object for logging.
+    """Get basic information about an object for logging.
     This only includes information available on the object itself. Some fields
     are missing because they depend on the event or rule that was triggered.
     """
@@ -134,7 +133,7 @@ def getObjectInfo(obj):
 
 def addLogEntry(obj, data):
     # XXX getLogEntry sometime returns True, probably it should just return None
-    if not data or data == True:
+    if not data or data is True:
         return
     tdata = td.get()
     if not tdata.registered:
