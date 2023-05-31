@@ -30,3 +30,7 @@ def manage_undo_transactions_with_audit(self, transaction_info=(), REQUEST=None)
         return
     REQUEST["RESPONSE"].redirect("%s/manage_UndoForm" % REQUEST["URL1"])
     return ""
+
+
+# # monkey patch undo to be able to audit ZMI undo operations
+# UndoSupport.manage_undo_transactions = manage_undo_transactions_with_audit
