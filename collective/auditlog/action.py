@@ -1,4 +1,3 @@
-# coding=utf-8
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
 from OFS.interfaces import IObjectClonedEvent
@@ -50,12 +49,12 @@ class IAuditAction(Interface):
 @implementer(IAuditAction, IRuleElementData)
 class AuditAction(SimpleItem):
     element = "plone.actions.Audit"
-    summary = u"Audit"
+    summary = "Audit"
 
 
 @implementer(IExecutable)
 @adapter(Interface, IAuditAction, Interface)
-class AuditActionExecutor(object):
+class AuditActionExecutor:
     def __init__(self, context, element, event):
         self.context = context
         self.element = element
@@ -63,15 +62,13 @@ class AuditActionExecutor(object):
 
     @property
     def request(self):
-        """Try to get a request
-        """
+        """Try to get a request"""
         return getRequest()
 
     @property
     @memoize
     def rule(self):
-        """ Check up the stack the rule that invoked this action
-        """
+        """Check up the stack the rule that invoked this action"""
         # start higher in the stack
         frame = inspect.currentframe().f_back.f_back
         while frame:
@@ -97,7 +94,7 @@ class AuditActionExecutor(object):
         return True
 
     def get_history_comment(self):
-        """ Given an object and a IActionSucceededEvent,
+        """Given an object and a IActionSucceededEvent,
         extract the comment of the transition.
         """
         action = self.event.action
@@ -122,8 +119,7 @@ class AuditActionExecutor(object):
 
     @memoize
     def getLogEntry(self):
-        """ Get's a log entry for your action
-        """
+        """Gets a log entry for your action"""
         event = self.event
         obj = event.object
         data = {"info": ""}
@@ -152,7 +148,7 @@ class AuditActionExecutor(object):
             else:
                 if self.rule is None or "Moved" in self.rule.rule.title:
                     parent_path = "/".join(event.oldParent.getPhysicalPath())
-                    previous_location = u"{0}/{1}".format(parent_path, event.oldName)
+                    previous_location = f"{parent_path}/{event.oldName}"
                     info = {"previous_location": previous_location}
                     data["info"] = json.dumps(info)
                     action = "moved"
@@ -226,10 +222,9 @@ class AuditActionExecutor(object):
 
 
 class AuditAddForm(AddForm):
-
     schema = IAuditAction
-    label = u"Add Audit Action"
-    form_name = u"Configure element"
+    label = "Add Audit Action"
+    form_name = "Configure element"
 
     def create(self, data):
         a = AuditAction()
@@ -237,7 +232,6 @@ class AuditAddForm(AddForm):
 
 
 class AuditEditForm(EditForm):
-
     schema = IAuditAction
-    label = u"Edit Audit Action"
-    form_name = u"Configure element"
+    label = "Edit Audit Action"
+    form_name = "Configure element"

@@ -23,14 +23,12 @@ except ImportError:
         from Globals import InitializeClass
 
 
-class Empty(object):
-    """
-    """
+class Empty:
+    """ """
 
 
 class IAuditCatalog(Interface):
-    """
-    """
+    """ """
 
 
 @implementer(IAuditCatalog)
@@ -61,14 +59,14 @@ class AuditCatalog(CatalogTool):
             self.addColumn("UID")
             self.addColumn("last_audited_date")
             self.addColumn("audited_action")
-            l = PLexicon(
+            lexicon = PLexicon(
                 "audit_lexicon",
                 "",
                 HTMLWordSplitter(),
                 CaseNormalizer(),
                 StopWordRemover(),
             )
-            self._setObject("audit_lexicon", l)
+            self._setObject("audit_lexicon", lexicon)
         catalog = portal_api.get_tool("portal_catalog")
         indexes = catalog._catalog.indexes
         for name, index in indexes.items():

@@ -190,7 +190,7 @@ now named 'pcelery' and it needs a path to the zope configuration. Example::
 
 Flower is included in this setup. Run "bin/flower" from the buildout
 directory and consult the dashboard at http://localhost:5555 using a
-browser. Note that the broker is now a requried parameter::
+browser. Note that the broker is now a required parameter::
 
     $ bin/flower --broker redis://127.0.0.1:6379
 

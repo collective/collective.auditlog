@@ -56,13 +56,13 @@ class IAuditLogSettings(Interface):
     """
 
     storage = schema.Choice(
-        title=_(u"Log storage"),
+        title=_("Log storage"),
         description=_(
-            u"help_auditlog_storage",
+            "help_auditlog_storage",
             default=(
-                u"Audit Log is designed for use with a SQL database, "
-                u"but the data can be stored in the ZODB catalog for "
-                u"allowing audit log searches with catalog indexes."
+                "Audit Log is designed for use with a SQL database, "
+                "but the data can be stored in the ZODB catalog for "
+                "allowing audit log searches with catalog indexes."
             ),
         ),
         required=True,
@@ -71,53 +71,53 @@ class IAuditLogSettings(Interface):
     )
 
     connectionstring = schema.TextLine(
-        title=_(u"Audit Log Connection String"),
+        title=_("Audit Log Connection String"),
         description=_(
-            u"help_auditlog_connection",
+            "help_auditlog_connection",
             default=(
-                u"Enter the connection string for the database Audit Log "
-                u"is to write to. "
-                u"Must be a valid SQLAlchemy connection string."
+                "Enter the connection string for the database Audit Log "
+                "is to write to. "
+                "Must be a valid SQLAlchemy connection string."
             ),
         ),
         required=True,
-        default=u"sqlite:///:memory:",
+        default="sqlite:///:memory:",
     )
 
     connectionparameters = schema.TextLine(
-        title=_(u"Audit Log Connection Parameters"),
+        title=_("Audit Log Connection Parameters"),
         description=_(
-            u"help_auditlog_connection_parameteers",
+            "help_auditlog_connection_parameteers",
             default=(
-                u"Enter the connection parametes in a json form. "
-                u'E.g.: \'{"pool_recycle": 3600, "echo": true}\' '
+                "Enter the connection parameters in a json form. "
+                'E.g.: \'{"pool_recycle": 3600, "echo": true}\' '
             ),
         ),
         required=True,
-        default=u"",
+        default="",
     )
 
     trackworkingcopies = schema.Bool(
-        title=_(u"Track Working Copy Activity?"),
+        title=_("Track Working Copy Activity?"),
         description=_(
-            u"help_auditlog_trackworkingcopies",
+            "help_auditlog_trackworkingcopies",
             default=(
-                u"When checked AuditLog will track all actions "
-                u"to Working Copies. "
-                u"When unchecked, only cancel check out and check-in actions "
-                u"will be tracked."
+                "When checked AuditLog will track all actions "
+                "to Working Copies. "
+                "When unchecked, only cancel check out and check-in actions "
+                "will be tracked."
             ),
         ),
         required=False,
     )
 
     automaticevents = schema.List(
-        title=_(u"Trigger Without Content Rule"),
+        title=_("Trigger Without Content Rule"),
         description=_(
-            u"help_auditlog_automaticevents",
+            "help_auditlog_automaticevents",
             default=(
-                u"The selected events will not require a content rule "
-                u"to trigger them, so all instances will be logged."
+                "The selected events will not require a content rule "
+                "to trigger them, so all instances will be logged."
             ),
         ),
         default=[],
@@ -135,7 +135,7 @@ class IAuditableActionPerformedEvent(Interface):
 
 
 @implementer(IAuditableActionPerformedEvent)
-class AuditableActionPerformedEvent(object):
+class AuditableActionPerformedEvent:
     def __init__(self, object, request, action, info=None):
         self.object = object
         self.request = request
@@ -144,14 +144,14 @@ class AuditableActionPerformedEvent(object):
 
 
 class IBeforeStoreAuditlogEntryEvent(Interface):
-    """ Event fired before storing an entry into the auditlog"""
+    """Event fired before storing an entry into the auditlog"""
 
     object = Attribute("The subject of the event.")
     data = Attribute("The data stored in the log")
 
 
 @implementer(IBeforeStoreAuditlogEntryEvent)
-class BeforeStoreAuditlogEntryEvent(object):
+class BeforeStoreAuditlogEntryEvent:
     def __init__(self, object, data):
         self.object = object
         self.data = data

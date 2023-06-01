@@ -9,6 +9,7 @@ from collective.auditlog import db
 from collective.auditlog.models import Base
 from logging import getLogger
 from plone.app.contentrules import handlers as cr_handlers
+from sqlalchemy import inspect
 from transaction.interfaces import IDataManagerSavepoint
 from transaction.interfaces import ISavepointDataManager
 from zope.interface import implementer
@@ -32,7 +33,7 @@ def get():
 
 
 @implementer(ISavepointDataManager)
-class DataManager(object):
+class DataManager:
     def __init__(self, td):
         self._session = None
         self.td = td
@@ -43,7 +44,7 @@ class DataManager(object):
         if self._session is None:
             self._session = db.getSession()
             engine = db.getEngine()
-            if not engine.dialect.has_table(engine, "audit"):
+            if not inspect(engine).has_table("audit"):
                 Base.metadata.create_all(bind=engine)
         return self._session
 
@@ -51,7 +52,7 @@ class DataManager(object):
         if self.td.registered:
             try:
                 self.session.commit()
-            except:
+            except Exception:
                 logger.error(
                     "Error during audit log commit. "
                     "Error stack: %s" % (traceback.format_exc())
@@ -119,7 +120,7 @@ class Savepoint:
                 cr_handlers.close(None)
 
 
-class TransactionData(object):
+class TransactionData:
     def __init__(self):
         self.joined = False
         self.registered = False

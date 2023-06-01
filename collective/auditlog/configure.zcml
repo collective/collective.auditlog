@@ -17,9 +17,9 @@
   <browser:page
       name="auditlog-settings"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      permission="cmf.ManagePortal"
       class=".controlpanel.AuditLogSettingsControlPanel"
       template="controlpanel.pt"
+      permission="cmf.ManagePortal"
       />
 
   <browser:resourceDirectory
@@ -30,48 +30,48 @@
   <browser:page
       name="auditlog-view"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      permission="collective.auditlog.ViewAuditlog"
       class="collective.auditlog.browser.LogView"
       template="logview.pt"
+      permission="collective.auditlog.ViewAuditlog"
       />
 
   <interface
-      name="A working copy has been checked in."
       interface="plone.app.iterate.interfaces.ICheckinEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="A working copy has been checked in."
       />
 
   <interface
-      name="An object has been checked out."
       interface="plone.app.iterate.interfaces.IBeforeCheckoutEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been checked out."
       />
 
   <interface
-      name="A working copy has been cancelled."
       interface="plone.app.iterate.interfaces.ICancelCheckoutEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="A working copy has been cancelled."
       />
 
   <interface
-      name="An object has been moved"
       interface="zope.lifecycleevent.interfaces.IObjectMovedEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been moved"
       />
   <interface
-      name="An object has been added"
       interface="zope.lifecycleevent.interfaces.IObjectAddedEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been added"
       />
   <interface
-      name="An object has been created"
       interface="zope.lifecycleevent.interfaces.IObjectCreatedEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been created"
       />
   <interface
-      name="An object has been copied"
       interface="OFS.interfaces.IObjectClonedEvent"
       type="plone.contentrules.rule.interfaces.IRuleEventType"
+      name="An object has been copied"
       />
 
   <!-- Rule triggers -->

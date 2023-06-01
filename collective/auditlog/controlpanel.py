@@ -1,4 +1,3 @@
-# coding=utf-8
 from collective.auditlog.db import config
 from collective.auditlog.interfaces import _
 from collective.auditlog.interfaces import IAuditLogSettings
@@ -6,17 +5,16 @@ from plone.app.registry.browser import controlpanel
 
 
 class AuditLogSettingsEditForm(controlpanel.RegistryEditForm):
-
     schema = IAuditLogSettings
-    label = _(u"Audit Log settings")
-    description = _(u"""""")
+    label = _("Audit Log settings")
+    description = _("""""")
 
     def updateFields(self):
-        super(AuditLogSettingsEditForm, self).updateFields()
+        super().updateFields()
         conn_string = config.get("audit-connection-string", None)
         conn_string_field = self.fields.get("connectionstring", None)
         if conn_string is not None and conn_string_field is not None:
-            desc = u"""Read-only. The connection string was defined in
+            desc = """Read-only. The connection string was defined in
                 the configuration file.
             """
             conn_string_field.field.required = False
@@ -24,14 +22,14 @@ class AuditLogSettingsEditForm(controlpanel.RegistryEditForm):
         conn_params = config.get("audit-connection-params", None)
         conn_params_field = self.fields.get("connectionparameters", None)
         if conn_params is not None and conn_params_field is not None:
-            desc = u"""Read-only. The connection parameters were
+            desc = """Read-only. The connection parameters were
                 defined in the configuration file.
             """
             conn_params_field.field.required = False
             conn_params_field.field.description = desc
 
     def updateWidgets(self):
-        super(AuditLogSettingsEditForm, self).updateWidgets()
+        super().updateWidgets()
         conn_string = config.get("audit-connection-string", None)
         conn_string_widget = self.widgets.get("connectionstring", None)
         if conn_string is not None and conn_string_widget is not None:

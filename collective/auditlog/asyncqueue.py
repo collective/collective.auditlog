@@ -1,4 +1,3 @@
-# coding=utf-8
 from collective.auditlog import db
 from collective.auditlog import td
 from collective.auditlog.models import LogEntry
@@ -6,9 +5,10 @@ from Products.CMFPlone.utils import safe_unicode
 
 
 try:
-    import collective.celery
-    from collective.auditlog.tasks import queue_job
     from celery.utils.log import get_task_logger
+    from collective.auditlog.tasks import queue_job
+
+    import collective.celery  # noqa: F401
 
     logger = get_task_logger(__name__)
 except ImportError:

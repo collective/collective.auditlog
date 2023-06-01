@@ -1,4 +1,3 @@
-# coding=utf-8
 from collective.auditlog.action import AuditActionExecutor
 from collective.auditlog.utils import addLogEntry
 from collective.auditlog.utils import getObjectInfo
@@ -18,21 +17,21 @@ import json
 
 
 try:
-    from plone.app.contentrules.handlers import (
-        execute_rules,
-        execute,
-        is_portal_factory,
-    )
+    from plone.app.contentrules.handlers import execute
+    from plone.app.contentrules.handlers import execute_rules
+    from plone.app.contentrules.handlers import is_portal_factory
 except ImportError:
-    from Acquisition import aq_inner, aq_parent
-    from plone.app.contentrules.handlers import execute, is_portal_factory
+    from Acquisition import aq_inner
+    from Acquisition import aq_parent
+    from plone.app.contentrules.handlers import execute
+    from plone.app.contentrules.handlers import is_portal_factory
 
     # copied from plone.app.iterate 2.0:
 
     def execute_rules(event):
-        """ When an action is invoked on an object,
+        """When an action is invoked on an object,
         execute rules assigned to its parent.
-        Base action executor handler """
+        Base action executor handler"""
 
         if is_portal_factory(event.object):
             return

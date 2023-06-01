@@ -1,11 +1,12 @@
 Changelog
 =========
 
-2.0.1 (unreleased)
-------------------
+3.0.0a1 (unreleased)
+--------------------
 
-- Nothing changed yet.
-
+- Drop Python 2.7
+- Use SQLAlchemy 1.4
+  [ale-rt]
 
 2.0.0 (2023-05-31)
 ------------------
@@ -29,7 +30,7 @@ Changelog
   [thet]
 
 - Remove deprecations.
-  action.canExecute is renamed to ``can_execute``, takes no paramters and is a property.
+  action.canExecute is renamed to ``can_execute``, takes no parameters and is a property.
   [thet]
 
 - Python 3 compatibility.

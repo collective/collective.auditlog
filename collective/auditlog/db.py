@@ -1,4 +1,3 @@
-# coding=utf-8
 from App.config import getConfiguration
 from json import loads
 from plone.registry.interfaces import IRegistry
@@ -6,8 +5,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from zope.component import getUtility
-
-import six
 
 
 zope_conf = getConfiguration()
@@ -39,7 +36,7 @@ def getEngine(conn_string=None, conn_parameters=None, req=None):
             ]  # noqa
         if not conn_parameters:
             conn_parameters = {}
-        elif isinstance(conn_parameters, six.string_types):
+        elif isinstance(conn_parameters, str):
             conn_parameters = loads(conn_parameters)
         engine = create_engine(conn_string, **conn_parameters)
     return engine

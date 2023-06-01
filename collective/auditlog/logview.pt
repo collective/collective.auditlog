@@ -18,8 +18,7 @@
     <metal:js fill-slot="javascript_head_slot">
       <script tal:attributes="
                 src string:${portal_url}/++resource++collective.auditlog/infinitescroll.jquery.js;
-              "
-      ></script>
+              "></script>
     </metal:js>
   </head>
   <body>
@@ -70,8 +69,7 @@
           <tr tal:define="
                 order python:request.get('order', 'performed_on');
                 direction view/direction;
-              "
-          >
+              ">
             <th style="white-space: nowrap"
                 tal:repeat="column view/columns"
             >
@@ -88,14 +86,12 @@
                 <span tal:condition="python:direction == 'asc'">
                   <img tal:attributes="
                          src string:${portal_url}/arrowTop.png;
-                       "
-                  />
+                       " />
                 </span>
                 <span tal:condition="python:direction == 'desc'">
                   <img tal:attributes="
                          src string:${portal_url}/arrowBottom.png;
-                       "
-                  />
+                       " />
                 </span>
               </tal:block>
             </th>
