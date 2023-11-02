@@ -15,14 +15,15 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - "3.7"
-          - "3.8"
+          - ["3.7", "py37-Plone52"]
+          - ["3.8", "py38-Plone52"]
+          - ["3.8", "py38-Plone60"]
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python ${{ matrix.python-version[0] }}
         uses: actions/setup-python@v2
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: ${{ matrix.python-version[0] }}
       - name: Pip cache
         uses: actions/cache@v2
         with:
@@ -35,4 +36,4 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install tox
       - name: Run tox
-        run: tox
+        run: tox -e ${{ matrix.python-version[1] }}
