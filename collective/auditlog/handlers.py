@@ -19,12 +19,10 @@ import json
 try:
     from plone.app.contentrules.handlers import execute
     from plone.app.contentrules.handlers import execute_rules
-    from plone.app.contentrules.handlers import is_portal_factory
 except ImportError:
     from Acquisition import aq_inner
     from Acquisition import aq_parent
     from plone.app.contentrules.handlers import execute
-    from plone.app.contentrules.handlers import is_portal_factory
 
     # copied from plone.app.iterate 2.0:
 
@@ -32,10 +30,6 @@ except ImportError:
         """When an action is invoked on an object,
         execute rules assigned to its parent.
         Base action executor handler"""
-
-        if is_portal_factory(event.object):
-            return
-
         execute(aq_parent(aq_inner(event.object)), event)
 
 
@@ -72,9 +66,6 @@ def moved_event(event):
 
 def created_event(event):
     obj = event.object
-
-    if is_portal_factory(obj):
-        return
 
     if IObjectCopiedEvent.providedBy(event):
         return  # ignore this event since we're listening to cloned instead

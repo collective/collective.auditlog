@@ -1,0 +1,2 @@
+Complete the removal of Archetypes code: ``is_portal_factory`` and ``WorkingCopyRelation`` are gone for good.
+[ale-rt]
