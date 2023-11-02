@@ -42,7 +42,12 @@ def getUID(context):
         return uid
 
     if hasattr(context, "UID"):
-        return context.UID()
+        try:
+            return context.UID()
+        except TypeError:
+            # Happens when running Plone 6 code before running
+            # the migration steps from Plone 5 to Plone6
+            pass
 
     try:
         return "/".join(context.getPhysicalPath())
