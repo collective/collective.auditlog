@@ -38,7 +38,12 @@ setup(
     keywords="Plone Audit Log",
     author="rain2o",
     author_email="Joel@rain2odesigns.com",
-    url="http://svn.plone.org/svn/collective/",
+    url="https://github.com/collective/collective.auditlog/",
+    project_urls={
+        "PyPI": "https://pypi.org/project/collective.auditlog/",
+        "Source": "https://github.com/collective/collective.auditlog",
+        "Tracker": "https://github.com/collective/collective.auditlog/issues",
+    },
     license="GPL",
     packages=find_packages(),
     namespace_packages=["collective"],
