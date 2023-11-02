@@ -20,7 +20,10 @@ from zope.globalrequest import getRequest
 def is_installed():
     try:
         site = getSite()
-        installer = get_installer(site)
+        try:
+            installer = get_installer(site)
+        except Exception:
+            return False
         installed = installer.is_product_installed("collective.auditlog")
         registry = queryUtility(IRegistry, context=site)
         installed = (
