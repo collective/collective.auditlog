@@ -1,8 +1,13 @@
 from collective.auditlog import db
 from collective.auditlog import td
 from collective.auditlog.models import LogEntry
-from Products.CMFPlone.utils import safe_unicode
 
+
+try:
+    from plone.base.utils import safe_text
+except ImportError:
+    # BBB Plone 5.2
+    from Products.CMFPlone.utils import safe_text
 
 try:
     from celery.utils.log import get_task_logger
@@ -28,7 +33,7 @@ def runJob(context, **data):
     for key in data:
         value = data[key]
         if isinstance(value, str):
-            data[key] = safe_unicode(value)
+            data[key] = safe_text(value)
 
     log = LogEntry(**data)
     session.add(log)

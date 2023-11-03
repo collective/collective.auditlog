@@ -20,7 +20,10 @@ from zope.globalrequest import getRequest
 def is_installed():
     try:
         site = getSite()
-        installer = get_installer(site)
+        try:
+            installer = get_installer(site)
+        except Exception:
+            return False
         installed = installer.is_product_installed("collective.auditlog")
         registry = queryUtility(IRegistry, context=site)
         installed = (
@@ -39,7 +42,12 @@ def getUID(context):
         return uid
 
     if hasattr(context, "UID"):
-        return context.UID()
+        try:
+            return context.UID()
+        except TypeError:
+            # Happens when running Plone 6 code before running
+            # the migration steps from Plone 5 to Plone6
+            pass
 
     try:
         return "/".join(context.getPhysicalPath())

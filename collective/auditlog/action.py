@@ -32,13 +32,6 @@ import json
 import logging
 
 
-try:
-    from plone.app.iterate.relation import WorkingCopyRelation
-except ImportError:
-    # Import will fail if we do not have Products.Archetypes
-    WorkingCopyRelation = None
-
-
 logger = logging.getLogger("collective.auditlog")
 
 
@@ -189,24 +182,7 @@ class AuditActionExecutor:
             return True
 
         if IWorkingCopy.providedBy(obj):
-            # if working copy, iterate, check if Track Working Copies is
-            # enabled
-            if not self.trackWorkingCopies:
-                # if not enabled, we only care about checked messages
-                if "check" not in action:
-                    return True
-            # if enabled in control panel, use original object and move
-            # working copy path to working_copy
-            data["working_copy"] = "/".join(obj.getPhysicalPath())
-            if WorkingCopyRelation:
-                relationships = obj.getReferences(WorkingCopyRelation.relationship)
-            else:
-                relationships = []
-            # check relationships, if none, something is wrong, not logging
-            # action
-            if len(relationships) <= 0:
-                return True
-            obj = relationships[0]
+            return True
 
         data.update(self._getObjectInfo(obj))
         data["action"] = action
