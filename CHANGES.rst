@@ -18,9 +18,6 @@ Internal:
   [plone devs] (53dc5b4c)
 
 
-Changelog
-=========
-
 3.0.0a1 (unreleased)
 --------------------
 
