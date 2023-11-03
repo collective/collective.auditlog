@@ -1,3 +1,13 @@
+3.0.0a2 (2023-11-03)
+--------------------
+
+Breaking changes:
+
+
+- Complete the removal of Archetypes code: ``is_portal_factory`` and ``WorkingCopyRelation`` are gone for good.
+  [ale-rt] (#33)
+
+
 3.0.0a1 (2023-06-01)
 --------------------
 
