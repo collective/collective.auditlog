@@ -14,6 +14,7 @@ dist/
 docs/_build
 __pycache__/
 .tox
+.vscode/
 
 # venv / buildout related
 bin/
@@ -46,6 +47,3 @@ var/
 #  _your own configuration lines_
 #  """
 ##
-temp_auto_push.bat
-temp_interactive_push.bat
-.gitignore
