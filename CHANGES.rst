@@ -1,3 +1,14 @@
+3.0.0 (2026-05-22)
+------------------
+
+Bug fixes:
+
+
+- editorconfig: Don't use inline comments.
+  Inline comments are invalid since editorconfig v0.15.0.
+  [thet]
+
+
 3.0.0a2 (2023-11-03)
 --------------------
 
