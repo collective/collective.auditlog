@@ -1,4 +1,4 @@
-from collective.auditlog.db import getSession
+from collective.auditlog import db
 from collective.auditlog.interfaces import IAuditLogSettings
 from collective.auditlog.models import Base
 from collective.auditlog.models import LogEntry
@@ -28,7 +28,8 @@ class tempDb:
     session = None
 
     def __init__(self):
-        _, self.tempfilename = mkstemp()
+        fd, self.tempfilename = mkstemp()
+        os.close(fd)
 
     @property
     def logs(self):
@@ -37,11 +38,13 @@ class tempDb:
     def __enter__(self):
         self.registry = registry = getUtility(IRegistry)
         registry[self.registry_key] = "sqlite:///%s" % (self.tempfilename)
-        self.session = getSession()
-        Base.metadata.create_all(self.session.bind.engine)
+        self.session = db.getSession()
+        Base.metadata.create_all(self.session.bind)
         return self
 
     def __exit__(self, type, value, traceback):
+        transaction.abort()
+        db.engine.dispose()
         os.remove(self.tempfilename)
 
 
@@ -49,6 +52,7 @@ class TestActions(unittest.TestCase):
     layer = AuditLog_FUNCTIONAL_TESTING
 
     def setUp(self):
+        self.db = self.enterContext(tempDb())
         self.portal = self.layer["portal"]
         self.request = self.layer["request"].clone()
         login(self.portal, TEST_USER_NAME)
@@ -88,69 +92,73 @@ class TestActions(unittest.TestCase):
         _status.rule_filter.reset()
 
     def test_add(self):
-        with tempDb() as db:
-            self.create_page()
-            self.assertEqual(db.logs[-1].action, "added")
+        db = self.db
+        self.create_page()
+        self.assertEqual(db.logs[-1].action, "added")
 
     def test_unicode(self):
-        with tempDb() as db:
-            self.create_page(title="Pàge")
-            self.assertEqual(db.logs[-1].action, "added")
+        db = self.db
+        self.create_page(title="Pàge")
+        self.assertEqual(db.logs[-1].action, "added")
 
     @unittest.skip("The ObjectModifiedEvent seems not to be fired")
     def test_moved(self):
+        db = self.db
         self.create_page()
         self.portal.invokeFactory("Folder", id="folder", Title="folder")
-        with tempDb() as db:
-            cd = self.portal.manage_cutObjects("page")
-            self.portal.folder.manage_pasteObjects(cd)
-            self.assertEqual(db.logs[-1].action, "moved")
+        cd = self.portal.manage_cutObjects("page")
+        self.portal.folder.manage_pasteObjects(cd)
+        self.assertEqual(db.logs[-1].action, "moved")
 
     def test_copied(self):
+        db = self.db
         self.create_page()
         self.portal.invokeFactory(
             "Folder",
             id="folder",
             title="folder",
         )
-        with tempDb() as db:
-            cd = self.portal.manage_copyObjects("page")
-            self.portal.folder.manage_pasteObjects(cd)
-            self.assertEqual(db.logs[-1].action, "copied")
+        cd = self.portal.manage_copyObjects("page")
+        self.portal.folder.manage_pasteObjects(cd)
+        self.assertEqual(db.logs[-1].action, "copied")
 
     @unittest.skip("The ObjectModifiedEvent seems not to be fired")
     def test_rename(self):
+        db = self.db
         self.create_page()
 
-        with tempDb() as db:
-            self.portal.manage_renameObject("page", "page2")
-            self.assertEqual(db.logs[-1].action, "rename")
+        self.portal.manage_renameObject("page", "page2")
+        self.assertEqual(db.logs[-1].action, "rename")
 
     def test_delete(self):
+        db = self.db
         self.create_page()
 
-        with tempDb() as db:
-            self.portal.manage_delObjects(["page"])
-            self.assertEqual(db.logs[-1].action, "removed")
+        self.portal.manage_delObjects(["page"])
+        self.assertTrue(
+            any(
+                log.action == "removed" and log.path == "/plone/page" for log in db.logs
+            )
+        )
 
     def test_transition(self):
+        db = self.db
         self.create_page()
         pw = getToolByName(self.portal, "portal_workflow")
-        with tempDb() as db:
-            # publish and ...
-            pw.doActionFor(
-                self.portal.page,
-                "publish",
-            )
-            self.assertEqual(db.logs[-1].action, "workflow")
-            info = json.loads(db.logs[-1].info)
-            self.assertEqual(info["transition"], "publish")
-            self.assertEqual(info["comments"], "")
+        # publish and ...
+        pw.doActionFor(
+            self.portal.page,
+            "publish",
+        )
+        self.assertEqual(db.logs[-1].action, "workflow")
+        info = json.loads(db.logs[-1].info)
+        self.assertEqual(info["transition"], "publish")
+        self.assertEqual(info["comments"], "")
 
-            self.reset_rule_filter()
-            # ... retract the test page (adding a comment)
-            pw.doActionFor(self.portal.page, "retract", comment="I've been commented ♥")
-            self.assertEqual(db.logs[-1].action, "workflow")
-            info = json.loads(db.logs[-1].info)
-            self.assertEqual(info["transition"], "retract")
-            self.assertEqual(info["comments"], "I've been commented \u2665")
+        self.reset_rule_filter()
+        # ... retract the test page (adding a comment)
+        pw.doActionFor(self.portal.page, "retract", comment="I've been commented ♥")
+        self.assertEqual(db.logs[-1].action, "workflow")
+        info = json.loads(db.logs[-1].info)
+        self.assertEqual(info["transition"], "retract")
+        self.assertEqual(info["comments"], "I've been commented \u2665")

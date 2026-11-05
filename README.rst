@@ -138,7 +138,7 @@ can be made to look for those even if they are gone from Plone.
 Celery Integration
 ==================
 The collective.celery package requires adding the celery and
-collective.celery eggs to the mian buildout section eggs. Example::
+collective.celery eggs to the main buildout section eggs. Example::
 
     eggs =
         celery

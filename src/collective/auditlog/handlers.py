@@ -15,7 +15,6 @@ from zope.lifecycleevent.interfaces import IObjectRemovedEvent
 
 import json
 
-
 try:
     from plone.app.contentrules.handlers import execute
     from plone.app.contentrules.handlers import execute_rules

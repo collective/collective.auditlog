@@ -5,7 +5,6 @@ from zope.i18nmessageid import MessageFactory
 
 import transaction
 
-
 MessageFactory = MessageFactory("collective.auditlog")
 
 

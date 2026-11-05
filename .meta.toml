@@ -1,12 +1,20 @@
 # Generated from:
-# https://github.com/plone/meta/tree/master/config/default
+# https://github.com/plone/meta/tree/2.x/src/plone/meta/default
 # See the inline comments on how to expand/tweak this configuration file
 [meta]
 template = "default"
-commit-id = "53dc5b4c"
+commit-id = "2.12.0"
 
 [manifest]
 additional-rules = [
     "include *.rst *.cfg *.txt .coveragerc",
     "prune news",
     ]
+
+[pyproject]
+dependencies_ignores = "['Globals', 'celery', 'collective.celery']"
+dependencies_mappings = ["'Products.ZCatalog' = ['Products.ZCTextIndex']"]
+
+[tox.test_matrix]
+"6.2" = ["3.14", "3.11"]
+"6.3" = ["3.15", "3.13", "3.12"]

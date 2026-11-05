@@ -6,7 +6,6 @@ from zope.interface.interface import Attribute
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 
-
 _ = MessageFactory("collective.auditlog")
 
 EVENT_TYPES = [

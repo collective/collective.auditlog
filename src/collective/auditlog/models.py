@@ -5,7 +5,6 @@ from sqlalchemy import String
 from sqlalchemy import Unicode
 from sqlalchemy.ext.declarative import declarative_base
 
-
 Base = declarative_base()
 
 

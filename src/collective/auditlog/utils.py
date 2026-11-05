@@ -132,9 +132,11 @@ def getObjectInfo(obj):
         uid=getUID(obj),
         type=getattr(obj, "portal_type", ""),
         title=pretty_title_or_id(aq_parent(obj), obj),
-        path="/".join(obj.getPhysicalPath())
-        if getattr(obj, "getPhysicalPath", False)
-        else "/",
+        path=(
+            "/".join(obj.getPhysicalPath())
+            if getattr(obj, "getPhysicalPath", False)
+            else "/"
+        ),
     )
     return data
 
