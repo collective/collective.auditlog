@@ -1,6 +1,6 @@
 [report]
 include =
-    collective/*
+    src/collective/*
 omit =
     */test*
     */upgrades/*
