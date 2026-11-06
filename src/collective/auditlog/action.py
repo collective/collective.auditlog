@@ -31,7 +31,6 @@ import inspect
 import json
 import logging
 
-
 logger = logging.getLogger("collective.auditlog")
 
 

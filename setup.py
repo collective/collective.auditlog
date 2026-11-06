@@ -1,8 +1,6 @@
-from setuptools import find_packages
 from setuptools import setup
 
-
-version = "3.0.1.dev0"
+version = "4.0.0.dev0"
 
 
 long_description = "\n\n".join(
@@ -18,21 +16,23 @@ setup(
     version=version,
     description=("Provides extra conditions and triggers for all content " "actions"),
     long_description=long_description,
-    # Get more strings from
-    # http://pypi.python.org/pypi?:action=list_classifiers
+    # Get more strings from https://pypi.org/classifiers/
     classifiers=[
         "Development Status :: 5 - Production/Stable",
         "Framework :: Plone",
-        "Framework :: Plone :: 5.2",
-        "Framework :: Plone :: 6.0",
+        "Framework :: Plone :: 6.2",
+        "Framework :: Plone :: 6.3",
         "Framework :: Plone :: Addon",
         "Framework :: Zope",
         "Framework :: Zope :: 4",
         "Framework :: Zope :: 5",
-        "License :: OSI Approved :: GNU General Public License (GPL)",
         "Programming Language :: Python",
-        "Programming Language :: Python :: 3.7",
-        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3 :: Only",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
+        "Programming Language :: Python :: 3.13",
+        "Programming Language :: Python :: 3.14",
+        "Programming Language :: Python :: 3.15",
         "Operating System :: OS Independent",
     ],
     keywords="Plone Audit Log",
@@ -44,17 +44,29 @@ setup(
         "Source": "https://github.com/collective/collective.auditlog",
         "Tracker": "https://github.com/collective/collective.auditlog/issues",
     },
-    license="GPL",
-    packages=find_packages(),
-    namespace_packages=["collective"],
+    license_expression="GPL-2.0-or-later",
+    license_files=("docs/LICENSE.txt", "docs/LICENSE.GPL"),
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        "setuptools",
-        "sqlalchemy>=1.4,<2",
+        "Zope",
+        "Products.CMFCore",
+        "Products.CMFPlone",
+        "Products.PluggableAuthService",
+        "Products.ZCatalog",
+        "plone.app.registry",
+        "plone.base",
+        "plone.contentrules",
+        "plone.dexterity",
+        "plone.memoize",
+        "plone.uuid",
+        "sqlalchemy",
+        "plone.api",
         "plone.app.contentrules",
+        "plone.app.discussion",
+        "plone.app.iterate",
     ],
-    python_requires=">=3.7",
+    python_requires=">=3.11",
     extras_require={
         "celery": [
             "collective.celery",
@@ -62,7 +74,6 @@ setup(
         "test": [
             "plone.app.testing",
             "plone.app.contenttypes",
-            "pysqlite;python_version<'3'",
         ],
     },
     entry_points="""

@@ -13,7 +13,6 @@ from Products.ZCTextIndex.ZCTextIndex import PLexicon
 from zope.interface import implementer
 from zope.interface import Interface
 
-
 try:
     from AccessControl.class_init import InitializeClass
 except ImportError:

@@ -2,7 +2,6 @@ from collective.auditlog import db
 from collective.auditlog import td
 from collective.auditlog.models import LogEntry
 
-
 try:
     from plone.base.utils import safe_text
 except ImportError:

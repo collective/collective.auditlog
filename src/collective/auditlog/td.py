@@ -18,7 +18,6 @@ import threading
 import traceback
 import transaction as transaction_manager
 
-
 logger = getLogger(__name__)
 
 tranaction_data = threading.local()

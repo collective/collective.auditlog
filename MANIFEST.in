@@ -1,5 +1,5 @@
-graft collective
+graft src/collective
 graft docs
-include *.rst *.cfg *.txt .coveragerc
-global-exclude *.pyc
+include *.rst *.cfg *.txt
+global-exclude *.pyc .coveragerc
 prune news

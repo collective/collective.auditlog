@@ -6,7 +6,6 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 from zope.component import getUtility
 
-
 zope_conf = getConfiguration()
 product_conf = getattr(zope_conf, "product_config", {})
 config = product_conf.get("collective.auditlog", {})
