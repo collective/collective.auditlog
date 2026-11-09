@@ -1,3 +1,15 @@
+4.0.0 (2026-11-09)
+------------------
+
+Breaking changes:
+
+
+- Replace ``pkg_resources`` namespace with PEP 420 native namespace.
+  Support only Plone 6.2 and Python 3.11+.
+  Support SQLAlchemy 2+.
+  @ale-rt
+
+
 3.0.0 (2026-05-22)
 ------------------
 
